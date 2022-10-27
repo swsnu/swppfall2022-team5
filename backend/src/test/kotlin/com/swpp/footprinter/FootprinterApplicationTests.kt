@@ -9,5 +9,4 @@ class FootprinterApplicationTests {
 	@Test
 	fun contextLoads() {
 	}
-
 }
