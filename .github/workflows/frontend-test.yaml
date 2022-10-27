@@ -31,5 +31,5 @@ jobs:
       - name: install deps
         run: yarn install
 
-      - name: run unit tests
-        run: yarn test:unit
+      - name: run unit tests with coverage
+        run: yarn test:unit --coverage
