@@ -28,6 +28,7 @@ dependencies {
     runtimeOnly("com.mysql:mysql-connector-j")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("com.h2database:h2")
 }
 
 tasks.withType<KotlinCompile> {
@@ -38,5 +39,6 @@ tasks.withType<KotlinCompile> {
 }
 
 tasks.withType<Test> {
+    systemProperty("spring.profiles.active", "test")
     useJUnitPlatform()
 }
