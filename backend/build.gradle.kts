@@ -7,6 +7,7 @@ plugins {
     kotlin("jvm") version "1.6.21"
     kotlin("plugin.spring") version "1.6.21"
     kotlin("plugin.jpa") version "1.6.21"
+    jacoco
 }
 
 group = "com.swpp"
@@ -41,4 +42,16 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
     systemProperty("spring.profiles.active", "test")
     useJUnitPlatform()
+}
+
+jacoco {
+    toolVersion = "0.8.8"
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required.set(true)
+        csv.required.set(false)
+        html.required.set(false)
+    }
 }
