@@ -1,4 +1,4 @@
-name: backend build
+name: backend lint
 
 on:
   pull_request:
@@ -11,7 +11,7 @@ defaults:
     working-directory: ./backend
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,11 +24,9 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
-      - name: grant permission to gradlew
-        run: chmod +x ./gradlew
-
-      - name: check lint & build without test
-        run: ./gradlew build -x test
+      - name: run lint
+        run: |
+          ./gradlew clean ktlintCheck
 
       - if: ${{ failure() }}
         name: print ktlint report
