@@ -1,0 +1,33 @@
+spring.profiles.active: dev # defaults to dev
+spring:
+  datasource:
+    url:
+    username:
+    password:
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+
+---
+
+spring.config.activate.on-profile: dev
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/footprinter?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    username: team5
+    password: footprinter
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+
+
+---
+
+# To be configured when deploying to AWS
+spring.config.activate.on-profile: prod
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
