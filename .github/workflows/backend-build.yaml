@@ -27,8 +27,8 @@ jobs:
       - name: grant permission to gradlew
         run: chmod +x ./gradlew
 
-      - name: check lint & test
-        run: ./gradlew build
+      - name: check lint & build without test
+        run: ./gradlew build -x test
 
       - if: ${{ failure() }}
         name: print ktlint report
