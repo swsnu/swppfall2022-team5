@@ -31,3 +31,9 @@ jobs:
       - if: ${{ failure() }}
         name: print ktlint report
         run: cat ./build/reports/ktlint/**/*.txt
+      
+      - name: upload ktlint reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: ktlint-reports
+          path: ./build/reports/ktlint/**/*.txt
