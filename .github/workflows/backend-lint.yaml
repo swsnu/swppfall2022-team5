@@ -36,4 +36,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ktlint-reports
-          path: ./build/reports/ktlint/**/*.txt
+          path: backend/build/reports/ktlint/**/*.txt

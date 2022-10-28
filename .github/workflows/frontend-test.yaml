@@ -38,4 +38,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: frontend-coverage
-          path: ./coverage/lcov.info
+          path: frontend/coverage/lcov.info
