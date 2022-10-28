@@ -31,4 +31,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: backend-coverage
-          path: backend/build/reports/jacoco/**/*.xml
+          path: backend/build/reports/jacoco/test/*.xml
