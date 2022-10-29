@@ -23,6 +23,13 @@ jobs:
         with:
           java-version: '17'
           distribution: 'corretto'
+          cache: 'gradle'
 
-      - name: run test
-        run: ./gradlew clean test
+      - name: run test with coverage
+        run: ./gradlew clean test jacocoTestReport
+
+      - name: upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-coverage
+          path: backend/build/reports/jacoco/test/*.xml

@@ -31,5 +31,11 @@ jobs:
       - name: install deps
         run: yarn install
 
-      - name: run unit tests
-        run: yarn test:unit
+      - name: run unit tests with coverage
+        run: yarn test:unit --coverage
+
+      - name: upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/lcov.info

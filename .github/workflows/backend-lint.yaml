@@ -23,6 +23,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'corretto'
+          cache: 'gradle'
 
       - name: run lint
         run: |
@@ -31,3 +32,9 @@ jobs:
       - if: ${{ failure() }}
         name: print ktlint report
         run: cat ./build/reports/ktlint/**/*.txt
+      
+      - name: upload ktlint reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: ktlint-reports
+          path: backend/build/reports/ktlint/**/*.txt
