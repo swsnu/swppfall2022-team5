@@ -20,22 +20,22 @@ jobs:
       - uses: dawidd6/action-download-artifact@v2
         with:
           workflow: frontend-test.yaml
-          path: ~/artifacts
+          path: ./artifacts
 
       - uses: dawidd6/action-download-artifact@v2
         with:
           workflow: frontend-build.yaml
-          path: ~/artifacts
+          path: ./artifacts
 
       - uses: dawidd6/action-download-artifact@v2
         with:
           workflow: backend-lint.yaml
-          path: ~/artifacts
+          path: ./artifacts
 
       - uses: dawidd6/action-download-artifact@v2
         with:
           workflow: backend-test.yaml
-          path: ~/artifacts
+          path: ./artifacts
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
