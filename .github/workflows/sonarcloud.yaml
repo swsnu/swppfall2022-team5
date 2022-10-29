@@ -1,6 +1,5 @@
 name: Sonar Cloud
 on:
-  pull_request:     # for debugging
   workflow_run:
     workflows: [frontend build, frontend test, backend lint, backend test]
     types: 
