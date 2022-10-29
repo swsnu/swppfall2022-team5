@@ -14,8 +14,27 @@ jobs:
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       
-      - uses: actions/download-artifact@v3
+      - uses: ahmadnassri/action-workflow-run-wait@v1
+       # only runs additional steps if [ frontend build, frontend test, backend lint, backend test ] were successful
+      
+      - uses: dawidd6/action-download-artifact@v2
         with:
+          workflow: frontend-test.yaml
+          path: ~/artifacts
+
+      - uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: frontend-build.yaml
+          path: ~/artifacts
+
+      - uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: backend-lint.yaml
+          path: ~/artifacts
+
+      - uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: backend-test.yaml
           path: ~/artifacts
 
       - name: SonarCloud Scan
