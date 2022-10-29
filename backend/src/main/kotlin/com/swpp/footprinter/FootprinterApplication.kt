@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class FootprinterApplication
 
 fun main(args: Array<String>) {
-	runApplication<FootprinterApplication>(*args)
+    runApplication<FootprinterApplication>(*args)
 }

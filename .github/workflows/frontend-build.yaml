@@ -1,0 +1,45 @@
+name: frontend build
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/*.yaml"
+      - "frontend/**"
+
+defaults:
+  run:
+    working-directory: ./frontend
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    strategy:
+      matrix:
+        node-version: [16]
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+          cache-dependency-path: ./frontend/yarn.lock
+
+      - name: install deps
+        run: yarn install
+      
+      - name: check lint & types
+        run: yarn build --no-lint && yarn lint -o ./reports/eslint.json -f json
+
+      - name: upload eslint reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: eslint-reports
+          path: frontend/reports/eslint.json

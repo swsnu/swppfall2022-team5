@@ -1,4 +1,5 @@
-spring.profiles.active: dev # defaults to dev
+spring.profiles.default: dev
+
 spring:
   datasource:
     url:
@@ -31,3 +32,15 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+
+---
+
+spring.config.activate.on-profile: test
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MYSQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
