@@ -6,7 +6,13 @@ import com.swpp.footprinter.core.domain.photo.model.Photo
 import com.swpp.footprinter.core.domain.place.model.Place
 import com.swpp.footprinter.core.domain.tag.model.Tag
 import com.swpp.footprinter.core.domain.trace.model.Trace
-import javax.persistence.*
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.FetchType
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
+import javax.persistence.OneToMany
+import javax.persistence.OneToOne
 
 @Entity
 class Footprint(
@@ -26,9 +32,9 @@ class Footprint(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place")
-    val places: Place,
+    val place: Place,
 
-    @OneToOne(mappedBy = "memo_id")
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memo")
     val memo: Memo,
 
@@ -36,8 +42,7 @@ class Footprint(
     @JoinColumn(name = "tag")
     val tag: Tag,
 
-    @OneToMany(mappedBy = "photo")
-    @JoinColumn(name = "photo")
-    val photos: List<Photo>
+    @OneToMany(mappedBy = "footprint")
+    val photos: List<Photo> = listOf(),
 
 ) : BaseEntity()

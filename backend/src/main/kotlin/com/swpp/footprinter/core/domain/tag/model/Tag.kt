@@ -3,17 +3,16 @@ package com.swpp.footprinter.core.domain.tag.model
 import com.swpp.footprinter.core.common.model.BaseEntity
 import com.swpp.footprinter.core.domain.footprint.model.Footprint
 import javax.persistence.Column
-import javax.persistence.FetchType
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
+import javax.persistence.Entity
+import javax.persistence.OneToMany
 
+@Entity
 class Tag(
 
     @Column(name = "tag_name")
     val tagName: String,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "footprint_id")
+    @OneToMany(mappedBy = "tag")
     val taggedFootprint: List<Footprint>,
 
 ) : BaseEntity()

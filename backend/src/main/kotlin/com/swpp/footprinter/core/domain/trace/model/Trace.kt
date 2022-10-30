@@ -20,7 +20,7 @@ class Trace(
     @Column(name = "trace_date", nullable = false)
     val traceDate: String,
 
-    @OneToMany(mappedBy = "footprint")
+    @OneToMany(mappedBy = "trace")
     val footprintList: MutableList<Footprint>,
 
     @ManyToOne(fetch = FetchType.LAZY)

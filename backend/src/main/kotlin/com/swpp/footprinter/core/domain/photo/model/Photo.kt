@@ -3,10 +3,12 @@ package com.swpp.footprinter.core.domain.photo.model
 import com.swpp.footprinter.core.common.model.BaseEntity
 import com.swpp.footprinter.core.domain.footprint.model.Footprint
 import javax.persistence.Column
+import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 
+@Entity
 class Photo(
 
     @Column(name = "image_url")
@@ -25,7 +27,7 @@ class Photo(
     val timestamp: String,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "footprint")
+    @JoinColumn(name = "footprint_id")
     val footprint: Footprint,
 
 ) : BaseEntity()

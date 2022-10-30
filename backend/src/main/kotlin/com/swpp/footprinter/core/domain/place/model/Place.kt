@@ -18,7 +18,7 @@ class Place(
     @Column(name = "district")
     val district: String,
 
-    @OneToMany(mappedBy = "footprint")
+    @OneToMany(mappedBy = "place")
     val footprints: List<Footprint>,
 
 ) : BaseEntity()

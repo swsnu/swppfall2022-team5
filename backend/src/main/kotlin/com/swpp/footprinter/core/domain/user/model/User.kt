@@ -16,16 +16,16 @@ class User(
     @Column(name = "email")
     val email: String,
 
-    @OneToMany(mappedBy = "trace")
+    @OneToMany(mappedBy = "owner")
     val myTraces: List<Trace> = listOf(),
 
-    @ManyToMany(mappedBy = "trace")
+    @ManyToMany(mappedBy = "likedUser")
     val likedTraces: List<Trace> = listOf(),
 
-    @ManyToMany(mappedBy = "user")
+    @ManyToMany(mappedBy = "followingUser")
     val followedUser: List<User> = listOf(),
 
-    @ManyToMany(mappedBy = "user")
+    @ManyToMany()
     val followingUser: List<User> = listOf(),
 
 ) : BaseEntity()
