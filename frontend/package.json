@@ -11,6 +11,7 @@
     "test:unit": "jest"
   },
   "dependencies": {
+    "@tabler/icons": "^1.108.0",
     "moment": "^2.29.4",
     "next": "13.0.0",
     "react": "18.2.0",

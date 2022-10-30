@@ -728,6 +728,11 @@
   dependencies:
     tslib "^2.4.0"
 
+"@tabler/icons@^1.108.0":
+  version "1.108.0"
+  resolved "https://registry.yarnpkg.com/@tabler/icons/-/icons-1.108.0.tgz#95f20eed2d32aa60a0e992ad08f6e2fa213e6161"
+  integrity sha512-g5omegUgM1aaS+ICoJNNlFpxBGHPQq92Hs0w0pZLn1LzvMRc2H/3NO7A+G4idJwrJ6Nk8V7rnA9T8X2m4aGSaQ==
+
 "@testing-library/dom@^8.5.0":
   version "8.19.0"
   resolved "https://registry.yarnpkg.com/@testing-library/dom/-/dom-8.19.0.tgz#bd3f83c217ebac16694329e413d9ad5fdcfd785f"
