@@ -1,6 +1,13 @@
-import Head from "next/head";
-import Image from "next/image";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import Container from "../components/containers/Container";
 
 export default function Home() {
-  return <div className="">hello</div>;
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/footprints");
+  });
+
+  return <Container></Container>;
 }
