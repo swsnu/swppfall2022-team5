@@ -3,7 +3,13 @@ package com.swpp.footprinter.core.domain.trace.model
 import com.swpp.footprinter.core.common.model.BaseEntity
 import com.swpp.footprinter.core.domain.footprint.model.Footprint
 import com.swpp.footprinter.core.domain.user.model.User
-import javax.persistence.*
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.FetchType
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToMany
+import javax.persistence.ManyToOne
+import javax.persistence.OneToMany
 
 @Entity
 class Trace(
