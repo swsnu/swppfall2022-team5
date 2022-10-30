@@ -5,7 +5,26 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    container: {
+      screens: {
+        sm: "100%",
+        md: "450px",
+      },
+    },
+    colors: {
+      navy: {
+        50: "#f6f6f9",
+        100: "#ebecf3",
+        200: "#d3d5e4",
+        300: "#acb0cd",
+        400: "#7f86b1",
+        500: "#5e6699",
+        600: "#4a507f",
+        700: "#3d4167",
+        800: "#21233b",
+        900: "#181925",
+      },
+    },
   },
   plugins: [],
 };
