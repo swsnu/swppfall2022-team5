@@ -2,11 +2,7 @@ package com.swpp.footprinter.core.domain.photo.model
 
 import com.swpp.footprinter.core.common.model.BaseEntity
 import com.swpp.footprinter.core.domain.footprint.model.Footprint
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.FetchType
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
+import javax.persistence.*
 
 @Entity
 class Photo(

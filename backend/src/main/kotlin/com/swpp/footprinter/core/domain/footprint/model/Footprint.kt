@@ -6,13 +6,7 @@ import com.swpp.footprinter.core.domain.photo.model.Photo
 import com.swpp.footprinter.core.domain.place.model.Place
 import com.swpp.footprinter.core.domain.tag.model.Tag
 import com.swpp.footprinter.core.domain.trace.model.Trace
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.FetchType
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
-import javax.persistence.OneToMany
-import javax.persistence.OneToOne
+import javax.persistence.*
 
 @Entity
 class Footprint(
