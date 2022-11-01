@@ -1,4 +1,4 @@
-package com.swpp.footprinter.core.common.model
+package com.swpp.footprinter.common.model
 
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
