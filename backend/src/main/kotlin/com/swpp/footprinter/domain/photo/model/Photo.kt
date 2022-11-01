@@ -26,4 +26,4 @@ class Photo(
     @JoinColumn(referencedColumnName = "id", name = "footprintId")
     val footprint: Footprint,
 
-    ) : BaseEntity()
+) : BaseEntity()

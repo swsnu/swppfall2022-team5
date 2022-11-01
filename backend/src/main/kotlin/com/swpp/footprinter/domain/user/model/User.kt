@@ -16,8 +16,7 @@ class User(
     @OneToMany(mappedBy = "owner")
     val myTrace: List<Trace>,
 
-    ) : BaseEntity()
-
+) : BaseEntity()
 
 @Entity
 class UserFollow(
@@ -30,8 +29,7 @@ class UserFollow(
     @JoinColumn(referencedColumnName = "id", name = "followingId")
     val followed: User,
 
-    ) : BaseEntity()
-
+) : BaseEntity()
 
 @Entity
 class LikedTrace(
@@ -44,4 +42,4 @@ class LikedTrace(
     @JoinColumn(referencedColumnName = "id", name = "traceId")
     val trace: Trace,
 
-    ) : BaseEntity()
+) : BaseEntity()

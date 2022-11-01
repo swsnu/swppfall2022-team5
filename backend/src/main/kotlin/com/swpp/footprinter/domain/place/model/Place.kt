@@ -21,4 +21,4 @@ class Place(
     @OneToMany(mappedBy = "place")
     val footprints: List<Footprint>,
 
-    ) : BaseEntity()
+) : BaseEntity()

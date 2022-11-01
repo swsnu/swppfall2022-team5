@@ -39,4 +39,4 @@ class Footprint(
     @OneToMany(mappedBy = "footprint")
     val photos: List<Photo> = listOf(),
 
-    ) : BaseEntity()
+) : BaseEntity()

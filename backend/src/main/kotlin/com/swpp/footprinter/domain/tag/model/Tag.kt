@@ -15,4 +15,4 @@ class Tag(
     @OneToMany(mappedBy = "tag")
     val taggedFootprints: List<Footprint>,
 
-    ) : BaseEntity()
+) : BaseEntity()

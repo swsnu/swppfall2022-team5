@@ -14,4 +14,4 @@ class Memo(
     @JoinColumn(referencedColumnName = "id", name = "footprintId")
     val footprint: Footprint,
 
-    ) : BaseEntity()
+) : BaseEntity()

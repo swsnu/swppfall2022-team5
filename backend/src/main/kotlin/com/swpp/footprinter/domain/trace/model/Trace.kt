@@ -21,4 +21,4 @@ class Trace(
     @OneToMany(mappedBy = "trace")
     val footprintList: List<Footprint>,
 
-    ) : BaseEntity()
+) : BaseEntity()
