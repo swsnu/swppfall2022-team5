@@ -1,5 +1,17 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+buildscript {
+    repositories {
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
+    }
+    dependencies {
+        classpath("com.github.nbaztec:coveralls-jacoco-gradle-plugin:1.2.15")
+    }
+}
+
+
 plugins {
     id("org.springframework.boot") version "2.7.5"
     id("io.spring.dependency-management") version "1.0.15.RELEASE"
@@ -57,11 +69,3 @@ tasks.jacocoTestReport {
     }
 }
 
-coverallsJacoco {
-    reportPath = "" // default: "build/reports/jacoco/test/jacocoTestReport.xml"
-
-    apiEndpoint = "" // default: https://coveralls.io/api/v1/jobs
-
-    dryRun = false // default: false
-    coverallsRequest = File("build/req.json") // default: null
-}
