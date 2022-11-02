@@ -58,5 +58,5 @@ tasks.jacocoTestReport {
 }
 
 coverallsJacoco {
-    reportPath = "backend/build/reports/jacoco/test/jacocoTestReport.xml" // default: "build/reports/jacoco/test/jacocoTestReport.xml"
+    reportPath = "./backend/build/reports/jacoco/test/jacocoTestReport.xml" // default: "build/reports/jacoco/test/jacocoTestReport.xml"
 }
