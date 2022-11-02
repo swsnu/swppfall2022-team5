@@ -69,3 +69,11 @@ tasks.jacocoTestReport {
     }
 }
 
+coverallsJacoco {
+    reportPath = "backend/" // default: "build/reports/jacoco/test/jacocoTestReport.xml"
+
+    apiEndpoint = "" // default: https://coveralls.io/api/v1/jobs
+
+    dryRun = false // default: false
+    coverallsRequest = File("build/req.json") // default: null
+}
