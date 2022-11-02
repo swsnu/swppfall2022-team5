@@ -25,8 +25,8 @@ jobs:
           distribution: 'corretto'
           cache: 'gradle'
           
-      - name: cd
-        run: cd backend
+      - name: ls
+        run: ls -al
 
       - name: run test with coverage
         env:
