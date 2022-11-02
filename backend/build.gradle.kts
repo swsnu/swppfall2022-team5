@@ -70,7 +70,7 @@ tasks.jacocoTestReport {
 }
 
 coverallsJacoco {
-    reportPath = "backend/build/reports/jacoco/test/jacocoTestReport.xml"
+    reportPath = ""
 
     apiEndpoint = "" // default: https://coveralls.io/api/v1/jobs
 
