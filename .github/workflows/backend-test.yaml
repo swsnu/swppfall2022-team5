@@ -26,7 +26,9 @@ jobs:
           cache: 'gradle'
 
       - name: run test with coverage
-        run: ./gradlew clean test jacocoTestReport
+	env:
+		COVERALLS_REPO_TOKEN: ${{secrets.COVERALLS_REPO_TOKEN }}
+        run: ./gradlew clean test jacocoTestReport coverallsJacoco
 
       - name: upload coverage report
         uses: actions/upload-artifact@v3
