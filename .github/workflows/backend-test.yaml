@@ -25,6 +25,9 @@ jobs:
           distribution: 'corretto'
           cache: 'gradle'
 
+      - name: jacoco-badge-generator
+        uses: cicirello/jacoco-badge-generator@v2.8.1
+
       - name: run test with coverage
         env:
           COVERALLS_REPO_TOKEN: ${{secrets.COVERALLS_REPO_TOKEN }}
