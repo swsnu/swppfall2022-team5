@@ -24,9 +24,6 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
           cache: 'gradle'
-          
-      - name: ls
-        run: ls -al
 
       - name: run test with coverage
         env:

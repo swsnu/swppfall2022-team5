@@ -68,12 +68,3 @@ tasks.jacocoTestReport {
         html.required.set(false)
     }
 }
-
-coverallsJacoco {
-    reportPath = ""
-
-    apiEndpoint = "" // default: https://coveralls.io/api/v1/jobs
-
-    dryRun = false // default: false
-    coverallsRequest = File("build/req.json") // default: null
-}
