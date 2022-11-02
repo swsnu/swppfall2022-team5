@@ -25,17 +25,11 @@ jobs:
           distribution: 'corretto'
           cache: 'gradle'
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build with Gradle
-        run: ./gradlew clean build
-
       - name: run test with coverage
         env:
           COVERALLS_REPO_TOKEN: ${{secrets.COVERALLS_REPO_TOKEN }}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        run: ./gradlew test jacocoTestReport coverallsJacoco
+        run: ./gradlew test
 
       - name: upload coverage report
         uses: actions/upload-artifact@v3
