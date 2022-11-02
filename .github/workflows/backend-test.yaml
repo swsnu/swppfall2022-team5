@@ -25,11 +25,8 @@ jobs:
           distribution: 'corretto'
           cache: 'gradle'
 
-      - name: run test
-        run: ./gradlew test
-
-      - name: file check
-        run: ls -al && cd build && ls -al && cd reports && ls -al
+      - name: Build with Gradle
+        run: ./gradlew build -x test
 
       - name: run test with coverage
         env:
