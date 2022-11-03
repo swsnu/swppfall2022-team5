@@ -25,9 +25,6 @@ jobs:
           distribution: 'corretto'
           cache: 'gradle'
 
-      - name: build
-        run: ./gradlew build --no-daemon
-
       - name: run test with coverage
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
