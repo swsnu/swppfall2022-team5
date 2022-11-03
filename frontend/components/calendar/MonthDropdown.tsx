@@ -12,8 +12,8 @@ const MonthDropdown = ({ selectedDate }: IProps) => {
   return (
     <div className="mx-5 mb-3">
       <Popover>
-        <Popover.Button>
-          <div className="flex items-center hover:cursor-pointer hover:opacity-80">
+        <Popover.Button className="focus:outline-none">
+          <div className="flex items-center hover:opacity-80">
             <Moment
               className="select-none pr-1 text-lg font-semibold"
               locale="ko"
@@ -32,8 +32,8 @@ const MonthDropdown = ({ selectedDate }: IProps) => {
           leaveFrom="opacity-100 translate-y-1"
           leaveTo="opacity-0 translate-y-0"
         >
-          <Popover.Panel className="absolute left-1/2 z-10 mt-3 w-screen max-w-md -translate-x-1/2 transform px-4 sm:px-0">
-            <div className="overflow-hidden rounded-lg bg-navy-800 py-5 px-4 shadow-sm">
+          <Popover.Panel className="absolute left-1/2 z-10 mt-3 w-screen max-w-md -translate-x-1/2 transform px-4 sm:px-0 md:max-w-lg">
+            <div className="overflow-hidden rounded-lg border border-navy-200/5 bg-navy-800 py-5 px-4 shadow-md">
               <FullCalendar />
             </div>
           </Popover.Panel>
