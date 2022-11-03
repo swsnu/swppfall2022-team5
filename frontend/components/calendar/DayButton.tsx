@@ -20,7 +20,7 @@ const DayButton = ({ date, onClick, isActive, isCurrentMonth, showWeekday }: IPr
         )}
         <button
           className={classNames("mt-1 flex h-10 w-10 items-center justify-center rounded-full hover:cursor-pointer ", {
-            "bg-navy-700": isActive,
+            "bg-navy-600": isActive,
             "hover:bg-navy-100/5": !isActive,
             "opacity-50": !isCurrentMonth,
           })}
