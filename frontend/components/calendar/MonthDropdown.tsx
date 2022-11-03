@@ -10,7 +10,7 @@ interface IProps {
 
 const MonthDropdown = ({ selectedDate }: IProps) => {
   return (
-    <div className="mx-7 mb-3">
+    <div className="mx-5 mb-3">
       <Popover>
         <Popover.Button>
           <div className="flex items-center hover:cursor-pointer hover:opacity-80">
@@ -33,7 +33,7 @@ const MonthDropdown = ({ selectedDate }: IProps) => {
           leaveTo="opacity-0 translate-y-0"
         >
           <Popover.Panel className="absolute left-1/2 z-10 mt-3 w-screen max-w-md -translate-x-1/2 transform px-4 sm:px-0">
-            <div className="overflow-hidden rounded-lg bg-navy-800 shadow-sm">
+            <div className="overflow-hidden rounded-lg bg-navy-800 py-5 px-4 shadow-sm">
               <FullCalendar />
             </div>
           </Popover.Panel>

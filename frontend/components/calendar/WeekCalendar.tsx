@@ -10,7 +10,7 @@ interface IProps {
 
 const WeekCalendar = ({ week, setSelectedDate, selectedDate, showWeekday }: IProps) => {
   return (
-    <div className="mx-5 columns-7">
+    <div className="mx-3 columns-7">
       {week.map((date) => {
         return (
           <DayButton

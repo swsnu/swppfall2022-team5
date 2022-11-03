@@ -12,7 +12,7 @@ const FullCalendar = ({}: IProps) => {
     useCalendarStore((state) => state, shallow);
 
   return (
-    <div className="py-5 px-4 ">
+    <div className="">
       <div className="flex items-center justify-center pb-5 text-lg font-semibold">
         <IconButton icon={IconChevronLeft} onClick={selectPrevMonth} />
         <div className="mx-2 select-none">
