@@ -1,14 +1,18 @@
-import { render } from '@testing-library/react';
-import '@testing-library/jest-dom'
-import Home from "../../pages";
+import { render } from "@testing-library/react";
+import { useRouter } from "next/router";
+import Home from "../../pages/index";
 
-/**
- * @jest-environment react
- */
+jest.mock("next/router", () => ({
+  useRouter: jest.fn(),
+}));
 
-describe("index", () => {
-  it("is empty unit test", () => { });
-  it("should render properly", () => {
-    expect(render(<Home />)).toBeTruthy();
-  })
+describe("Home", () => {
+  it("redirect to /footprints", () => {
+    const push = jest.fn();
+
+    (useRouter as jest.Mock).mockImplementation(() => ({ push }));
+
+    render(<Home />);
+    expect(push).toHaveBeenCalledWith("/footprints");
+  });
 });
