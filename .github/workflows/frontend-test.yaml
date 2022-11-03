@@ -21,6 +21,11 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
+          
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
 
       - name: setup node
         uses: actions/setup-node@v3
@@ -38,10 +43,14 @@ jobs:
       - name: Coveralls node scripts
         env: 
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          COVERALLS_GIT_BRANCH: ${{ steps.extract_branch.outputs.branch }}
         run: yarn coveralls
 
       - name: Coveralls
         uses: coverallsapp/github-action@master
+        env: 
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          COVERALLS_GIT_BRANCH: ${{ steps.extract_branch.outputs.branch }}
         with:
           github-token: ${{ secrets.github_token  }}
           path-to-lcov: frontend/coverage/lcov.info
