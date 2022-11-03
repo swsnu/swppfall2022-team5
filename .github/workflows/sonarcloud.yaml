@@ -1,8 +1,7 @@
 name: Sonar Cloud
 on:
   workflow_run:
-    # frontend test replaced to Coveralls
-    workflows: [frontend build, backend lint, backend test]
+    workflows: [frontend build, frontend test, backend lint, backend test]
     types: 
       - completed
 jobs:
@@ -17,11 +16,10 @@ jobs:
       - uses: ahmadnassri/action-workflow-run-wait@v1
        # only runs additional steps if [ frontend build, frontend test, backend lint, backend test ] were successful
       
-      # Replaced to Coveralls
-      # - uses: dawidd6/action-download-artifact@v2
-      #   with:
-      #     workflow: frontend-test.yaml
-      #     path: ./artifacts
+      - uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: frontend-test.yaml
+          path: ./artifacts
 
       - uses: dawidd6/action-download-artifact@v2
         with:
