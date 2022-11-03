@@ -35,7 +35,7 @@ jobs:
         run: ./gradlew test jacocoTestReport
 
       - name: file check
-        run: ls build/reports -a && ls build/reports/jacoco -a
+        run: ls build/reports/jacoco/test -a
 
       - name: upload coverage report
         uses: actions/upload-artifact@v3
