@@ -25,8 +25,8 @@ jobs:
           distribution: 'corretto'
           cache: 'gradle'
 
-      - name: Build with Gradle
-        run: ./gradlew build -x test
+      - name: build
+        run: ./gradlew build --no-daemon
 
       - name: run test with coverage
         env:
