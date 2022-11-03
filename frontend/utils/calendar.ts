@@ -1,4 +1,4 @@
-export const getWeeksInMonth = (year: number, month: number) => {
+export const getWeeksInMonth = ({ year, month }: { year: number; month: number }) => {
   let weeks = [],
     firstDate = new Date(year, month, 1),
     lastDate = new Date(year, month + 1, 0),
@@ -51,7 +51,7 @@ export const getWeeksInMonth = (year: number, month: number) => {
 };
 
 export const getWeekContainingDate = (target: Date): Date[] => {
-  const month = getWeeksInMonth(target.getFullYear(), target.getMonth());
+  const month = getWeeksInMonth({ year: target.getFullYear(), month: target.getMonth() });
   for (const week of month) {
     for (const day of week) {
       if (isSameDate(day, target)) {

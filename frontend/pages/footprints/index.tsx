@@ -11,8 +11,8 @@ export default function Footprints() {
   return (
     <Container>
       <NavigationBar />
-      <MonthDropdown selectedDate={selectedDate} onClick={() => {}} />
-      <WeekCalendar week={selectedWeek} setSelectedDate={setSelectedDate} selectedDate={selectedDate} />
+      <MonthDropdown selectedDate={selectedDate} />
+      <WeekCalendar week={selectedWeek} setSelectedDate={setSelectedDate} selectedDate={selectedDate} showWeekday />
     </Container>
   );
 }

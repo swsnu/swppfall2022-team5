@@ -5,9 +5,10 @@ interface IProps {
   week: Date[];
   setSelectedDate: (date: Date) => void;
   selectedDate: Date;
+  showWeekday: boolean;
 }
 
-const WeekCalendar = ({ week, setSelectedDate, selectedDate }: IProps) => {
+const WeekCalendar = ({ week, setSelectedDate, selectedDate, showWeekday }: IProps) => {
   return (
     <div className="mx-5 columns-7">
       {week.map((date) => {
@@ -22,6 +23,7 @@ const WeekCalendar = ({ week, setSelectedDate, selectedDate }: IProps) => {
             isCurrentMonth={
               selectedDate.getFullYear() === date.getFullYear() && selectedDate.getMonth() === date.getMonth()
             }
+            showWeekday={showWeekday}
           />
         );
       })}

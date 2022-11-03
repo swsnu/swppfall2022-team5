@@ -1,18 +1,44 @@
-import Moment from "react-moment";
+import { Popover, Transition } from "@headlessui/react";
 import { IconChevronDown } from "@tabler/icons";
+import { Fragment } from "react";
+import Moment from "react-moment";
+import FullCalendar from "./FullCalendar";
 
 interface IProps {
-  onClick: () => void;
   selectedDate: Date;
 }
 
-const MonthDropdown = ({ onClick, selectedDate }: IProps) => {
+const MonthDropdown = ({ selectedDate }: IProps) => {
   return (
     <div className="mx-7 mb-3">
-      <div className="flex items-center hover:cursor-pointer hover:opacity-80 ">
-        <Moment className="pr-1 text-lg font-semibold" locale="ko" date={selectedDate} format="YYYY년 MM월" />
-        <IconChevronDown />
-      </div>
+      <Popover>
+        <Popover.Button>
+          <div className="flex items-center hover:cursor-pointer hover:opacity-80">
+            <Moment
+              className="select-none pr-1 text-lg font-semibold"
+              locale="ko"
+              date={selectedDate}
+              format="YYYY년 M월"
+            />
+            <IconChevronDown />
+          </div>
+        </Popover.Button>
+        <Transition
+          as={Fragment}
+          enter="transition ease-out duration-200"
+          enterFrom="opacity-0 translate-y-0"
+          enterTo="opacity-100 translate-y-1"
+          leave="transition ease-in duration-150"
+          leaveFrom="opacity-100 translate-y-1"
+          leaveTo="opacity-0 translate-y-0"
+        >
+          <Popover.Panel className="absolute left-1/2 z-10 mt-3 w-screen max-w-md -translate-x-1/2 transform px-4 sm:px-0">
+            <div className="overflow-hidden rounded-lg bg-navy-800 shadow-sm">
+              <FullCalendar />
+            </div>
+          </Popover.Panel>
+        </Transition>
+      </Popover>
     </div>
   );
 };
