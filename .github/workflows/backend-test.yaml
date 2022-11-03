@@ -26,7 +26,7 @@ jobs:
           cache: 'gradle'
 
       - name: build
-        run: ./gradlew build--no-daemon
+        run: ./gradlew build --no-daemon
 
       - name: run test with coverage
         env:
