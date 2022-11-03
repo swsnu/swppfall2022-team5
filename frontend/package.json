@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:unit": "jest"
+    "test:unit": "jest",
+    "coveralls": "cat coverage/lcov.info | node node_modules/.bin/coveralls"
   },
   "dependencies": {
     "@tabler/icons": "^1.108.0",

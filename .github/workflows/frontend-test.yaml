@@ -35,10 +35,13 @@ jobs:
       - name: run unit tests
         run: yarn test:unit --coverage
 
-      - name: Coveralls
-        uses: coverallsapp/github-action@master
+      - name: Coveralls node scripts
         env: 
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run: yarn coveralls
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.github_token  }}
           path-to-lcov: frontend/coverage/lcov.info
