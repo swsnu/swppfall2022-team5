@@ -9,7 +9,7 @@ export interface TagType {
 
 export function TagList(props: { tagList: Array<TagType> }) {
     return (
-        <div className="my-3 pb-2 flex overflow-x-auto">
+        <div className="my-3 pb-2 flex overflow-x-auto scrollbar-hide">
             {props.tagList.map((tag) => (
                 <FloatingButton
                     onClick={() => {
