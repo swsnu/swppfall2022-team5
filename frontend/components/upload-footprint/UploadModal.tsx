@@ -1,5 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 
 interface IProps {
   isOpen: boolean;
@@ -20,6 +20,7 @@ import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import FilePondPluginImageCrop from "filepond-plugin-image-crop";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+import RectangleButton from "../buttons/RectangleButton";
 
 registerPlugin(
   FilePondPluginImageExifOrientation,
@@ -29,7 +30,10 @@ registerPlugin(
 );
 
 const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
+  const filepondRef = useRef<FilePond>(null);
   const [files, setFiles] = useState<any[]>([]);
+  console.log(files);
+
   const closeModal = () => {
     setIsOpen(false);
   };
@@ -60,7 +64,7 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl border border-navy-200/5 bg-navy-800 px-6 pt-6 pb-3 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="max-h-[40rem] w-full max-w-md transform overflow-hidden overflow-y-scroll rounded-2xl border border-navy-200/5 bg-navy-800 px-6 pt-6 pb-3 text-left align-middle shadow-xl transition-all">
                 <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-navy-200">
                   사진을 업로드하세요
                 </Dialog.Title>
@@ -69,15 +73,36 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
                 </div>
                 <FilePond
                   files={files}
-                  onupdatefiles={setFiles}
+                  ref={filepondRef}
+                  onupdatefiles={(files) => {
+                    files.forEach((file) => {
+                      file.file;
+                      console.log(file.getMetadata());
+                    });
+                    setFiles(files);
+                  }}
+                  allowProcess={false}
+                  instantUpload={false}
                   allowMultiple={true}
                   maxFiles={10}
-                  server="/api"
+                  server={{ url: "http://localhost:8000", process: "/api/v1/process" }}
                   name="files" /* sets the file input name, it's filepond by default */
                   labelIdle="이곳을 클릭하거나 사진을 드래그해서 업로드해보세요."
                   acceptedFileTypes={["image/jpeg", "image/png", "image/jpg", "image/heic"]}
                   imageCropAspectRatio="3:1"
+                  maxParallelUploads={5}
+                  itemInsertLocation="after"
                 />
+                <div className="flex justify-center">
+                  <RectangleButton
+                    text="분석하기"
+                    onClick={() => {
+                      filepondRef.current?.processFiles();
+                    }}
+                    isLoading={false}
+                    disabled={files.length === 0}
+                  />
+                </div>
               </Dialog.Panel>
             </Transition.Child>
           </div>
