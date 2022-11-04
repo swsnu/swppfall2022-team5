@@ -6,8 +6,7 @@ import com.swpp.footprinter.domain.place.model.Place
 import com.swpp.footprinter.domain.tag.model.Tag
 import com.swpp.footprinter.domain.trace.model.Trace
 
-
-data class FootprintResponse (
+data class FootprintResponse(
     val id: Long,
     val startTime: String?,
     val endTime: String?,

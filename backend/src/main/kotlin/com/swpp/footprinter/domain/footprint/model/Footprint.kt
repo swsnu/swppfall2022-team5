@@ -42,7 +42,7 @@ class Footprint(
 
 ) : BaseEntity() {
 
-    fun toResponse() : FootprintResponse {
+    fun toResponse(): FootprintResponse {
         return FootprintResponse(
             id = id!!,
             startTime = startTime,
