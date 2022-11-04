@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import shallow from "zustand/shallow";
 import MonthDropdown from "../../components/calendar/MonthDropdown";
 import WeekCalendar from "../../components/calendar/WeekCalendar";
@@ -27,9 +27,9 @@ export default function Footprints() {
         <FloatingButton
           icon={IconPlus}
           text="기록 추가하기"
-          onClick={() => {
+          onClick={useCallback(() => {
             setIsModalOpen(true);
-          }}
+          }, [])}
           className="fixed bottom-0 my-5 text-right"
         />
       </div>

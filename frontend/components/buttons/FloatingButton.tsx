@@ -1,5 +1,6 @@
 import { TablerIcon } from "@tabler/icons";
 import classNames from "classnames";
+import { memo } from "react";
 
 interface IProps {
   onClick: () => void;
@@ -25,4 +26,4 @@ const FloatingButton = ({ onClick, icon: Icon, className, text }: IProps) => {
   );
 };
 
-export default FloatingButton;
+export default memo(FloatingButton);
