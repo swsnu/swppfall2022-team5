@@ -19,6 +19,7 @@ import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orien
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import FilePondPluginImageCrop from "filepond-plugin-image-crop";
+import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 import RectangleButton from "../buttons/RectangleButton";
 
@@ -27,6 +28,7 @@ registerPlugin(
   FilePondPluginImagePreview,
   FilePondPluginFileValidateType,
   FilePondPluginImageCrop,
+  FilePondPluginFileValidateSize,
 );
 
 const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
@@ -82,16 +84,20 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
                     setFiles(files);
                   }}
                   allowProcess={false}
-                  instantUpload={false}
                   allowMultiple={true}
                   maxFiles={10}
-                  server={{ url: "http://localhost:8000", process: "/api/v1/process" }}
+                  server={{
+                    url: "http://localhost:8080",
+                    process: "/api/v1/photos/process",
+                    revert: "/api/v1/photos/revert",
+                  }}
                   name="files" /* sets the file input name, it's filepond by default */
                   labelIdle="이곳을 클릭하거나 사진을 드래그해서 업로드해보세요."
                   acceptedFileTypes={["image/jpeg", "image/png", "image/jpg", "image/heic"]}
                   imageCropAspectRatio="3:1"
                   maxParallelUploads={5}
                   itemInsertLocation="after"
+                  maxFileSize="10MB"
                 />
                 <div className="flex justify-center">
                   <RectangleButton

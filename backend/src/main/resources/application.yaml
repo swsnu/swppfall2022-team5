@@ -1,6 +1,10 @@
 spring.profiles.default: dev
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   datasource:
     url:
     username:
@@ -22,7 +26,6 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: create
-
 
 ---
 
