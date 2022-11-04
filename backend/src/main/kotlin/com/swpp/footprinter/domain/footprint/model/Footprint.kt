@@ -1,6 +1,7 @@
 package com.swpp.footprinter.domain.footprint.model
 
 import com.swpp.footprinter.common.model.BaseEntity
+import com.swpp.footprinter.domain.footprint.dto.FootprintResponse
 import com.swpp.footprinter.domain.memo.model.Memo
 import com.swpp.footprinter.domain.photo.model.Photo
 import com.swpp.footprinter.domain.place.model.Place
@@ -39,4 +40,19 @@ class Footprint(
     @OneToMany(mappedBy = "footprint")
     var photos: List<Photo> = listOf(),
 
-) : BaseEntity()
+) : BaseEntity() {
+
+    fun toResponse() : FootprintResponse {
+        return FootprintResponse(
+            id = id!!,
+            startTime = startTime,
+            endTime = endTime,
+            rating = rating,
+            trace = trace,
+            place = place,
+            tag = tag,
+            memo = memo,
+            photos = photos
+        )
+    }
+}
