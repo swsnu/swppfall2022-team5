@@ -1,0 +1,17 @@
+.filepond--panel-root {
+  background-color: rgb(24 25 37) !important;
+  border: 2px dashed rgb(211 213 228 / 0.05) !important;
+}
+
+.filepond--drop-label {
+  color: rgb(94 102 153 / 0.9) !important;
+}
+
+.filepond--credits {
+  display: none;
+}
+
+.filepond--item {
+  border-radius: 0.7rem;
+  overflow: hidden;
+}

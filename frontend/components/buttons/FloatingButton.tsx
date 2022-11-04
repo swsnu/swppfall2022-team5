@@ -15,6 +15,7 @@ const FloatingButton = ({ onClick, icon: Icon, className, text }: IProps) => {
         className,
         "rounded-full border border-navy-200/5 bg-navy-700 px-4 py-3 text-navy-200 transition-colors hover:bg-navy-600",
       )}
+      onClick={onClick}
     >
       <div className="flex items-center justify-center">
         <Icon />
