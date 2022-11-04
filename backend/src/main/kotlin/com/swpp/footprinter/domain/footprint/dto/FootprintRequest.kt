@@ -5,6 +5,7 @@ import com.swpp.footprinter.domain.photo.model.Photo
 import com.swpp.footprinter.domain.place.model.Place
 import com.swpp.footprinter.domain.tag.model.Tag
 import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
 data class FootprintRequest(
@@ -18,8 +19,8 @@ data class FootprintRequest(
     val memo: Memo?,
     @field: NotNull(message = "비어있을 수 없음")
     val tag: Tag?,
-    @field: NotNull(message = "비어있을 수 없음")
-    val photos: List<Photo>? = listOf(),
+    @field: NotEmpty(message = "비어있을 수 없음")
+    val photos: List<Photo>?,
     @field: NotNull(message = "비어있을 수 없음")
     val place: Place?
 )
