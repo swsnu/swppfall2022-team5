@@ -39,10 +39,3 @@ jobs:
           COVERALLS_PARALLEL: true
           COVERALLS_FLAG_NAME: backend-coverage-${{ github.run_id }}
         run: ./gradlew coverallsJacoco
-
-
-      - name: upload coverage report
-        uses: actions/upload-artifact@v3
-        with:
-          name: backend-coverage
-          path: backend/build/reports/jacoco/test/*.xml
