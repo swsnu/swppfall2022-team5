@@ -39,9 +39,3 @@ jobs:
       
       - name: check lint & types
         run: yarn build --no-lint && yarn lint -o ./reports/eslint.json -f json
-
-      - name: upload eslint reports
-        uses: actions/upload-artifact@v3
-        with:
-          name: eslint-reports
-          path: frontend/reports/eslint.json

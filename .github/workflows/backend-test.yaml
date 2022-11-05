@@ -37,7 +37,7 @@ jobs:
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           COVERALLS_PARALLEL: true
-          COVERALLS_FLAG_NAME: backend-coverage
+          COVERALLS_FLAG_NAME: backend-coverage-${{ github.run_id }}
         run: ./gradlew coverallsJacoco
 
 
