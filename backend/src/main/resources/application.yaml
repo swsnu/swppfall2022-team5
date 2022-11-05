@@ -1,5 +1,25 @@
 spring.profiles.default: dev
 
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+    credentials:
+      access-key:
+      secret-key: 
+    s3:
+      bucket-name: footprinter-media
+
+logging:
+  level:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
+
 spring:
   servlet:
     multipart:
