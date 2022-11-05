@@ -37,7 +37,7 @@ jobs:
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           COVERALLS_PARALLEL: true
-          COVERALLS_FLAG_NAME: backend-coverage-${{ github.run_id }}
+          COVERALLS_FLAG_NAME: coverage-${{ github.run_id }}
         run: ./gradlew coverallsJacoco
 
   frontend-unittest:
@@ -75,7 +75,7 @@ jobs:
           path-to-lcov: frontend/coverage/lcov.info
           base-path: frontend
           parallel: true
-          flag-name: frontend-coverage-${{ github.run_id }}
+          flag-name: coverage-${{ github.run_id }}
 
   send-coverage:
     runs-on: ubuntu-latest
@@ -87,3 +87,4 @@ jobs:
         with:
           github-token: ${{ secrets.github_token }}
           parallel-finished: true
+          flag-name: coverage-${{ github.run_id }}
