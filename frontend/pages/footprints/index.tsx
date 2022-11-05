@@ -66,7 +66,7 @@ let testFootprint: FootprintType = {
     id: 1,
     startTime: new Date(),
     endTime: new Date(),
-    rating: 5,
+    rating: 4,
     photoList: testPhotoList,
     place: testPlace,
     tagList: testTagList,
@@ -83,7 +83,7 @@ export default function Footprints() {
 
   return (
     <Container>
-      <div className="sticky top-0 left-0 right-0 border-b border-navy-700/50 bg-navy-800/90 pb-4 backdrop-blur-md">
+      <div className="sticky top-0 left-0 right-0 border-b border-navy-700/50 bg-navy-800/90 pb-4 backdrop-blur-md z-50">
         <NavigationBar />
         <MonthDropdown selectedDate={selectedDate} />
         <WeekCalendar week={selectedWeek} setSelectedDate={setSelectedDate} selectedDate={selectedDate} showWeekday />

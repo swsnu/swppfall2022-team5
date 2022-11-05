@@ -33,7 +33,7 @@ export function Footprint(props: Iprops) {
                 disabled={!props.modifying}
             ></textarea>
 
-            <p>{["😝","😀","🤔","😕","😢"][props.rating]}</p>
+            <h1>{["😝","😀","🤔","😕","😢"].reverse()[props.rating]}</h1>
         </div>
     );
 }
