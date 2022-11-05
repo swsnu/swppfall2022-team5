@@ -8,10 +8,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:unit": "jest"
+    "test:unit": "jest",
+    "coveralls": "cat coverage/lcov.info | node node_modules/.bin/coveralls"
   },
   "dependencies": {
     "@tabler/icons": "^1.108.0",
+    "@types/jest": "^29.2.1",
+    "coveralls": "^3.1.1",
     "moment": "^2.29.4",
     "next": "13.0.0",
     "react": "18.2.0",
