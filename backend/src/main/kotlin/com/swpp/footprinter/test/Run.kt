@@ -1,21 +1,29 @@
-package com.swpp.footprinter.domain.user.test
+package com.swpp.footprinter.test
 
+import com.swpp.footprinter.domain.trace.model.Trace
+import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import com.swpp.footprinter.domain.user.model.User
 import com.swpp.footprinter.domain.user.repository.UserRepository
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 
 @Component
-class DataInitializer(private val userRepo: UserRepository) : ApplicationRunner {
+class DataInitializer(
+    private val userRepo: UserRepository,
+    private val traceRepo: TraceRepository
+) : ApplicationRunner {
 
     @Throws(Exception::class)
     override fun run(args: ApplicationArguments) {
-        println("This should be printing to the console but it is not")
-
         listOf("User1", "User2", "User3").forEach {
             userRepo.save(User(username = it, email = "$it@snu.ac.kr", myTrace = listOf()))
         }
         userRepo.findAll().forEach { println(it.username) }
+
+        listOf("Trace1", "Trace2", "Trace3").forEach {
+            traceRepo.save(Trace(traceTitle = it, traceDate = "2022-11-05", footprintList = listOf(), owner = userRepo.findByIdOrNull(2)!!))
+        }
     }
 }
