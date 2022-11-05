@@ -11,18 +11,18 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 interface TraceService {
-    fun getAllTraces() : List<TraceResponse>
+    fun getAllTraces(): List<TraceResponse>
     fun createTrace(request: TraceRequest)
 }
 
 @Service
 class TraceServiceImpl(
-    private val traceRepo : TraceRepository,
+    private val traceRepo: TraceRepository,
     private val footprintRepo: FootprintRepository,
     private val userRepo: UserRepository
 ) : TraceService {
     override fun getAllTraces(): List<TraceResponse> {
-        return traceRepo.findAll().filter { it.owner != userRepo.findByIdOrNull(1)!!  }.map { trace -> trace.toResponse() } // TODO: 현재 user로 넣기
+        return traceRepo.findAll().filter { it.owner != userRepo.findByIdOrNull(1)!! }.map { trace -> trace.toResponse() } // TODO: 현재 user로 넣기
     }
 
     override fun createTrace(request: TraceRequest) {
@@ -34,16 +34,18 @@ class TraceServiceImpl(
         )
         val newId = traceRepo.save(newTrace).id
         for (footprint in request.footprintList!!) {
-            footprintRepo.save(Footprint(
-                startTime = footprint.startTime!!,
-                endTime = footprint.endTime!!,
-                rating = footprint.rating!!,
-                trace = newTrace,
-                place = footprint.place!!,
-                tag = footprint.tag!!,
-                memo = footprint.memo!!,
-                photos = footprint.photos!!
-            ))
+            footprintRepo.save(
+                Footprint(
+                    startTime = footprint.startTime!!,
+                    endTime = footprint.endTime!!,
+                    rating = footprint.rating!!,
+                    trace = newTrace,
+                    place = footprint.place!!,
+                    tag = footprint.tag!!,
+                    memo = footprint.memo!!,
+                    photos = footprint.photos!!
+                )
+            )
         }
     }
 }
