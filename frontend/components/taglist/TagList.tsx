@@ -12,6 +12,7 @@ export function TagList(props: { tagList: Array<TagType> }) {
         <div className="my-3 pb-2 flex overflow-x-auto scrollbar-hide">
             {props.tagList.map((tag) => (
                 <FloatingButton
+                    key={tag.id}
                     onClick={() => {
                         // TODO: Link to filter with tag page when not editing
                      }}

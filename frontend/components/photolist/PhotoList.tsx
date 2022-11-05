@@ -11,7 +11,9 @@ export function PhotoList(props: {photoList: Array<PhotoType>}) {
     return (
         <div className="my-3 flex overflow-x-auto scrollbar-hide">
             {props.photoList.map((photo) => (
-                <div className="flex-shrink-0 w-max h-40 mx-2">
+                <div className="flex-shrink-0 w-max h-40 mx-2"
+                    key={photo.id}
+                >
                     <Image
                         src={photo.imageUrl}
                         alt=""

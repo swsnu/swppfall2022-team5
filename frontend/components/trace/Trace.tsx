@@ -5,7 +5,10 @@ export function Trace(props: {footprintList: Array<FootprintType>, modifying: bo
     return ( 
         <div>
             {props.footprintList.map((fp => (
-                <div className="mx-3 mt-3 mb-6 border-2 border-solid  border-navy-500 rounded-lg ">
+                <div 
+                    key={fp.id}
+                    className="mx-3 mt-3 mb-6 border-2 border-solid  border-navy-500 rounded-lg "
+                >
                     <Footprint {...fp} modifying={props.modifying} />
                 </div>
             )))}
