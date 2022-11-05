@@ -37,8 +37,11 @@ jobs:
 
       - name: Update lcov.info
         run: |
+          cd frontend
+          cat ./coverage/lcov.info
           sed -E "s/SF:(.+file:(.+))/SF:\2/g" ./coverage/lcov.info > coverage/lcov.new.info
           mv ./coverage/lcov.new.info ./coverage/lcov.info
+          cat ./coverage/lcov.info
 
       - name: Coveralls
         uses: coverallsapp/github-action@master
