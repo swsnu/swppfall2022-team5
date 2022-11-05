@@ -5,6 +5,7 @@ on:
     paths:
       - ".github/workflows/*.yaml"
       - "frontend/**"
+      - "backend/**"
 
 defaults:
   run:

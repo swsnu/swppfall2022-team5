@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "filepond.css";
+
+html {
+  background-color: #13141e;
+}
