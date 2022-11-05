@@ -35,6 +35,11 @@ jobs:
       - name: run unit tests
         run: yarn test:unit --coverage
 
+      - name: Update lcov.info
+        run: |
+          sed -E "s/SF:(.+file:(.+))/SF:\2/g" ./coverage/lcov.info > coverage/lcov.new.info
+          mv ./coverage/lcov.new.info ./coverage/lcov.info
+
       - name: Coveralls
         uses: coverallsapp/github-action@master
         env: 
