@@ -13,7 +13,7 @@ export interface PlaceType {
 
 export function Place(props: PlaceType) {
     return (
-        <div className="my-3 rounded">
+        <div className="my-3">
             <h2 className="text-left"> {props.name} </h2>
             <h3 className="text-left"> {props.city + "," + props.country + "," + props.district} </h3>
             <Map center={{lat: props.latitude, lng: props.longitude}}

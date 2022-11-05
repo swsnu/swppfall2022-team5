@@ -1,0 +1,14 @@
+import Container from "../containers/Container";
+import { Footprint, FootprintType } from "../footprint/Footprint";
+
+export function Trace(props: {footprintList: Array<FootprintType>, modifying: boolean}) {
+    return ( 
+        <div>
+            {props.footprintList.map((fp => (
+                <div className="mx-3 mt-3 mb-6 border-2 border-solid  border-navy-500 rounded-lg ">
+                    <Footprint {...fp} modifying={props.modifying} />
+                </div>
+            )))}
+        </div>
+    )
+}
