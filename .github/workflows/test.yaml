@@ -37,7 +37,7 @@ jobs:
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           COVERALLS_PARALLEL: true
-          COVERALLS_FLAG_NAME: coverage-${{ github.run_id }}
+          COVERALLS_FLAG_NAME: backend-coverage
         run: ./gradlew test coverallsJacoco
 
   frontend-unittest:
@@ -66,16 +66,16 @@ jobs:
         run: yarn test:unit --coverage
         working-directory: ./frontend
 
-      # - name: Coveralls
-      #   uses: coverallsapp/github-action@master
-      #   env:
-      #     COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-      #   with:
-      #     github-token: ${{ secrets.github_token  }}
-      #     path-to-lcov: frontend/coverage/lcov.info
-      #     base-path: frontend
-      #     parallel: true
-      #     flag-name: coverage-${{ github.run_id }}
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        with:
+          github-token: ${{ secrets.github_token  }}
+          path-to-lcov: frontend/coverage/lcov.info
+          base-path: frontend
+          parallel: true
+          flag-name: frontend-coverage
 
   send-coverage:
     runs-on: ubuntu-latest
