@@ -37,7 +37,6 @@ jobs:
 
       - name: Update lcov.info
         run: |
-          cd frontend
           cat ./coverage/lcov.info
           sed -E "s/SF:(.+file:(.+))/SF:\2/g" ./coverage/lcov.info > coverage/lcov.new.info
           mv ./coverage/lcov.new.info ./coverage/lcov.info
@@ -49,10 +48,10 @@ jobs:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         with:
           github-token: ${{ secrets.github_token  }}
-          path-to-lcov: frontend/coverage/lcov.info
+          path-to-lcov: ./coverage/lcov.info
 
       - name: upload coverage report
         uses: actions/upload-artifact@v3
         with:
           name: frontend-coverage
-          path: frontend/coverage/lcov.info
+          path: ./coverage/lcov.info
