@@ -8,18 +8,18 @@ interface IProps {
 }
 
 // Import React FilePond
+import { FilePondFile } from "filepond";
 import { FilePond, registerPlugin } from "react-filepond";
-import { FilePondInitialFile } from "filepond";
 
 // Import FilePond styles
 import "filepond/dist/filepond.min.css";
 
 // Import the Image EXIF Orientation and Image Preview plugins
-import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
-import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import FilePondPluginImageCrop from "filepond-plugin-image-crop";
-import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
+import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
+import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 import RectangleButton from "../buttons/RectangleButton";
 
@@ -34,10 +34,15 @@ registerPlugin(
 const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
   const filepondRef = useRef<FilePond>(null);
   const [files, setFiles] = useState<any[]>([]);
-  console.log(files);
+  const [confirmDisabled, setConfirmDisabled] = useState(true);
 
   const closeModal = () => {
     setIsOpen(false);
+  };
+
+  const startAnalysis = () => {
+    const filePaths = files.map((file: FilePondFile) => file.serverId).filter((value) => !!value);
+    console.log(filePaths);
   };
 
   return (
@@ -77,14 +82,13 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
                   files={files}
                   ref={filepondRef}
                   onupdatefiles={(files) => {
-                    files.forEach((file) => {
-                      file.file;
-                      console.log(file.getMetadata());
-                    });
                     setFiles(files);
                   }}
                   allowProcess={false}
                   allowMultiple={true}
+                  onprocessfiles={() => {
+                    setConfirmDisabled(false);
+                  }}
                   maxFiles={10}
                   server={{
                     url: "http://localhost:8080",
@@ -102,11 +106,9 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
                 <div className="flex justify-center">
                   <RectangleButton
                     text="분석하기"
-                    onClick={() => {
-                      filepondRef.current?.processFiles();
-                    }}
+                    onClick={startAnalysis}
                     isLoading={false}
-                    disabled={files.length === 0}
+                    disabled={files.length === 0 || confirmDisabled}
                   />
                 </div>
               </Dialog.Panel>
