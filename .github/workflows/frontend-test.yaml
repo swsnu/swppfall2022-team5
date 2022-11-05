@@ -42,6 +42,7 @@ jobs:
         with:
           github-token: ${{ secrets.github_token  }}
           path-to-lcov: frontend/coverage/lcov.info
+          base-path: frontend
 
       - name: upload coverage report
         uses: actions/upload-artifact@v3
