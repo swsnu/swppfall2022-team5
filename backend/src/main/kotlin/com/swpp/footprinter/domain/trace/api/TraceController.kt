@@ -38,4 +38,5 @@ class TraceController(
     ) {
         service.deleteTraceById(traceId)
     }
+
 }

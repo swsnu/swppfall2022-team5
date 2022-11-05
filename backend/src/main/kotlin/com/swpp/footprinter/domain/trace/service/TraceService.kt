@@ -15,6 +15,8 @@ interface TraceService {
     fun createTrace(request: TraceRequest)
     fun getTraceById(traceId: Long): TraceResponse
     fun deleteTraceById(traceId: Long)
+
+    fun createInitialTraceBasedOnPhotosGiven(photoIds: List<Long>): Any // List<Pair<Place, List<Photo>>>
 }
 
 @Service
@@ -58,5 +60,8 @@ class TraceServiceImpl(
 
     override fun deleteTraceById(traceId: Long) {
         traceRepo.deleteById(traceId) // TODO: Authentication
+    }
+
+    override fun createInitialTraceBasedOnPhotosGiven(photoIds: List<Long>): Any {
     }
 }
