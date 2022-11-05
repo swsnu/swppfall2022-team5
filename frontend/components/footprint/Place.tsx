@@ -16,7 +16,8 @@ export function Place(props: PlaceType) {
         <div className="my-3">
             <h2 className="text-left"> {props.name} </h2>
             <h3 className="text-left"> {props.city + "," + props.country + "," + props.district} </h3>
-            <div>
+            {/* Extract map part to components to use in edit page. use MapMarkerCluster for clusterred marker*/}
+            {/* <div>
                 <Map center={{lat: props.latitude, lng: props.longitude}}
                     className="mt-1 w-full h-40 rounded z-0"
                     level={10}
@@ -27,7 +28,7 @@ export function Place(props: PlaceType) {
                         position={{lat: props.latitude, lng: props.longitude}}
                     />
                 </Map>
-            </div>
+            </div> */}
         </div>
     );
 }

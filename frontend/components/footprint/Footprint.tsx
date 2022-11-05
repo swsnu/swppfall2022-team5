@@ -1,4 +1,5 @@
 import { IconLock } from "@tabler/icons";
+import FloatingButton from "../buttons/FloatingButton";
 import { PhotoList, PhotoType } from "../photolist/PhotoList";
 import { TagList, TagType } from "../taglist/TagList";
 import { Place, PlaceType } from "./Place";
@@ -10,7 +11,7 @@ export interface FootprintType {
     rating: number,
     photoList: Array<PhotoType>,
     place: PlaceType,
-    tagList: Array<TagType>,
+    tag: TagType,
     memo: string
 }
 
@@ -22,9 +23,18 @@ interface Iprops extends FootprintType{
 export function Footprint(props: Iprops) {
     return (
         <div className="mx-3 mb-3 w-auto h-auto">
-            <Place {...props.place} />
-            <TagList tagList={props.tagList}/>
+            <div className="flex mt-3 mx-3 items-stretch">
+                <FloatingButton 
+                    icon={props.tag.icon} 
+                    text={props.tag.name} 
+                    onClick={() => {/* TODO: implement filter */}}
+                />
+                <h2 className="text-xl text-center h-full ml-2">
+                    {('0' + props.startTime.getHours()).slice(-2) + ":" + ('0' + props.startTime.getMinutes()).slice(-2)}
+                </h2>
+            </div>
             <PhotoList photoList={props.photoList} />
+            <Place {...props.place} />
 
             <div>
                 <h2>Memo</h2>
