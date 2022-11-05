@@ -33,7 +33,10 @@ jobs:
       - name: run coveralls
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        run: ./gradlew test coverallsJacoco
+          COVERALLS_PARALLEL: true
+          COVERALLS_FLAG_NAME: backend-coverage
+        run: ./gradlew coverallsJacoco
+
 
       - name: upload coverage report
         uses: actions/upload-artifact@v3

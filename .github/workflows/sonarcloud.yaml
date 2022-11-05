@@ -41,3 +41,24 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        with:
+          github-token: ${{ secrets.github_token  }}
+          path-to-lcov: frontend/coverage/lcov.info
+          base-path: frontend
+          parallel: true
+          flag-name: frontend-coverage
+
+  finish:
+    needs: sonarcloud
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          parallel-finished: true
