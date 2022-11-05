@@ -9,18 +9,18 @@ import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
 data class FootprintRequest(
-    @field: NotBlank(message = "비어있을 수 없음")
+    @field: NotBlank
     val startTime: String?,
-    @field: NotBlank(message = "비어있을 수 없음")
+    @field: NotBlank
     val endTime: String?,
-    @field: NotNull(message = "비어있을 수 없음")
+    @field: NotNull
     val rating: Int?,
-    @field: NotNull(message = "비어있을 수 없음")
+    @field: NotNull
     val memo: Memo?,
-    @field: NotNull(message = "비어있을 수 없음")
+    @field: NotNull
     val tag: Tag?,
-    @field: NotEmpty(message = "비어있을 수 없음")
+    @field: NotEmpty
     val photos: List<Photo>?,
-    @field: NotNull(message = "비어있을 수 없음")
+    @field: NotNull
     val place: Place?
 )
