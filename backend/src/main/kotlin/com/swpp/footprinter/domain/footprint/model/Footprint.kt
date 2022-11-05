@@ -1,6 +1,7 @@
 package com.swpp.footprinter.domain.footprint.model
 
 import com.swpp.footprinter.common.model.BaseEntity
+import com.swpp.footprinter.domain.footprint.dto.FootprintResponse
 import com.swpp.footprinter.domain.memo.model.Memo
 import com.swpp.footprinter.domain.photo.model.Photo
 import com.swpp.footprinter.domain.place.model.Place
@@ -12,13 +13,13 @@ import javax.persistence.*
 class Footprint(
 
     @Column(name = "start_time", nullable = false)
-    val startTime: String,
+    var startTime: String,
 
     @Column(name = "end_time", nullable = false)
-    val endTime: String,
+    var endTime: String,
 
     @Column(name = "rating", nullable = false)
-    val rating: Int,
+    var rating: Int,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id", name = "traceId")
@@ -26,17 +27,32 @@ class Footprint(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id", name = "placeId")
-    val place: Place,
+    var place: Place,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id", name = "tagId")
-    val tag: Tag,
+    var tag: Tag,
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id", name = "memoId")
-    val memo: Memo,
+    var memo: Memo,
 
     @OneToMany(mappedBy = "footprint")
-    val photos: List<Photo> = listOf(),
+    var photos: List<Photo> = listOf(),
 
-) : BaseEntity()
+) : BaseEntity() {
+
+    fun toResponse(): FootprintResponse {
+        return FootprintResponse(
+            id = id!!,
+            startTime = startTime,
+            endTime = endTime,
+            rating = rating,
+            trace = trace,
+            place = place,
+            tag = tag,
+            memo = memo,
+            photos = photos
+        )
+    }
+}
