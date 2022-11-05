@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service
 interface TraceService {
     fun getAllTraces(): List<TraceResponse>
     fun createTrace(request: TraceRequest)
+    fun getTraceById(traceId: Long): TraceResponse
 }
 
 @Service
@@ -47,5 +48,10 @@ class TraceServiceImpl(
                 )
             )
         }
+    }
+
+    override fun getTraceById(traceId: Long): TraceResponse {
+        val trace = traceRepo.findByIdOrNull(traceId) ?: TODO("존재하지 않는 trace")
+        return trace.toResponse()
     }
 }

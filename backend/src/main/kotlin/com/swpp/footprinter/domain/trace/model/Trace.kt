@@ -28,7 +28,8 @@ class Trace(
             id = id!!,
             date = traceDate,
             title = traceTitle,
-            ownerId = owner.id
+            ownerId = owner.id,
+            footprintList = footprintList.map { it.toResponse() }
         )
     }
 }

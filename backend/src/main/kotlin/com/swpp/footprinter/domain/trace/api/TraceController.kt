@@ -24,4 +24,11 @@ class TraceController(
     ) {
         service.createTrace(request)
     }
+
+    @GetMapping("/traces/{traceId}")
+    fun getTraceDetail(
+        @PathVariable traceId: Long
+    ): TraceResponse {
+        return service.getTraceById(traceId)
+    }
 }
