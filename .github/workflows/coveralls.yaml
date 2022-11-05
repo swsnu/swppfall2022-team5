@@ -1,0 +1,44 @@
+name: Coveralls
+on:
+  workflow_run:
+    workflows: [frontend test, backend test]
+    types: 
+      - completed
+jobs:
+  coveralls:
+    name: Coveralls
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      
+      - uses: ahmadnassri/action-workflow-run-wait@v1
+       # only runs additional steps if [ frontend build, frontend test, backend lint, backend test ] were successful
+      
+      - uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: frontend-test.yaml
+          path: ./artifacts
+
+      - uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: backend-test.yaml
+          path: ./artifacts
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        with:
+          github-token: ${{ secrets.github_token  }}
+          path-to-lcov: frontend/coverage/lcov.info
+          base-path: frontend
+          parallel: true
+          flag-name: frontend-coverage-${{ github.run_id }}
+      
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          parallel-finished: true
