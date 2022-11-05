@@ -1,5 +1,6 @@
 import Moment from "react-moment";
 import classNames from "classnames";
+import "moment/locale/ko";
 
 interface IProps {
   date: Date;
@@ -15,7 +16,7 @@ const DayButton = ({ date, onClick, isActive, isCurrentMonth, showWeekday }: IPr
       <div>
         {showWeekday && (
           <div className="text-center text-sm text-navy-200">
-            <Moment date={date} format="ddd" />
+            <Moment date={date} format="ddd" locale="ko" />
           </div>
         )}
         <button
