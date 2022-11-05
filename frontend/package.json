@@ -16,6 +16,7 @@
     "@tabler/icons": "^1.108.0",
     "classnames": "^2.3.2",
     "filepond": "^4.30.4",
+    "filepond-plugin-file-validate-size": "^2.2.7",
     "filepond-plugin-file-validate-type": "^1.2.8",
     "filepond-plugin-image-crop": "^2.0.6",
     "filepond-plugin-image-exif-orientation": "^1.0.11",
