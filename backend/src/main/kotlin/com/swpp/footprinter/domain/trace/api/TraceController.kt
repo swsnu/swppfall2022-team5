@@ -31,4 +31,11 @@ class TraceController(
     ): TraceResponse {
         return service.getTraceById(traceId)
     }
+
+    @DeleteMapping("/traces/{traceId}")
+    fun deleteTrace(
+        @PathVariable traceId: Long
+    ) {
+        service.deleteTraceById(traceId)
+    }
 }

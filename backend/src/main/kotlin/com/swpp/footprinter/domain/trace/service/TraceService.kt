@@ -14,6 +14,7 @@ interface TraceService {
     fun getAllTraces(): List<TraceResponse>
     fun createTrace(request: TraceRequest)
     fun getTraceById(traceId: Long): TraceResponse
+    fun deleteTraceById(traceId: Long)
 }
 
 @Service
@@ -53,5 +54,9 @@ class TraceServiceImpl(
     override fun getTraceById(traceId: Long): TraceResponse {
         val trace = traceRepo.findByIdOrNull(traceId) ?: TODO("존재하지 않는 trace")
         return trace.toResponse()
+    }
+
+    override fun deleteTraceById(traceId: Long) {
+        traceRepo.deleteById(traceId) // TODO: Authentication
     }
 }
