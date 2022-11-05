@@ -19,12 +19,13 @@ jobs:
       - uses: dawidd6/action-download-artifact@v2
         with:
           workflow: frontend-test.yaml
-          path: ./artifacts
 
       - uses: dawidd6/action-download-artifact@v2
         with:
           workflow: backend-test.yaml
-          path: ./artifacts
+        
+      - run: |
+          ls -R
 
       - name: Coveralls
         uses: coverallsapp/github-action@master
