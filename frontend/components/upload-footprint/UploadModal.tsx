@@ -1,5 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 
 interface IProps {
   isOpen: boolean;
@@ -8,30 +8,41 @@ interface IProps {
 }
 
 // Import React FilePond
+import { FilePondFile } from "filepond";
 import { FilePond, registerPlugin } from "react-filepond";
-import { FilePondInitialFile } from "filepond";
 
 // Import FilePond styles
 import "filepond/dist/filepond.min.css";
 
 // Import the Image EXIF Orientation and Image Preview plugins
-import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
-import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import FilePondPluginImageCrop from "filepond-plugin-image-crop";
+import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
+import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+import RectangleButton from "../buttons/RectangleButton";
 
 registerPlugin(
   FilePondPluginImageExifOrientation,
   FilePondPluginImagePreview,
   FilePondPluginFileValidateType,
   FilePondPluginImageCrop,
+  FilePondPluginFileValidateSize,
 );
 
 const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
+  const filepondRef = useRef<FilePond>(null);
   const [files, setFiles] = useState<any[]>([]);
+  const [confirmDisabled, setConfirmDisabled] = useState(true);
+
   const closeModal = () => {
     setIsOpen(false);
+  };
+
+  const startAnalysis = () => {
+    const filePaths = files.map((file: FilePondFile) => file.serverId).filter((value) => !!value);
+    console.log(filePaths);
   };
 
   return (
@@ -60,7 +71,7 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl border border-navy-200/5 bg-navy-800 px-6 pt-6 pb-3 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="max-h-[40rem] w-full max-w-md transform overflow-hidden overflow-y-scroll rounded-2xl border border-navy-200/5 bg-navy-800 px-6 pt-6 pb-3 text-left align-middle shadow-xl transition-all">
                 <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-navy-200">
                   사진을 업로드하세요
                 </Dialog.Title>
@@ -69,15 +80,37 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
                 </div>
                 <FilePond
                   files={files}
-                  onupdatefiles={setFiles}
+                  ref={filepondRef}
+                  onupdatefiles={(files) => {
+                    setFiles(files);
+                  }}
+                  allowProcess={false}
                   allowMultiple={true}
+                  onprocessfiles={() => {
+                    setConfirmDisabled(false);
+                  }}
                   maxFiles={10}
-                  server="/api"
+                  server={{
+                    url: "http://localhost:8080",
+                    process: "/api/v1/photos/process",
+                    revert: "/api/v1/photos/revert",
+                  }}
                   name="files" /* sets the file input name, it's filepond by default */
                   labelIdle="이곳을 클릭하거나 사진을 드래그해서 업로드해보세요."
                   acceptedFileTypes={["image/jpeg", "image/png", "image/jpg", "image/heic"]}
                   imageCropAspectRatio="3:1"
+                  maxParallelUploads={5}
+                  itemInsertLocation="after"
+                  maxFileSize="10MB"
                 />
+                <div className="flex justify-center">
+                  <RectangleButton
+                    text="분석하기"
+                    onClick={startAnalysis}
+                    isLoading={false}
+                    disabled={files.length === 0 || confirmDisabled}
+                  />
+                </div>
               </Dialog.Panel>
             </Transition.Child>
           </div>
