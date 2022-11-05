@@ -2,6 +2,7 @@ package com.swpp.footprinter.domain.trace.model
 
 import com.swpp.footprinter.common.model.BaseEntity
 import com.swpp.footprinter.domain.footprint.model.Footprint
+import com.swpp.footprinter.domain.trace.dto.TraceResponse
 import com.swpp.footprinter.domain.user.model.User
 import javax.persistence.*
 
@@ -21,4 +22,13 @@ class Trace(
     @OneToMany(mappedBy = "trace")
     val footprintList: List<Footprint>,
 
-) : BaseEntity()
+) : BaseEntity() {
+    fun toResponse(): TraceResponse {
+        return TraceResponse(
+            id = id!!,
+            date = traceDate,
+            title = traceTitle,
+            ownerId = owner.id
+        )
+    }
+}
