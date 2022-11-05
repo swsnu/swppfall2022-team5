@@ -38,7 +38,7 @@ jobs:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           COVERALLS_PARALLEL: true
           COVERALLS_FLAG_NAME: coverage-${{ github.run_id }}
-        run: ./gradlew coverallsJacoco
+        run: ./gradlew test coverallsJacoco
 
   frontend-unittest:
     runs-on: ubuntu-latest
@@ -87,4 +87,3 @@ jobs:
         with:
           github-token: ${{ secrets.github_token }}
           parallel-finished: true
-          flag-name: coverage-${{ github.run_id }}
