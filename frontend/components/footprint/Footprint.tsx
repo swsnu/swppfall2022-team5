@@ -26,14 +26,22 @@ export function Footprint(props: Iprops) {
             <TagList tagList={props.tagList}/>
             <PhotoList photoList={props.photoList} />
 
-            <h2>Memo</h2>
-            <textarea
-                className="rounded w-full h-fit bg-navy-800/90 px-2"
-                defaultValue={props.memo}
-                disabled={!props.modifying}
-            ></textarea>
-
-            <h1>{["😝","😀","🤔","😕","😢"].reverse()[props.rating]}</h1>
+            <div>
+                <h2>Memo</h2>
+                <div className="flex flex-nowrap">
+                    <textarea
+                        className="rounded w-fit h-fit bg-navy-800/90 px-2"
+                        defaultValue={props.memo}
+                        disabled={!props.modifying}
+                    ></textarea>
+                    <h1
+                        className="text-3xl h-max text-center ml-1"
+                        onClick={() => {/* TODO: add select rate on modify */}}
+                    >
+                        {["😝","😀","🤔","😕","😢"].reverse()[props.rating]}
+                    </h1>
+                </div>
+            </div>
         </div>
     );
 }
