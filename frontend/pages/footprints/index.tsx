@@ -1,27 +1,42 @@
+import { useCallback, useState } from "react";
+import shallow from "zustand/shallow";
 import MonthDropdown from "../../components/calendar/MonthDropdown";
 import WeekCalendar from "../../components/calendar/WeekCalendar";
 import Container from "../../components/containers/Container";
 import NavigationBar from "../../components/navbar/NavigationBar";
 import { useCalendarStore } from "../../store/calendar";
-import { getWeekContainingDate } from "../../utils/calendar";
-import shallow from "zustand/shallow";
+
+import { IconPlus } from "@tabler/icons";
+import FloatingButton from "../../components/buttons/FloatingButton";
+import UploadModal from "../../components/upload-footprint/UploadModal";
 
 export default function Footprints() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { selectedDate, selectedWeek, setSelectedDate } = useCalendarStore((state) => state, shallow);
+  // const {isOpen, setIsOpen} = useFootprintStore(state=>{isOpen:state.isUploadModalOpen, setIsOpen: state.setIsUploadModalOpen}, shallow)
+
   return (
     <Container>
-      <div className="sticky top-0 right-0 bg-navy-800/90 pb-4 backdrop-blur-md">
+      <div className="sticky top-0 left-0 right-0 border-b border-navy-700/50 bg-navy-800/90 pb-4 backdrop-blur-md">
         <NavigationBar />
         <MonthDropdown selectedDate={selectedDate} />
         <WeekCalendar week={selectedWeek} setSelectedDate={setSelectedDate} selectedDate={selectedDate} showWeekday />
       </div>
-      <div>
-        <div className="p-4 text-navy-200 ">
-          {"s auctor tellus non metus posuere, eget sagittis diam vestibulum. Nunc a luctus risus, sed blandit est. Suspendisse vestibulum sapien ac orci luctus congue. Sed nisl purus, luctus ut leo gravida, imperdiet bibendum mauris. Vivamus sit amet ullamcorper magna. Morbi elementum massa vitae massa finibus, at tincid".repeat(
-            50,
-          )}
-        </div>
+
+      <div className="flex justify-center">
+        <FloatingButton
+          icon={IconPlus}
+          text="기록 추가하기"
+          onClick={useCallback(() => {
+            setIsModalOpen(true);
+          }, [])}
+          className="fixed bottom-0 my-5 text-right"
+        />
       </div>
+
+      <div className="p-4 text-navy-200">{"fw e fa".repeat(30)}</div>
+
+      <UploadModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} onConfirm={() => {}} />
     </Container>
   );
 }
