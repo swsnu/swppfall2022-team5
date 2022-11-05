@@ -12,14 +12,18 @@
     "coveralls": "cat coverage/lcov.info | node node_modules/.bin/coveralls"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.3",
     "@tabler/icons": "^1.108.0",
+    "classnames": "^2.3.2",
+    "immer": "^9.0.16",
     "@types/jest": "^29.2.1",
     "coveralls": "^3.1.1",
     "moment": "^2.29.4",
     "next": "13.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-moment": "^1.1.2"
+    "react-moment": "^1.1.2",
+    "zustand": "^4.1.4"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",

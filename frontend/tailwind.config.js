@@ -1,9 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./pages/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
   theme: {
     container: {
       screens: {
@@ -12,6 +9,7 @@ module.exports = {
       },
     },
     colors: {
+      white: "#ffffff",
       navy: {
         50: "#f6f6f9",
         100: "#ebecf3",
@@ -20,9 +18,9 @@ module.exports = {
         400: "#7f86b1",
         500: "#5e6699",
         600: "#4a507f",
-        700: "#3d4167",
-        800: "#21233b",
-        900: "#181925",
+        700: "#393d60",
+        800: "#181925",
+        900: "#14151f",
       },
     },
   },
