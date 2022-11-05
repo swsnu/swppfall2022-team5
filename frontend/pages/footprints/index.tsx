@@ -11,6 +11,7 @@ import FloatingButton from "../../components/buttons/FloatingButton";
 import UploadModal from "../../components/upload-footprint/UploadModal";
 import { dummyFootprints } from "../../data/footprints";
 import { FootprintPreview } from "../../components/footprint/FootprintPreview";
+import NavbarContainer from "../../components/containers/NavbarContainer";
 
 export default function Footprints() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,11 +19,11 @@ export default function Footprints() {
 
   return (
     <Container>
-      <div className="sticky top-0 left-0 right-0 z-50 border-b border-navy-700/50 bg-navy-800/90 pb-4 backdrop-blur-md">
+      <NavbarContainer className="pb-4">
         <NavigationBar />
         <MonthDropdown selectedDate={selectedDate} />
         <WeekCalendar week={selectedWeek} setSelectedDate={setSelectedDate} selectedDate={selectedDate} showWeekday />
-      </div>
+      </NavbarContainer>
 
       <div className="flex justify-center">
         <FloatingButton
