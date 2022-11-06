@@ -29,16 +29,13 @@ jobs:
           cache: 'gradle'
 
       - name: run test
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         run: ./gradlew test jacocoTestReport
 
-      - name: run coveralls
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-          COVERALLS_PARALLEL: true
-          COVERALLS_FLAG_NAME: backend-coverage
-        run: ./gradlew test coverallsJacoco
+      - name: upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-coverage
+          path: backend/build/reports/jacoco/test/jacocoTestReport.xml
 
   frontend-unittest:
     runs-on: ubuntu-latest
@@ -66,24 +63,28 @@ jobs:
         run: yarn test:unit --coverage
         working-directory: ./frontend
 
-      - name: Coveralls
-        uses: coverallsapp/github-action@master
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      - name: upload coverage report
+        uses: actions/upload-artifact@v3
         with:
-          github-token: ${{ secrets.github_token  }}
-          path-to-lcov: frontend/coverage/lcov.info
-          base-path: frontend
-          parallel: true
-          flag-name: frontend-coverage
+          name: frontend-coverage
+          path: frontend/coverage/lcov.info
 
-  send-coverage:
+  sonarcloud:
+    name: SonarCloud
+    needs: [backend-test, frontend-unittest]
     runs-on: ubuntu-latest
-    name: Send Coverage Report
-    needs: ['backend-test', 'frontend-unittest']
     steps:
-      - name: Coveralls Finished
-        uses: coverallsapp/github-action@master
+      - uses: actions/checkout@v3
         with:
-          github-token: ${{ secrets.github_token }}
-          parallel-finished: true
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
