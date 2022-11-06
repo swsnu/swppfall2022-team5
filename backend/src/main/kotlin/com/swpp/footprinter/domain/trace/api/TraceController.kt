@@ -1,6 +1,6 @@
 package com.swpp.footprinter.domain.trace.api
 
-import com.swpp.footprinter.domain.trace.dto.InitialTraceDTO
+import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
 import com.swpp.footprinter.domain.trace.dto.TraceResponse
 import com.swpp.footprinter.domain.trace.service.TraceService
@@ -43,7 +43,7 @@ class TraceController(
     @PostMapping("/traces/create")
     fun createNewTrace(
         @RequestBody photoIdLists: List<Long>,
-    ): List<InitialTraceDTO> {
+    ): List<FootprintInitialTraceResponse> {
         return service.createInitialTraceBasedOnPhotoIdListGiven(photoIdLists)
     }
 }

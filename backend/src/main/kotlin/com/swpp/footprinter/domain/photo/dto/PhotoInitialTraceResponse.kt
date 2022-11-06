@@ -2,7 +2,7 @@ package com.swpp.footprinter.domain.photo.dto
 
 import java.util.*
 
-data class PhotoInitialTraceDTO(
+data class PhotoInitialTraceResponse(
     val id: Long,
     val imageUrl: String,
     val longitude: Double,
