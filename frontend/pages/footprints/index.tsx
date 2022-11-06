@@ -19,7 +19,7 @@ export default function Footprints() {
 
   return (
     <Container>
-      <NavbarContainer className="pb-4">
+      <NavbarContainer className="z-20 pb-4">
         <NavigationBar />
         <MonthDropdown selectedDate={selectedDate} />
         <WeekCalendar week={selectedWeek} setSelectedDate={setSelectedDate} selectedDate={selectedDate} showWeekday />
