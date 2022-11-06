@@ -11,6 +11,7 @@ import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.domain.photo.model.Photo
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
+import com.swpp.footprinter.utils.dateToString8601
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -70,7 +71,7 @@ class PhotoController(
                 imagePath = path,
                 latitude = pdsLat.toString(),
                 longitude = pdsLon.toString(),
-                timestamp = exifDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL).toString(),
+                timestamp = dateToString8601(exifDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)),
                 footprint = null,
             )
             photoRepository.save(photo)
