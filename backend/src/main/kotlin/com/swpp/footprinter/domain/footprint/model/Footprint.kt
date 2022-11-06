@@ -31,9 +31,7 @@ class Footprint(
     @JoinColumn(referencedColumnName = "id", name = "tagId")
     var tag: Tag,
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(referencedColumnName = "id", name = "memoId")
-    var memo: Memo,
+    var memo: String,
 
     @OneToMany(mappedBy = "footprint")
     var photos: List<Photo> = listOf(),
