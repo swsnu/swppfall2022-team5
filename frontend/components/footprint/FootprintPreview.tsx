@@ -3,12 +3,19 @@ import { FootprintType } from "../../dto/footprint";
 import Image from "next/image";
 import "moment/locale/ko";
 import Photo from "./Photo";
+import { useRouter } from "next/router";
 
 interface IProps extends FootprintType {}
 
 export function FootprintPreview(props: IProps) {
+  const router = useRouter();
   return (
-    <div className="text-navy-100">
+    <div
+      className="p-5 text-navy-100 transition-colors hover:cursor-pointer hover:bg-navy-800/50"
+      onClick={() => {
+        router.push(`/footprints/detail/${props.id}`);
+      }}
+    >
       <div className="mb-2 flex items-center gap-2">
         <div className="text-2xl">{props.tag.emoji}</div>
         <Moment className="text-sm" date={props.startTime} locale="ko" format="LT" />

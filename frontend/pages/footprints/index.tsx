@@ -36,7 +36,16 @@ export default function Footprints() {
         />
       </div>
 
-      <div className="p-5">
+      <div className="mb-20 divide-y divide-navy-700/50">
+        {dummyFootprints.map((footprint) => {
+          return <FootprintPreview key={footprint.id} {...footprint} />;
+        })}
+        {dummyFootprints.map((footprint) => {
+          return <FootprintPreview key={footprint.id} {...footprint} />;
+        })}
+        {dummyFootprints.map((footprint) => {
+          return <FootprintPreview key={footprint.id} {...footprint} />;
+        })}
         {dummyFootprints.map((footprint) => {
           return <FootprintPreview key={footprint.id} {...footprint} />;
         })}
