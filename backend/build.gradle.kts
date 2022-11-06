@@ -32,6 +32,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("com.h2database:h2")
+    implementation("com.drewnoakes:metadata-extractor:2.18.0")
 }
 
 tasks.withType<KotlinCompile> {

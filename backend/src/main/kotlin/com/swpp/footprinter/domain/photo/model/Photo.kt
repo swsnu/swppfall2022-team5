@@ -7,11 +7,8 @@ import javax.persistence.*
 @Entity
 class Photo(
 
-    @Column(name = "image_url")
-    val imageUrl: String,
-
-    @Column(name = "coordinates")
-    val coordinates: String,
+    @Column(name = "image_path")
+    val imagePath: String,
 
     @Column(name = "longitude")
     val longitude: String,
@@ -24,6 +21,6 @@ class Photo(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id", name = "footprintId")
-    val footprint: Footprint,
+    val footprint: Footprint?,
 
 ) : BaseEntity()
