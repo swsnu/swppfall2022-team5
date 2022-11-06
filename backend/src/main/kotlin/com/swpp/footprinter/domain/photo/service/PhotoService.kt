@@ -7,7 +7,7 @@ import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.domain.photo.model.Photo
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
-import com.swpp.footprinter.utils.dateToString8601
+import com.swpp.footprinter.common.utils.dateToString8601
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
