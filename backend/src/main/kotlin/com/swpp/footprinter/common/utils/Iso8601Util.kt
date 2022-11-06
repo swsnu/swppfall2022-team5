@@ -1,4 +1,4 @@
-package com.swpp.footprinter.utils
+package com.swpp.footprinter.common.utils
 
 import java.text.SimpleDateFormat
 import java.time.Instant
