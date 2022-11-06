@@ -1,4 +1,4 @@
-package com.swpp.footprinter.domain.photo.model
+package com.swpp.footprinter.domain.photo.dto
 
 import java.util.*
 
