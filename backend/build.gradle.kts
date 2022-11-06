@@ -8,6 +8,7 @@ plugins {
     kotlin("plugin.spring") version "1.6.21"
     kotlin("plugin.jpa") version "1.6.21"
     jacoco
+    id("com.github.nbaztec.coveralls-jacoco") version "1.2.15"
 }
 
 group = "com.swpp"
@@ -31,6 +32,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("com.h2database:h2")
+    implementation("com.drewnoakes:metadata-extractor:2.18.0")
 }
 
 tasks.withType<KotlinCompile> {

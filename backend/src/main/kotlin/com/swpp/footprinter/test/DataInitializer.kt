@@ -6,10 +6,12 @@ import com.swpp.footprinter.domain.user.model.User
 import com.swpp.footprinter.domain.user.repository.UserRepository
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
+import org.springframework.context.annotation.Profile
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 
 @Component
+@Profile("!test")
 class DataInitializer(
     private val userRepo: UserRepository,
     private val traceRepo: TraceRepository
