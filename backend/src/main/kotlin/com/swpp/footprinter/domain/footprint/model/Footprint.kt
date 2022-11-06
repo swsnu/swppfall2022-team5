@@ -1,22 +1,20 @@
 package com.swpp.footprinter.domain.footprint.model
 
 import com.swpp.footprinter.common.model.BaseEntity
+import com.swpp.footprinter.common.utils.dateToString8601
 import com.swpp.footprinter.domain.footprint.dto.FootprintResponse
 import com.swpp.footprinter.domain.memo.model.Memo
 import com.swpp.footprinter.domain.photo.model.Photo
 import com.swpp.footprinter.domain.place.model.Place
 import com.swpp.footprinter.domain.tag.model.Tag
 import com.swpp.footprinter.domain.trace.model.Trace
+import java.util.*
 import javax.persistence.*
 
 @Entity
 class Footprint(
-
-    @Column(name = "start_time", nullable = false)
-    var startTime: String,
-
-    @Column(name = "end_time", nullable = false)
-    var endTime: String,
+    var startTime: Date,
+    var endTime: Date,
 
     @Column(name = "rating", nullable = false)
     var rating: Int,
@@ -40,13 +38,13 @@ class Footprint(
     @OneToMany(mappedBy = "footprint")
     var photos: List<Photo> = listOf(),
 
-) : BaseEntity() {
+    ) : BaseEntity() {
 
     fun toResponse(): FootprintResponse {
         return FootprintResponse(
             id = id!!,
-            startTime = startTime,
-            endTime = endTime,
+            startTime = dateToString8601(startTime),
+            endTime = dateToString8601(endTime),
             rating = rating,
             trace = trace,
             place = place,
