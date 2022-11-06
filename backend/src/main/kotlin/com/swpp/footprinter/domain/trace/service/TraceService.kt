@@ -92,21 +92,30 @@ class TraceServiceImpl(
 
 
     /**
+    * Assume GPS error is 30m, and 1 degree of lat/lng is 1112km.
+    * => Assume there is same place within 0.000027 degree of lat/lng.
+    */
+    fun isNearEnough(photo: PhotoInitialTraceDTO, latitude: Double, longitude: Double): Boolean {
+        val deltaLatScaled = abs(photo.latitude - latitude) * 10000
+        val deltaLngScaled = abs(photo.longitude - longitude) * 10000
+        val deltaScaled = sqrt(deltaLatScaled.pow(2.0) + deltaLngScaled.pow(2.0))
+        return (deltaScaled < 2.7)
+    }
+
+    /**
+    * Set similar time when the difference is within 1 hour.
+    */
+    fun isSimilarTime(photo: PhotoInitialTraceDTO, time: Date): Boolean {
+        val diffTime = abs(photo.timestamp.time - time.time)
+        return diffTime < 3600000 // 1 hour
+    }
+
+    /**
      * Group photos by place and time.
-     * Assume GPS error is 30m, and 1 degree of lat/lng is 1112km.
-     * => Assume there is same place within 0.000027 degree of lat/lng.
-     * Set similar time when the difference is within 1 hour.
      */
     // FIXME: Assumes all photos has perfect metadata
     private fun groupPhotosWithLocationAndTimeAndReturnInitialTraceDTOList(photoEntityList: List<Photo>): MutableList<InitialTraceDTO>  {
         val initialTraceDTOList: MutableList<InitialTraceDTO> = mutableListOf()
-
-        val isNearEnough: (PhotoInitialTraceDTO, Double, Double)-> Boolean = { photo, latitude, longitude ->
-            val deltaLatScaled = abs(photo.latitude - latitude) * 10000
-            val deltaLngScaled = abs(photo.longitude - longitude) * 10000
-            val deltaScaled = sqrt(deltaLatScaled.pow(2.0) + deltaLngScaled.pow(2.0))
-            (deltaScaled < 2.7)
-        }
 
         val isSimilarTime: (PhotoInitialTraceDTO, Date) -> Boolean = { photo, time ->
             val diffTime = abs(photo.timestamp.time - time.time)
