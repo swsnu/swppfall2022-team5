@@ -1,5 +1,6 @@
 package com.swpp.footprinter
 
+import com.swpp.footprinter.test.DummyService
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
@@ -7,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest
 class FootprinterApplicationTests {
 
     @Test
-    fun contextLoads() {
+    fun dummyServiceTest() {
+        val service = DummyService()
+        assert(service.returnDummyValue() == "hello")
     }
 }
