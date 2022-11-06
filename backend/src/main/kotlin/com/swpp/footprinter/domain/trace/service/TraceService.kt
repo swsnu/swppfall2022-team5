@@ -1,5 +1,6 @@
 package com.swpp.footprinter.domain.trace.service
 
+import com.amazonaws.services.s3.AmazonS3Client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
@@ -17,11 +18,13 @@ import com.swpp.footprinter.domain.trace.dto.TraceResponse
 import com.swpp.footprinter.domain.trace.model.Trace
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import com.swpp.footprinter.domain.user.repository.UserRepository
-import com.swpp.footprinter.utils.stringToDate8601
+import com.swpp.footprinter.common.utils.stringToDate8601
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.lang.Math.*
-import java.util.Date
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -41,6 +44,10 @@ class TraceServiceImpl(
     private val userRepo: UserRepository,
     private val photoRepo: PhotoRepository,
     private val kakaoAPIService: KakaoAPIService,
+    val amazonS3Client: AmazonS3Client,
+
+    @Value("\${cloud.aws.s3.bucket-name}")
+    private val bucketName: String
 ) : TraceService {
     override fun getAllTraces(): List<TraceResponse> {
         return traceRepo.findAll().filter { it.owner != userRepo.findByIdOrNull(1)!! }.map { trace -> trace.toResponse() } // TODO: 현재 user로 넣기
@@ -125,7 +132,19 @@ class TraceServiceImpl(
         photoEntityList.forEach{
             var isAdded = false
             val photo = PhotoInitialTraceDTO(
-                id=it.id!!, imagePath=it.imagePath, latitude=it.latitude.toDouble(), longitude=it.longitude.toDouble(), timestamp= stringToDate8601(it.timestamp)
+                id=it.id!!,
+                imageUrl=  amazonS3Client.generatePresignedUrl(
+                    bucketName,
+                    it.imagePath,
+                    Calendar.getInstance().let{ // Set expiration day to 1 day
+                        it.time = Date()
+                        it.add(Calendar.DATE, 1)
+                        it.time
+                    },
+                ).toString(),
+                latitude=it.latitude.toDouble(),
+                longitude=it.longitude.toDouble(),
+                timestamp= stringToDate8601(it.timestamp)
             )
             for (initialTraceDTO in initialTraceDTOList) {
                 // Check if place is near enough

@@ -4,7 +4,7 @@ import java.util.*
 
 data class PhotoInitialTraceDTO(
     val id: Long,
-    val imagePath: String,
+    val imageUrl: String,
     val longitude: Double,
     val latitude: Double,
     val timestamp: Date,
