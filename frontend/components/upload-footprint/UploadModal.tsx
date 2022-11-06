@@ -21,6 +21,7 @@ import FilePondPluginImageCrop from "filepond-plugin-image-crop";
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+import { useRouter } from "next/router";
 import RectangleButton from "../buttons/RectangleButton";
 
 registerPlugin(
@@ -35,6 +36,7 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
   const filepondRef = useRef<FilePond>(null);
   const [files, setFiles] = useState<any[]>([]);
   const [confirmDisabled, setConfirmDisabled] = useState(true);
+  const router = useRouter();
 
   const closeModal = () => {
     setIsOpen(false);
@@ -47,7 +49,7 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={closeModal}>
+      <Dialog as="div" className="relative z-30" onClose={closeModal}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -71,10 +73,8 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="max-h-[40rem] w-full max-w-md transform overflow-hidden overflow-y-scroll rounded-2xl border border-navy-200/5 bg-navy-800 px-6 pt-6 pb-3 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-navy-200">
-                  사진을 업로드하세요
-                </Dialog.Title>
+              <Dialog.Panel className="max-h-[40rem] w-full max-w-md transform overflow-hidden overflow-y-scroll rounded-2xl border border-navy-200/5 bg-navy-800 px-6 py-5 text-left align-middle shadow-xl transition-all">
+                <div className="text-lg font-medium leading-6 text-navy-200">사진을 업로드하세요</div>
                 <div className="mt-1 mb-4 text-sm text-navy-500">
                   사진의 정보를 분석해서 발자취를 쉽게 기록할 수 있도록 도와드려요.
                 </div>
@@ -103,12 +103,23 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
                   itemInsertLocation="after"
                   maxFileSize="10MB"
                 />
-                <div className="flex justify-center">
+                <div className="flex justify-center gap-4">
                   <RectangleButton
                     text="분석하기"
-                    onClick={startAnalysis}
+                    onClick={() => {
+                      closeModal();
+                      startAnalysis();
+                    }}
                     isLoading={false}
                     disabled={files.length === 0 || confirmDisabled}
+                  />
+                  <RectangleButton
+                    text="분석 건너뛰고 편집 화면으로 가기 (테스트)"
+                    onClick={() => {
+                      closeModal();
+                      router.push("/footprints/create");
+                    }}
+                    isLoading={false}
                   />
                 </div>
               </Dialog.Panel>
