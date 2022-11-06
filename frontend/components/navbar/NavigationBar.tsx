@@ -7,7 +7,7 @@ interface IProps {
 
 const NavigationBar = ({ title }: IProps) => {
   return (
-    <div className="flex items-center justify-between px-3 pt-5 pb-3">
+    <div className="flex items-center justify-between px-3 py-2">
       <IconButton icon={IconMenu2} onClick={() => {}} />
       <div>{title}</div>
       <IconButton icon={IconUser} onClick={() => {}} />
