@@ -1,0 +1,19 @@
+name: Coveralls
+on:
+  workflow_run:
+    workflows: [frontend test, backend test]
+    types: 
+      - completed
+jobs:
+  coveralls:
+    name: Coveralls
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ahmadnassri/action-workflow-run-wait@v1
+       # only runs additional steps if [ frontend build, frontend test, backend lint, backend test ] were successful
+      
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          parallel-finished: true

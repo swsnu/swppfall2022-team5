@@ -8,6 +8,7 @@ plugins {
     kotlin("plugin.spring") version "1.6.21"
     kotlin("plugin.jpa") version "1.6.21"
     jacoco
+    id("com.github.nbaztec.coveralls-jacoco") version "1.2.15"
 }
 
 group = "com.swpp"

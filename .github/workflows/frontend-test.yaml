@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: setup node
         uses: actions/setup-node@v3
@@ -37,15 +39,11 @@ jobs:
 
       - name: Coveralls
         uses: coverallsapp/github-action@master
-        env: 
+        env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         with:
           github-token: ${{ secrets.github_token  }}
           path-to-lcov: frontend/coverage/lcov.info
           base-path: frontend
-
-      - name: upload coverage report
-        uses: actions/upload-artifact@v3
-        with:
-          name: frontend-coverage
-          path: frontend/coverage/lcov.info
+          parallel: true
+          flag-name: frontend-coverage-${{ github.run_id }}
