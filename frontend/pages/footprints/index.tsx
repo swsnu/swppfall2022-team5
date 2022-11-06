@@ -36,7 +36,7 @@ export default function Footprints() {
         />
       </div>
 
-      <div className="mb-20 divide-y divide-navy-700/50">
+      <div className="divide-y divide-navy-700/50 pb-20">
         {dummyFootprints.map((footprint) => {
           return <FootprintPreview key={footprint.id} {...footprint} />;
         })}
