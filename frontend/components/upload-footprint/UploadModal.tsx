@@ -106,13 +106,17 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
                 <div className="flex justify-center gap-4">
                   <RectangleButton
                     text="분석하기"
-                    onClick={startAnalysis}
+                    onClick={() => {
+                      closeModal();
+                      startAnalysis();
+                    }}
                     isLoading={false}
                     disabled={files.length === 0 || confirmDisabled}
                   />
                   <RectangleButton
                     text="분석 건너뛰고 편집 화면으로 가기 (테스트)"
                     onClick={() => {
+                      closeModal();
                       router.push("/footprints/create");
                     }}
                     isLoading={false}
