@@ -23,13 +23,7 @@ class PhotoServiceImpl(
     private val photoRepository: PhotoRepository,
 ): PhotoService {
     override fun processMetadataAndSaveAsPhoto(multipartFile: MultipartFile, path: String): Photo {
-        val file = File(multipartFile.originalFilename ?: throw FootprinterException(ErrorType.MISSING_REQUEST_BODY))
-        file.createNewFile()
-        val fos = FileOutputStream(file)
-        fos.write(multipartFile.bytes)
-        fos.close()
-
-        val metadata: Metadata = ImageMetadataReader.readMetadata(file)
+        val metadata: Metadata = ImageMetadataReader.readMetadata(multipartFile.inputStream)
         val gpsDirectory: GpsDirectory = metadata.getFirstDirectoryOfType(GpsDirectory::class.java)
         val exifDirectory: ExifSubIFDDirectory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory::class.java)
 
@@ -45,11 +39,9 @@ class PhotoServiceImpl(
                 footprint = null,
             )
             photoRepository.save(photo)
-            file.delete()
             return photo
         } else {
             // TODO : 사진에 위치정보 메타데이터 없는 경우
-            file.delete()
             return Photo("", "", "", "", null)
         }
     }
