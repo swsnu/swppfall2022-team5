@@ -1,9 +1,7 @@
+import { useRouter } from "next/router";
 import Moment from "react-moment";
 import { FootprintType } from "../../dto/footprint";
-import Image from "next/image";
-import "moment/locale/ko";
 import Photo from "./Photo";
-import { useRouter } from "next/router";
 
 interface IProps extends FootprintType {}
 
@@ -18,9 +16,9 @@ export function FootprintPreview(props: IProps) {
     >
       <div className="mb-2 flex items-center gap-2">
         <div className="text-2xl">{props.tag.emoji}</div>
-        <Moment className="text-sm" date={props.startTime} locale="ko" format="LT" />
+        <Moment className="text-sm" date={props.startTime} format="LT" />
       </div>
-      <div className="flex gap-3 overflow-x-auto ">
+      <div className="flex gap-3 overflow-x-auto scrollbar-hide">
         {props.photos.map((photo) => {
           return <Photo key={photo.id} {...photo} />;
         })}
