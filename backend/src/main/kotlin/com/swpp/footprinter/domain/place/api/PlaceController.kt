@@ -11,15 +11,15 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/v1")
 class PlaceController(
-    private val apiService: KakaoAPIService
+    private val kakaoApiService: KakaoAPIService
 ) {
 
     @GetMapping("/place")
     @ResponseBody
     fun getRegionByCoordinate(
-        @RequestParam("x") longitude: String,
-        @RequestParam("y") latitude: String
+        @RequestParam("longitude") longitude: String,
+        @RequestParam("latitude") latitude: String
     ): ResponseEntity<String> {
-        return apiService.coordToRegion(longitude, latitude)
+        return kakaoApiService.coordToRegion(longitude, latitude)
     }
 }

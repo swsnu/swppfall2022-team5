@@ -6,9 +6,9 @@ import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.domain.footprint.model.Footprint
 import com.swpp.footprinter.domain.footprint.repository.FootprintRepository
 import com.swpp.footprinter.domain.photo.model.Photo
-import com.swpp.footprinter.domain.photo.model.PhotoInitialTraceDTO
+import com.swpp.footprinter.domain.photo.dto.PhotoInitialTraceDTO
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
-import com.swpp.footprinter.domain.place.model.PlaceInitialTraceDTO
+import com.swpp.footprinter.domain.place.dto.PlaceInitialTraceDTO
 import com.swpp.footprinter.domain.place.service.externalAPI.CATEGORY_CODE
 import com.swpp.footprinter.domain.place.service.externalAPI.KakaoAPIService
 import com.swpp.footprinter.domain.trace.dto.InitialTraceDTO

@@ -49,6 +49,7 @@ class PhotoServiceImpl(
             return photo
         } else {
             // TODO : 사진에 위치정보 메타데이터 없는 경우
+            file.delete()
             return Photo("", "", "", "", null)
         }
     }

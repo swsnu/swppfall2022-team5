@@ -1,4 +1,4 @@
-package com.swpp.footprinter.domain.place.model
+package com.swpp.footprinter.domain.place.dto
 
 import com.swpp.footprinter.domain.place.service.externalAPI.CATEGORY_CODE
 

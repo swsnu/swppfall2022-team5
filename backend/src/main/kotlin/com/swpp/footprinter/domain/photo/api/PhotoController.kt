@@ -19,7 +19,6 @@ import java.util.*
 @RequestMapping("/api/v1/photos")
 class PhotoController(
     val amazonS3Client: AmazonS3Client,
-    private val photoRepository: PhotoRepository,
     private val photoService: PhotoService,
 
     @Value("\${cloud.aws.s3.bucket-name}")
