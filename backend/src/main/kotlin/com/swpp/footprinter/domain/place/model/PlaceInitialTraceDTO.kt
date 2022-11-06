@@ -1,6 +1,10 @@
 package com.swpp.footprinter.domain.place.model
 
+import com.swpp.footprinter.domain.place.service.externalAPI.CATEGORY_CODE
+
 data class PlaceInitialTraceDTO(
-    var latitude: Double,
-    var longitude: Double,
+    val name: String,
+    val address: String,
+    val distance: Int,
+    val category: CATEGORY_CODE,
 )

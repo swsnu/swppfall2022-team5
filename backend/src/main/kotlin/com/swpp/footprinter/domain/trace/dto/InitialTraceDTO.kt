@@ -10,6 +10,6 @@ data class InitialTraceDTO(
     var meanLatitude: Double,
     var meanLongitude: Double,
     var meanTime: Date,
-    var minTime: Date,
-    var maxTime: Date,
+    var startTime: Date,
+    var endTime: Date,
 )
