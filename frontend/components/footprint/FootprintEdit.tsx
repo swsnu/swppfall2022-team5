@@ -1,10 +1,11 @@
 import { IconSearch } from "@tabler/icons";
 import Moment from "react-moment";
+import { FootprintRequestType } from "../../dto/footprint";
 import { FootprintPredictionType } from "../../dto/recommendations";
 import TagButton from "../buttons/TagButton";
 import Photo from "./Photo";
 
-interface IProps extends FootprintPredictionType {}
+interface IProps extends FootprintRequestType {}
 
 const Label = ({ text }: { text: string }) => {
   return <div className="mt-3 mb-1 text-sm text-navy-500">{text}</div>;
@@ -14,8 +15,8 @@ const FootprintEdit = (props: IProps) => {
   return (
     <div className="p-5 text-navy-200 transition-colors">
       <div className="flex gap-3 overflow-x-auto scrollbar-hide">
-        {props.photoList.map((photo) => {
-          return <Photo key={photo.id} {...photo} />;
+        {props.photos.map((photo) => {
+          return <Photo key={photo.imagePath} {...photo} />;
         })}
       </div>
       <div className="px-1">
@@ -26,7 +27,7 @@ const FootprintEdit = (props: IProps) => {
 
         <Label text="장소" />
         <div className="flex gap-3 overflow-x-auto scrollbar-hide">
-          {props.recommendedPlaceList.map((place) => {
+          {props.recommendedPlaces.map((place) => {
             return <TagButton key={place.address} className="flex-shrink-0" text={place.name} onClick={() => {}} />;
           })}
         </div>
@@ -36,7 +37,7 @@ const FootprintEdit = (props: IProps) => {
 
         <Label text="분류" />
         <div className="flex flex-wrap gap-x-3 gap-y-2">
-          {props.recommendedPlaceList.map((place) => {
+          {props.recommendedPlaces.map((place) => {
             return <TagButton key={place.address} text={place.name} onClick={() => {}} />;
           })}
         </div>

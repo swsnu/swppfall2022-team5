@@ -1,13 +1,19 @@
-import "../styles/globals.css";
-import type { AppProps } from "next/app";
-import Script from "next/script";
-import Head from "next/head";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "moment/locale/ko";
+import type { AppProps } from "next/app";
+import Head from "next/head";
+import Script from "next/script";
+import { useState } from "react";
 import Moment from "react-moment";
+import "../styles/globals.css";
 
 Moment.globalLocale = "ko";
 
+const createQueryClient = () =>
+  new QueryClient({ defaultOptions: { queries: { retry: 0, refetchOnWindowFocus: false } } });
+
 export default function App({ Component, pageProps }: AppProps) {
+  const [queryClient] = useState(createQueryClient);
   return (
     <>
       <Head>
@@ -63,7 +69,9 @@ export default function App({ Component, pageProps }: AppProps) {
         src="//dapi.kakao.com/v2/maps/sdk.js?appkey=186c8188c6305d81e1c1b9407a925f33&libraries=services,clusterer&autoload=false"
         strategy="beforeInteractive"
       />
-      <Component {...pageProps} />
+      <QueryClientProvider client={queryClient}>
+        <Component {...pageProps} />
+      </QueryClientProvider>
     </>
   );
 }

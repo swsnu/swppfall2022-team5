@@ -1,4 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
+import { useMutation } from "@tanstack/react-query";
 import { Fragment, useRef, useState } from "react";
 
 interface IProps {
@@ -23,6 +24,8 @@ import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 import { useRouter } from "next/router";
 import RectangleButton from "../buttons/RectangleButton";
+import { fetchInitialFootprints } from "../../api";
+import { useFootprintCreateStore } from "../../store/footprint";
 
 registerPlugin(
   FilePondPluginImageExifOrientation,
@@ -37,14 +40,18 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
   const [files, setFiles] = useState<any[]>([]);
   const [confirmDisabled, setConfirmDisabled] = useState(true);
   const router = useRouter();
-
+  const mutation = useMutation((photoIds: string[]) => fetchInitialFootprints(photoIds));
+  const setPendingFootprintRequest = useFootprintCreateStore((state) => state.setPendingFootprintRequests);
   const closeModal = () => {
     setIsOpen(false);
   };
 
   const startAnalysis = () => {
     const filePaths = files.map((file: FilePondFile) => file.serverId).filter((value) => !!value);
-    console.log(filePaths);
+    mutation.mutateAsync(filePaths).then((data) => {
+      setPendingFootprintRequest(data);
+      router.push("/footprints/create");
+    });
   };
 
   return (
@@ -110,7 +117,7 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
                       closeModal();
                       startAnalysis();
                     }}
-                    isLoading={false}
+                    isLoading={mutation.isLoading}
                     disabled={files.length === 0 || confirmDisabled}
                   />
                   <RectangleButton
