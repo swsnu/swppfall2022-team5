@@ -27,6 +27,7 @@ class PhotoServiceImpl(
 ): PhotoService {
     @Transactional
     override fun processMetadataAndSaveAsPhoto(multipartFile: MultipartFile, path: String) {
+
         val metadata: Metadata = ImageMetadataReader.readMetadata(multipartFile.inputStream)
         val gpsDirectory: GpsDirectory = metadata.getFirstDirectoryOfType(GpsDirectory::class.java)
         val exifDirectory: ExifSubIFDDirectory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory::class.java)

@@ -14,12 +14,7 @@ const MonthDropdown = ({ selectedDate }: IProps) => {
       <Popover>
         <Popover.Button className="focus:outline-none">
           <div className="flex items-center hover:opacity-80">
-            <Moment
-              className="select-none pr-1 text-lg font-semibold"
-              locale="ko"
-              date={selectedDate}
-              format="YYYY년 M월"
-            />
+            <Moment className="select-none pr-1 text-lg font-semibold" date={selectedDate} format="YYYY년 M월" />
             <IconChevronDown />
           </div>
         </Popover.Button>
