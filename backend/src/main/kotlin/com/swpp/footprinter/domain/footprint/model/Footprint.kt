@@ -32,10 +32,10 @@ class Footprint(
 
     var memo: String,
 
-    @OneToMany(mappedBy = "footprint", cascade=[CascadeType.ALL])
+    @OneToMany(mappedBy = "footprint", cascade = [CascadeType.ALL])
     var photos: MutableSet<Photo> = mutableSetOf(),
 
-    ) : BaseEntity() {
+) : BaseEntity() {
 
     fun toResponse(): FootprintResponse {
         return FootprintResponse(

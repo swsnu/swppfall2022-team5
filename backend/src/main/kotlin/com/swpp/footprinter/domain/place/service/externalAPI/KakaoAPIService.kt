@@ -47,4 +47,3 @@ enum class CATEGORY_CODE(val code: String) {
     `음식점`("FD6"),
     `카페`("CE7");
 }
-

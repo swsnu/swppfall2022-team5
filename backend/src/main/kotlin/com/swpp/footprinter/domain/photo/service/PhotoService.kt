@@ -24,7 +24,7 @@ class PhotoServiceImpl(
 
     @Value("\${cloud.aws.s3.bucket-name}")
     private val bucketName: String
-): PhotoService {
+) : PhotoService {
     @Transactional
     override fun processMetadataAndSaveAsPhoto(multipartFile: MultipartFile, path: String) {
 
