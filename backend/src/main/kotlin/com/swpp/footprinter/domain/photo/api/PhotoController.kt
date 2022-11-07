@@ -9,8 +9,10 @@ import com.drew.metadata.exif.ExifSubIFDDirectory
 import com.drew.metadata.exif.GpsDirectory
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
-import com.swpp.footprinter.domain.photo.model.Photo
+
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
+import com.swpp.footprinter.domain.photo.service.PhotoService
+
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -25,7 +27,7 @@ import java.util.*
 @RequestMapping("/api/v1/photos")
 class PhotoController(
     val amazonS3Client: AmazonS3Client,
-    val photoRepository: PhotoRepository,
+    private val photoService: PhotoService,
 
     @Value("\${cloud.aws.s3.bucket-name}")
     private val bucketName: String
@@ -41,7 +43,7 @@ class PhotoController(
         val randomUniqueId = UUID.randomUUID().toString()
         val path = Paths.get(randomUniqueId, multipartFile.originalFilename).toString()
         amazonS3Client.putObject(PutObjectRequest(bucketName, path, multipartFile.inputStream, objectMetadata))
-        processMetadataAndSaveAsPhoto(multipartFile, path)
+        photoService.processMetadataAndSaveAsPhoto(multipartFile, path)
         return path
     }
 

@@ -1,4 +1,5 @@
 spring.profiles.default: dev
+spring.profiles.include: dev, API-KEY
 
 cloud:
   aws:

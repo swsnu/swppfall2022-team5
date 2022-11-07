@@ -1,5 +1,6 @@
 package com.swpp.footprinter.domain.trace.api
 
+import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
 import com.swpp.footprinter.domain.trace.dto.TraceResponse
 import com.swpp.footprinter.domain.trace.service.TraceService
@@ -37,5 +38,12 @@ class TraceController(
         @PathVariable traceId: Long
     ) {
         service.deleteTraceById(traceId)
+    }
+
+    @PostMapping("/traces/create")
+    fun createNewTrace(
+        @RequestBody photoIdLists: List<Long>,
+    ): List<FootprintInitialTraceResponse> {
+        return service.createInitialTraceBasedOnPhotoIdListGiven(photoIdLists)
     }
 }
