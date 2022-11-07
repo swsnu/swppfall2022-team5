@@ -3,7 +3,6 @@ package com.swpp.footprinter.domain.footprint.model
 import com.swpp.footprinter.common.model.BaseEntity
 import com.swpp.footprinter.common.utils.dateToString8601
 import com.swpp.footprinter.domain.footprint.dto.FootprintResponse
-import com.swpp.footprinter.domain.memo.model.Memo
 import com.swpp.footprinter.domain.photo.model.Photo
 import com.swpp.footprinter.domain.place.model.Place
 import com.swpp.footprinter.domain.tag.model.Tag
@@ -33,8 +32,8 @@ class Footprint(
 
     var memo: String,
 
-    @OneToMany(mappedBy = "footprint")
-    var photos: List<Photo> = listOf(),
+    @OneToMany(mappedBy = "footprint", cascade=[CascadeType.ALL])
+    var photos: MutableSet<Photo> = mutableSetOf(),
 
     ) : BaseEntity() {
 
@@ -48,7 +47,7 @@ class Footprint(
             place = place,
             tag = tag,
             memo = memo,
-            photos = photos
+            photos = photos.toList()
         )
     }
 }

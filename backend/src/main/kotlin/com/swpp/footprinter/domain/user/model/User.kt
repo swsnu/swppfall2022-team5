@@ -13,8 +13,8 @@ class User(
     @Column(name = "email")
     val email: String,
 
-    @OneToMany(mappedBy = "owner")
-    val myTrace: List<Trace>,
+    @OneToMany(mappedBy = "owner", cascade = [CascadeType.ALL])
+    val myTrace: MutableSet<Trace>,
 
 ) : BaseEntity()
 

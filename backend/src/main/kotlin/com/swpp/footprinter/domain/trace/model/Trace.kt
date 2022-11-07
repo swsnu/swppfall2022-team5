@@ -19,8 +19,8 @@ class Trace(
     @JoinColumn(referencedColumnName = "id", name = "userId")
     val owner: User,
 
-    @OneToMany(mappedBy = "trace")
-    val footprintList: List<Footprint>,
+    @OneToMany(mappedBy = "trace", cascade = [CascadeType.ALL])
+    val footprintList: MutableSet<Footprint>,
 
 ) : BaseEntity() {
     fun toResponse(): TraceResponse {

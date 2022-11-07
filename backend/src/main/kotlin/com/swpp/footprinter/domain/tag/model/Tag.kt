@@ -9,10 +9,10 @@ import javax.persistence.OneToMany
 @Entity
 class Tag(
 
-    @Column(name = "tag_name")
+    @Column(name = "tag_name", unique = true)
     val tagName: String,
 
     @OneToMany(mappedBy = "tag")
-    val taggedFootprints: List<Footprint>,
+    val taggedFootprints: MutableSet<Footprint>,
 
 ) : BaseEntity()
