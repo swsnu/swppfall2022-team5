@@ -60,8 +60,9 @@ class TraceServiceImpl(
             owner = userRepo.findByIdOrNull(3)!!, // TODO: 현재 user로 넣기
             footprintList = mutableSetOf()
         )
-//        val newId = traceRepo.save(newTrace).id
+        traceRepo.save(newTrace)
 
+        //TODO: 여러 날의 footprint가 들어온 경우 handle
         traceRequest.footprintList!!.forEach {
             // Create new footprints
             val footprint = footprintService.createFootprintAndReturn(it, newTrace)
