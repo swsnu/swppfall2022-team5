@@ -1,6 +1,7 @@
 package com.swpp.footprinter.domain.trace.api
 
 import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
+import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
 import com.swpp.footprinter.domain.trace.dto.TraceResponse
 import com.swpp.footprinter.domain.trace.service.TraceService
@@ -21,18 +22,26 @@ class TraceController(
         return service.getAllTraces()
     }
 
+    @GetMapping("/traces")
+    @ResponseBody
+    fun getTraceByDate(
+        @RequestParam("date") date : String
+    ): TraceDetailResponse? {
+        return service.getTraceByDate(date)
+    }
+
     @PostMapping("/traces")
     fun createTrace(
         @RequestBody @Valid request: TraceRequest
     ): ResponseEntity<String> {
         service.createTrace(request)
-        return ResponseEntity<String>("Created", HttpStatus.OK)
+        return ResponseEntity<String>("Created", HttpStatus.CREATED)
     }
 
     @GetMapping("/traces/{traceId}")
     fun getTraceDetail(
         @PathVariable traceId: Long
-    ): TraceResponse {
+    ): TraceDetailResponse {
         return service.getTraceById(traceId)
     }
 
