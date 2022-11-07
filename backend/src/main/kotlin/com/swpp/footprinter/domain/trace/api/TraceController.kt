@@ -22,10 +22,10 @@ class TraceController(
         return service.getAllTraces()
     }
 
-    @GetMapping("/traces")
+    @GetMapping("/traces/{date}")
     @ResponseBody
     fun getTraceByDate(
-        @RequestParam("date") date : String
+        @PathVariable date: String
     ): TraceDetailResponse? {
         return service.getTraceByDate(date)
     }
