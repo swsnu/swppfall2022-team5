@@ -4,6 +4,7 @@ import { RecommendedPlaceType } from "./recommendations";
 import { TagType } from "./tag";
 
 export interface FootprintRequestType {
+  uuid: string;
   startTime: string;
   endTime: string;
   rating: number;
