@@ -15,10 +15,10 @@ interface UserService {
 }
 
 @Service
-class UserServiceImpl (
+class UserServiceImpl(
     private val userRepo: UserRepository,
     private val traceRepo: TraceRepository,
-): UserService {
+) : UserService {
     override fun getUserTraces(userId: Long): List<TraceResponse> {
         val user = userRepo.findByIdOrNull(userId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
         val traces = traceRepo.findTraceAllByOwner(user)
@@ -29,5 +29,4 @@ class UserServiceImpl (
         val user = userRepo.findByIdOrNull(userId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
         return traceRepo.findTraceByOwnerAndTraceDate(user, date)?.toDetailResponse()
     }
-
 }
