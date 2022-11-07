@@ -4,8 +4,6 @@ import com.amazonaws.services.s3.AmazonS3Client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
-import com.swpp.footprinter.domain.footprint.model.Footprint
-import com.swpp.footprinter.domain.footprint.repository.FootprintRepository
 import com.swpp.footprinter.domain.photo.model.Photo
 import com.swpp.footprinter.domain.photo.dto.PhotoInitialTraceResponse
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
@@ -18,19 +16,20 @@ import com.swpp.footprinter.domain.trace.dto.TraceResponse
 import com.swpp.footprinter.domain.trace.model.Trace
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import com.swpp.footprinter.domain.user.repository.UserRepository
-import com.swpp.footprinter.common.utils.stringToDate8601
+import com.swpp.footprinter.domain.footprint.service.FootprintService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.lang.Math.*
 import java.util.*
+import javax.transaction.Transactional
 import kotlin.collections.ArrayList
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 interface TraceService {
     fun getAllTraces(): List<TraceResponse>
-    fun createTrace(request: TraceRequest)
+    fun createTrace(traceRequest: TraceRequest)
     fun getTraceById(traceId: Long): TraceResponse
     fun deleteTraceById(traceId: Long)
 
@@ -40,7 +39,7 @@ interface TraceService {
 @Service
 class TraceServiceImpl(
     private val traceRepo: TraceRepository,
-    private val footprintRepo: FootprintRepository,
+    private val footprintService: FootprintService,
     private val userRepo: UserRepository,
     private val photoRepo: PhotoRepository,
     private val kakaoAPIService: KakaoAPIService,
@@ -53,27 +52,23 @@ class TraceServiceImpl(
         return traceRepo.findAll().filter { it.owner != userRepo.findByIdOrNull(1)!! }.map { trace -> trace.toResponse() } // TODO: 현재 user로 넣기
     }
 
-    override fun createTrace(request: TraceRequest) {
+    @Transactional
+    override fun createTrace(traceRequest: TraceRequest) {
         val newTrace = Trace(
-            traceTitle = request.title!!,
-            traceDate = request.date!!,
+            traceTitle = traceRequest.title!!,
+            traceDate = traceRequest.date!!,
             owner = userRepo.findByIdOrNull(3)!!, // TODO: 현재 user로 넣기
-            footprintList = listOf()
+            footprintList = mutableSetOf()
         )
-        val newId = traceRepo.save(newTrace).id
-        for (footprint in request.footprintList!!) {
-            footprintRepo.save(
-                Footprint(
-                    startTime = footprint.startTime!!,
-                    endTime = footprint.endTime!!,
-                    rating = footprint.rating!!,
-                    trace = newTrace,
-                    place = footprint.place!!,
-                    tag = footprint.tag!!,
-                    memo = footprint.memo!!,
-                    photos = footprint.photos!!
-                )
-            )
+        traceRepo.save(newTrace)
+
+        //TODO: 여러 날의 footprint가 들어온 경우 handle
+        traceRequest.footprintList!!.forEach {
+            // Create new footprints
+            val footprint = footprintService.createFootprintAndReturn(it, newTrace)
+
+            // Update newTrace
+            newTrace.footprintList.add(footprint)
         }
     }
 
@@ -124,11 +119,6 @@ class TraceServiceImpl(
     private fun groupPhotosWithLocationAndTimeAndReturnInitialTraceDTOList(photoEntityList: List<Photo>): MutableList<FootprintInitialTraceResponse>  {
         val footprintInitialTraceResponseList: MutableList<FootprintInitialTraceResponse> = mutableListOf()
 
-        val isSimilarTime: (PhotoInitialTraceResponse, Date) -> Boolean = { photo, time ->
-            val diffTime = abs(photo.timestamp.time - time.time)
-            diffTime < 3600000 // 1 hour
-        }
-
         photoEntityList.forEach{
             var isAdded = false
             val photo = PhotoInitialTraceResponse(
@@ -142,9 +132,9 @@ class TraceServiceImpl(
                         it.time
                     },
                 ).toString(),
-                latitude=it.latitude.toDouble(),
-                longitude=it.longitude.toDouble(),
-                timestamp= stringToDate8601(it.timestamp)
+                latitude= it.latitude,
+                longitude= it.longitude,
+                timestamp= it.timestamp,
             )
             for (initialTraceDTO in footprintInitialTraceResponseList) {
                 // Check if place is near enough
