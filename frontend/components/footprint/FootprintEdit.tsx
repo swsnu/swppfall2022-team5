@@ -13,8 +13,20 @@ const Label = ({ text }: { text: string }) => {
   return <div className="mt-3 mb-1 text-sm text-navy-500">{text}</div>;
 };
 
+interface Rating {
+  score: number;
+  text: string;
+}
+
 const FootprintEdit = (props: IProps) => {
   const updateFootprint = useFootprintCreateStore((state) => state.setFootprintByIDWith)(props.uuid);
+
+  const ratings: Rating[] = [
+    { score: 3, text: "🤩 최고예요" },
+    { score: 2, text: "👍 좋아요" },
+    { score: 1, text: "🤔 그냥 그래요" },
+    { score: 0, text: "👎 별로예요" },
+  ];
 
   return (
     <div className="p-5 text-navy-200 transition-colors">
@@ -49,12 +61,21 @@ const FootprintEdit = (props: IProps) => {
           <TagButton text="직접 추가하기" icon={IconSearch} onClick={() => {}} />
         </div> */}
 
-        {/* <Label text="분류" />
+        <Label text="평점" />
         <div className="flex flex-wrap gap-x-3 gap-y-2">
-          {props.recommendedPlaces.map((place) => {
-            return <TagButton key={place.name} text={place.name} onClick={() => {}} />;
+          {ratings.map((rating) => {
+            return (
+              <TagButton
+                key={rating.score}
+                text={rating.text}
+                onClick={() => {
+                  updateFootprint({ rating: rating.score });
+                }}
+                isActive={props.rating === rating.score}
+              />
+            );
           })}
-        </div> */}
+        </div>
 
         <Label text="메모" />
         <textarea

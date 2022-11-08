@@ -1,10 +1,10 @@
 import { useRouter } from "next/router";
 import Moment from "react-moment";
 import { tagToEmoji } from "../../data/emojiMap";
-import { FootprintType } from "../../dto/footprint";
+import { FootprintResponseType } from "../../dto/footprint";
 import Photo from "./Photo";
 
-interface IProps extends FootprintType {}
+interface IProps extends FootprintResponseType {}
 
 export function FootprintPreview(props: IProps) {
   const router = useRouter();
