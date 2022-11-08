@@ -2,6 +2,7 @@ import { FootprintPredictionType } from "../dto/recommendations";
 import { TraceDetailResponse, TraceRequestType } from "../dto/trace";
 import { apiClient } from "./client";
 import moment from "moment";
+import { TagType } from "../dto/tag";
 
 export const fetchInitialFootprints = async (photoIds: string[]) => {
   return (await apiClient.post<FootprintPredictionType[]>("/traces/create", photoIds)).data;
@@ -17,4 +18,8 @@ export const fetchTraceByDate = async (date: Date) => {
 
 export const fetchTraceById = async (traceId: number) => {
   return await apiClient.get<TraceDetailResponse>(`/traces/id/${traceId}`);
+};
+
+export const fetchTags = async () => {
+  return (await apiClient.get<TagType[]>(`/tags`)).data;
 };

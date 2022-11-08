@@ -44,7 +44,7 @@ const FootprintsCreate = () => {
                   toast.success("발자취를 성공적으로 저장했어요!");
                 },
                 onError: () => {
-                  toast.error("장소를 선택해주세요.");
+                  toast.error("요청이 실패했습니다.");
                 },
               },
             );

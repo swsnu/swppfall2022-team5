@@ -9,7 +9,7 @@ export interface FootprintRequestType {
   endTime: string;
   rating: number;
   memo: string;
-  tag: string;
+  tagId: number;
   photos: {
     imagePath: string;
     imageUrl: string;

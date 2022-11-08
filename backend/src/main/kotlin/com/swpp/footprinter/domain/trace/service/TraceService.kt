@@ -141,6 +141,7 @@ class TraceServiceImpl(
             var isAdded = false
             val photo = PhotoInitialTraceResponse(
                 id = it.id!!,
+                imagePath = it.imagePath,
                 imageUrl = imageUrlUtil.getImageURLfromImagePath(it.imagePath),
                 latitude = it.latitude,
                 longitude = it.longitude,

@@ -1,8 +1,7 @@
-import { IconSearch } from "@tabler/icons";
-import { sendStatusCode } from "next/dist/server/api-utils";
+import { useQuery } from "@tanstack/react-query";
 import Moment from "react-moment";
+import { fetchTags } from "../../api";
 import { FootprintRequestType } from "../../dto/footprint";
-import { FootprintPredictionType } from "../../dto/recommendations";
 import { useFootprintCreateStore } from "../../store/footprint";
 import TagButton from "../buttons/TagButton";
 import Photo from "./Photo";
@@ -20,12 +19,12 @@ interface Rating {
 
 const FootprintEdit = (props: IProps) => {
   const updateFootprint = useFootprintCreateStore((state) => state.setFootprintByIDWith)(props.uuid);
+  const tagResult = useQuery(["tags"], fetchTags);
 
   const ratings: Rating[] = [
-    { score: 3, text: "🤩 최고예요" },
-    { score: 2, text: "👍 좋아요" },
-    { score: 1, text: "🤔 그냥 그래요" },
-    { score: 0, text: "👎 별로예요" },
+    { score: 2, text: "🤩 좋아요" },
+    { score: 1, text: "🤔 보통이에요" },
+    { score: 0, text: "😢 별로예요" },
   ];
 
   return (
@@ -60,6 +59,22 @@ const FootprintEdit = (props: IProps) => {
         {/* <div className="mt-2">
           <TagButton text="직접 추가하기" icon={IconSearch} onClick={() => {}} />
         </div> */}
+
+        <Label text="태그" />
+        <div className="flex flex-wrap gap-x-3 gap-y-2">
+          {tagResult.data?.map((tag) => {
+            return (
+              <TagButton
+                key={tag.tagId}
+                onClick={() => {
+                  updateFootprint({ tagId: tag.tagId });
+                }}
+                text={tag.tagName}
+                isActive={props.tagId === tag.tagId}
+              />
+            );
+          })}
+        </div>
 
         <Label text="평점" />
         <div className="flex flex-wrap gap-x-3 gap-y-2">
