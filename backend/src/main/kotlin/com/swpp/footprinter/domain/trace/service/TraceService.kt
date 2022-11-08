@@ -3,10 +3,12 @@ package com.swpp.footprinter.domain.trace.service
 import com.amazonaws.services.s3.AmazonS3Client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.swpp.footprinter.common.Km_PER_LATLNG_DEGREE
+import com.swpp.footprinter.common.PLACE_FIND_METER
 import com.swpp.footprinter.common.PLACE_GRID_METER
 import com.swpp.footprinter.common.TIME_GRID_SEC
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
+import com.swpp.footprinter.common.utils.ImageUrlUtil
 import com.swpp.footprinter.domain.photo.model.Photo
 import com.swpp.footprinter.domain.photo.dto.PhotoInitialTraceResponse
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
@@ -19,6 +21,7 @@ import com.swpp.footprinter.domain.trace.model.Trace
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import com.swpp.footprinter.domain.user.repository.UserRepository
 import com.swpp.footprinter.domain.footprint.service.FootprintService
+import com.swpp.footprinter.domain.photo.service.PhotoService
 import com.swpp.footprinter.domain.tag.TAG_CODE
 import com.swpp.footprinter.domain.tag.dto.TagResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
@@ -48,7 +51,7 @@ class TraceServiceImpl(
     private val userRepo: UserRepository,
     private val photoRepo: PhotoRepository,
     private val kakaoAPIService: KakaoAPIService,
-    val amazonS3Client: AmazonS3Client,
+    private val imageUrlUtil: ImageUrlUtil,
 
     @Value("\${cloud.aws.s3.bucket-name}")
     private val bucketName: String
@@ -79,7 +82,13 @@ class TraceServiceImpl(
 
     override fun getTraceById(traceId: Long): TraceDetailResponse {
         val trace = traceRepo.findByIdOrNull(traceId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
-        return trace.toDetailResponse()
+        return trace.toDetailResponse().apply {
+            footprints?.forEach{ fp ->
+                fp.photos.forEach { p ->
+                    p.imageUrl = imageUrlUtil.getImageURLfromImagePath(p.imagePath)
+                }
+            }
+        }
     }
 
     override fun deleteTraceById(traceId: Long) {
@@ -93,7 +102,7 @@ class TraceServiceImpl(
 
         val initialTraceDTOList = groupPhotosWithLocationAndTimeAndReturnInitialTraceDTOList(photoEntityList)
 
-        addRecomendedPlaceToInitialTraceDTOList(initialTraceDTOList, radius = 60)
+        addRecomendedPlaceToInitialTraceDTOList(initialTraceDTOList, radius = PLACE_FIND_METER)
 
         return initialTraceDTOList
     }
@@ -134,15 +143,7 @@ class TraceServiceImpl(
             var isAdded = false
             val photo = PhotoInitialTraceResponse(
                 id = it.id!!,
-                imageUrl = amazonS3Client.generatePresignedUrl(
-                    bucketName,
-                    it.imagePath,
-                    Calendar.getInstance().let { // Set expiration day to 1 day
-                        it.time = Date()
-                        it.add(Calendar.DATE, 1)
-                        it.time
-                    },
-                ).toString(),
+                imageUrl = imageUrlUtil.getImageURLfromImagePath(it.imagePath),
                 latitude = it.latitude,
                 longitude = it.longitude,
                 timestamp = it.timestamp,

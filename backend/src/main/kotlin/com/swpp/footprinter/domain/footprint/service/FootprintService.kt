@@ -2,6 +2,7 @@ package com.swpp.footprinter.domain.footprint.service
 
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
+import com.swpp.footprinter.common.utils.ImageUrlUtil
 import com.swpp.footprinter.common.utils.stringToDate8601
 import com.swpp.footprinter.domain.footprint.dto.FootprintRequest
 import com.swpp.footprinter.domain.footprint.dto.FootprintResponse
@@ -35,10 +36,15 @@ class FootprintServiceImpl(
     private val tagRepo: TagRepository,
     private val photoRepo: PhotoRepository,
     private val photoService: PhotoService,
+    private val imageUrlUtil: ImageUrlUtil,
 ) : FootprintService {
     override fun getFootprintById(footprintId: Long): FootprintResponse {
         val footprint = footprintRepo.findByIdOrNull(footprintId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
-        return footprint.toResponse()
+        return footprint.toResponse().apply {
+            photos.forEach{
+                it.imageUrl =  imageUrlUtil.getImageURLfromImagePath(it.imagePath)
+            }
+        }
     }
 
     @Transactional
