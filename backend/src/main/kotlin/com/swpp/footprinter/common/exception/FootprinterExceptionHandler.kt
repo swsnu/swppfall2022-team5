@@ -18,7 +18,7 @@ class FootprinterExceptionHandler {
     // }
 
     @ExceptionHandler(FootprinterException::class)
-    fun handlerSeminarException(e: FootprinterException): ResponseEntity<ErrorResponse> {
+    fun handlerFootprinterException(e: FootprinterException): ResponseEntity<ErrorResponse> {
         return ResponseEntity(
             ErrorResponse(ErrorInfo(e.errorType.code, e.errorType.message)),
             e.errorType.httpStatus,

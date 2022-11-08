@@ -109,7 +109,7 @@ class FootprintServiceImpl(
                 target.place.footprints.remove(target)
                 if (target.place.footprints.isEmpty()) { placeRepo.delete(target.place) }
                 // Change to new place.
-                val editPlace = placeRepo.findByNameAndAddress(it.name!!, it.address!!)
+                val editPlace = placeRepo.findByNameAndAddress(it.name, it.address!!)
                 editPlace?.apply { this.footprints.add(target) }
                     ?: Place(
                         name = it.name,

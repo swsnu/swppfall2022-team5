@@ -17,10 +17,10 @@ import com.swpp.footprinter.domain.trace.model.Trace
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import com.swpp.footprinter.domain.user.repository.UserRepository
 import com.swpp.footprinter.domain.footprint.service.FootprintService
+import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import java.lang.Math.*
 import java.util.*
 import javax.transaction.Transactional
 import kotlin.collections.ArrayList
@@ -30,10 +30,11 @@ import kotlin.math.sqrt
 interface TraceService {
     fun getAllTraces(): List<TraceResponse>
     fun createTrace(traceRequest: TraceRequest)
-    fun getTraceById(traceId: Long): TraceResponse
+    fun getTraceById(traceId: Long): TraceDetailResponse
     fun deleteTraceById(traceId: Long)
 
-    fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
+    fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<Long>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
+    fun getTraceByDate(date: String): TraceDetailResponse?
 }
 
 @Service
@@ -58,7 +59,7 @@ class TraceServiceImpl(
             traceTitle = traceRequest.title!!,
             traceDate = traceRequest.date!!,
             owner = userRepo.findByIdOrNull(3)!!, // TODO: 현재 user로 넣기
-            footprintList = mutableSetOf()
+            footprints = mutableSetOf()
         )
         traceRepo.save(newTrace)
 
@@ -68,13 +69,13 @@ class TraceServiceImpl(
             val footprint = footprintService.createFootprintAndReturn(it, newTrace)
 
             // Update newTrace
-            newTrace.footprintList.add(footprint)
+            newTrace.footprints.add(footprint)
         }
     }
 
-    override fun getTraceById(traceId: Long): TraceResponse {
-        val trace = traceRepo.findByIdOrNull(traceId) ?: TODO("존재하지 않는 trace")
-        return trace.toResponse()
+    override fun getTraceById(traceId: Long): TraceDetailResponse {
+        val trace = traceRepo.findByIdOrNull(traceId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
+        return trace.toDetailResponse()
     }
 
     override fun deleteTraceById(traceId: Long) {
@@ -93,13 +94,18 @@ class TraceServiceImpl(
         return initialTraceDTOList
     }
 
+    override fun getTraceByDate(date: String): TraceDetailResponse? {
+        // TODO: 현재 유저 입력
+        return traceRepo.findTraceByOwnerAndTraceDate(userRepo.findByIdOrNull(1)!!, date)?.toDetailResponse()
+    }
+
     /**
      * Assume GPS error is 30m, and 1 degree of lat/lng is 1112km.
      * => Assume there is same place within 0.000027 degree of lat/lng.
      */
     fun isNearEnough(photo: PhotoInitialTraceResponse, latitude: Double, longitude: Double): Boolean {
-        val deltaLatScaled = abs(photo.latitude - latitude) * 10000
-        val deltaLngScaled = abs(photo.longitude - longitude) * 10000
+        val deltaLatScaled = kotlin.math.abs(photo.latitude - latitude) * 10000
+        val deltaLngScaled = kotlin.math.abs(photo.longitude - longitude) * 10000
         val deltaScaled = sqrt(deltaLatScaled.pow(2.0) + deltaLngScaled.pow(2.0))
         return (deltaScaled < 2.7)
     }
@@ -108,7 +114,7 @@ class TraceServiceImpl(
      * Set similar time when the difference is within 1 hour.
      */
     fun isSimilarTime(photo: PhotoInitialTraceResponse, time: Date): Boolean {
-        val diffTime = abs(photo.timestamp.time - time.time)
+        val diffTime = kotlin.math.abs(photo.timestamp.time - time.time)
         return diffTime < 3600000 // 1 hour
     }
 

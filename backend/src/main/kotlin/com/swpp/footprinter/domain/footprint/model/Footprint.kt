@@ -43,11 +43,11 @@ class Footprint(
             startTime = dateToString8601(startTime),
             endTime = dateToString8601(endTime),
             rating = rating,
-            trace = trace,
-            place = place,
-            tag = tag,
+            traceId = trace.id!!,
+            place = place.toResponse(),
+            tag = tag.toResponse(),
             memo = memo,
-            photos = photos.toList()
+            photos = photos.map { it.toResponse() }
         )
     }
 }
