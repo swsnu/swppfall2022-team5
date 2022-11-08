@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface TraceRepository : JpaRepository<Trace, Long> {
     fun findTraceByOwnerAndTraceDate(owner: User, traceDate: String): Trace?
     fun findTraceAllByOwner(user: User): MutableList<Trace>
+    fun existsByTraceTitle(title: String): Boolean
 }

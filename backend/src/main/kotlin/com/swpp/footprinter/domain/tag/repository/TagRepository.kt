@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface TagRepository : JpaRepository<Tag, Long> {
     fun findByTagCode(code: TAG_CODE): Tag?
+    fun existsByTagCode(code: TAG_CODE): Boolean
 }
