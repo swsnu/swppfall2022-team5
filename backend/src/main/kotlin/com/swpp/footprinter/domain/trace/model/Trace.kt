@@ -21,9 +21,9 @@ class Trace(
     val owner: User,
 
     @OneToMany(mappedBy = "trace", cascade = [CascadeType.ALL])
-    val footprintList: MutableSet<Footprint>,
+    val footprints: MutableSet<Footprint>,
 
-) : BaseEntity() {
+    ) : BaseEntity() {
     fun toResponse(): TraceResponse {
         return TraceResponse(
             id = id!!,
@@ -39,7 +39,7 @@ class Trace(
             date = traceDate,
             title = traceTitle,
             ownerId = owner.id,
-            footprintList = footprintList.map { it.toResponse() }
+            footprints = footprints.map { it.toResponse() }
         )
     }
 }
