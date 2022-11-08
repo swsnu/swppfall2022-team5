@@ -6,17 +6,21 @@ import Container from "../../components/containers/Container";
 import NavigationBar from "../../components/navbar/NavigationBar";
 import { useCalendarStore } from "../../store/calendar";
 
-import { IconLock, IconPlus } from "@tabler/icons";
+import { IconPlus } from "@tabler/icons";
+import { useQuery } from "@tanstack/react-query";
+import { fetchTraceByDate } from "../../api";
 import FloatingButton from "../../components/buttons/FloatingButton";
-import UploadModal from "../../components/upload-footprint/UploadModal";
-import { dummyFootprints } from "../../data/footprints";
-import { FootprintPreview } from "../../components/footprint/FootprintPreview";
 import NavbarContainer from "../../components/containers/NavbarContainer";
+import { FootprintPreview } from "../../components/footprint/FootprintPreview";
+import UploadModal from "../../components/upload-footprint/UploadModal";
 
 export default function Footprints() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { selectedDate, selectedWeek, setSelectedDate } = useCalendarStore((state) => state, shallow);
-
+  const footprintsResult = useQuery(["footprints", selectedDate], () => {
+    return fetchTraceByDate(selectedDate);
+  });
+  const dat = footprintsResult.data;
   return (
     <Container>
       <NavbarContainer className="z-20 pb-4">
@@ -32,23 +36,15 @@ export default function Footprints() {
           onClick={useCallback(() => {
             setIsModalOpen(true);
           }, [])}
-          className="fixed bottom-0 my-5 text-right"
+          className="fixed bottom-0 z-50 my-5 text-right"
         />
       </div>
 
       <div className="divide-y divide-navy-700/50 pb-20">
-        {dummyFootprints.map((footprint) => {
-          return <FootprintPreview key={footprint.id} {...footprint} />;
-        })}
-        {dummyFootprints.map((footprint) => {
-          return <FootprintPreview key={footprint.id} {...footprint} />;
-        })}
-        {dummyFootprints.map((footprint) => {
-          return <FootprintPreview key={footprint.id} {...footprint} />;
-        })}
-        {dummyFootprints.map((footprint) => {
-          return <FootprintPreview key={footprint.id} {...footprint} />;
-        })}
+        {footprintsResult.isSuccess &&
+          footprintsResult.data.footprints?.map((footprint) => {
+            return <FootprintPreview key={footprint.id} {...footprint} />;
+          })}
       </div>
 
       <UploadModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} onConfirm={() => {}} />

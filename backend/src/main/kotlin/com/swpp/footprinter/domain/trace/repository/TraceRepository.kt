@@ -5,6 +5,8 @@ import com.swpp.footprinter.domain.user.model.User
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface TraceRepository : JpaRepository<Trace, Long> {
-    fun findTraceByOwnerAndTraceDate(owner: User, traceDate: String): Trace?
+    fun findTraceByOwnerAndTraceDate(owner: User, traceDate: String): List<Trace>
+
+    fun findTracesByTraceDate(traceDate: String): MutableList<Trace>
     fun findTraceAllByOwner(user: User): MutableList<Trace>
 }

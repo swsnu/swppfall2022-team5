@@ -1,6 +1,6 @@
-import create from "zustand";
 import produce from "immer";
-import { getWeekContainingDate, getWeeksInMonth } from "../utils/calendar";
+import create from "zustand";
+import { getWeekContainingDate } from "../utils/calendar";
 
 interface CalendarState {
   selectedDate: Date;
@@ -36,6 +36,7 @@ export const useCalendarStore = create<CalendarState>()((set, get) => ({
   setSelectedDate: (date) => {
     set(
       produce((state) => {
+        date.setHours(0, 0, 0, 0);
         state.selectedDate = date;
         state.selectedWeek = getWeekContainingDate(date);
       }),

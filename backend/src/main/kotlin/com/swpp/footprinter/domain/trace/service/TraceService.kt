@@ -96,7 +96,7 @@ class TraceServiceImpl(
 
     override fun getTraceByDate(date: String): TraceDetailResponse? {
         // TODO: 현재 유저 입력
-        return traceRepo.findTraceByOwnerAndTraceDate(userRepo.findByIdOrNull(1)!!, date)?.toDetailResponse()
+        return traceRepo.findTracesByTraceDate(date).lastOrNull()?.toDetailResponse()
     }
 
     /**

@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import moment from "moment";
 import { useRouter } from "next/router";
 import { createTrace } from "../../../api";
 import RectangleButton from "../../../components/buttons/RectangleButton";
@@ -7,10 +8,12 @@ import NavbarContainer from "../../../components/containers/NavbarContainer";
 import FootprintEdit from "../../../components/footprint/FootprintEdit";
 import NavigationBar from "../../../components/navbar/NavigationBar";
 import { TraceRequestType } from "../../../dto/trace";
+import { useCalendarStore } from "../../../store/calendar";
 import { useFootprintCreateStore } from "../../../store/footprint";
 
 const FootprintsCreate = () => {
   const pendingFootprintRequests = useFootprintCreateStore((state) => state.pendingFootprintRequests);
+  const setSelectedDate = useCalendarStore((state) => state.setSelectedDate);
   const mutation = useMutation((traceRequest: TraceRequestType) => createTrace(traceRequest));
   const router = useRouter();
 
@@ -24,17 +27,18 @@ const FootprintsCreate = () => {
           return <FootprintEdit key={prediction.startTime} {...prediction} />;
         })}
       </div>
-      <div className="mx-6 flex">
+      <div className="mx-6 my-6 flex">
         <RectangleButton
           onClick={() => {
             mutation.mutate(
               {
                 title: "테스트 제목입니다.",
-                date: pendingFootprintRequests[0].startTime,
+                date: moment(pendingFootprintRequests[0].startTime).format("YYYY-MM-DD"),
                 footprintList: pendingFootprintRequests,
               },
               {
                 onSuccess: () => {
+                  setSelectedDate(new Date(pendingFootprintRequests[0].startTime));
                   router.push("/footprints");
                 },
               },

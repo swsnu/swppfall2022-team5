@@ -1,10 +1,8 @@
-import create from "zustand";
 import produce from "immer";
-import { getWeekContainingDate, getWeeksInMonth } from "../utils/calendar";
-import { FootprintPredictionType } from "../dto/recommendations";
-import { FootprintRequestType, FootprintType } from "../dto/footprint";
 import { v4 } from "uuid";
-import FootprintsCreate from "../pages/footprints/create";
+import create from "zustand";
+import { FootprintRequestType } from "../dto/footprint";
+import { FootprintPredictionType } from "../dto/recommendations";
 
 interface FootprintCreateState {
   pendingFootprintRequests: FootprintRequestType[];
@@ -23,7 +21,7 @@ export const useFootprintCreateStore = create<FootprintCreateState>()((set, get)
             uuid: v4(),
             startTime: prediction.startTime,
             endTime: prediction.endTime,
-            rating: 0,
+            rating: 3,
             memo: "",
             tag: "",
             photos: prediction.photoList.map((photo) => ({ imagePath: photo.imagePath, imageUrl: photo.imageUrl })),
