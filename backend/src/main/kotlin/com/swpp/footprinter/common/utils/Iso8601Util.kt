@@ -2,8 +2,6 @@ package com.swpp.footprinter.common.utils
 
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
-import java.text.SimpleDateFormat
-import java.time.DateTimeException
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException

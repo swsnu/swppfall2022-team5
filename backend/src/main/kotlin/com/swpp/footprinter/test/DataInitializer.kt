@@ -25,7 +25,7 @@ class DataInitializer(
         userRepo.findAll().forEach { println(it.username) }
 
         listOf("Trace1", "Trace2", "Trace3").forEach {
-            traceRepo.save(Trace(traceTitle = it, traceDate = "2022-11-05", footprintList = mutableSetOf(), owner = userRepo.findByIdOrNull(2)!!))
+            traceRepo.save(Trace(traceTitle = it, traceDate = "2022-11-05", footprints = mutableSetOf(), owner = userRepo.findByIdOrNull(2)!!))
         }
     }
 }

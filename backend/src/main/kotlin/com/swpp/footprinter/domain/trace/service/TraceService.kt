@@ -17,10 +17,10 @@ import com.swpp.footprinter.domain.trace.model.Trace
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import com.swpp.footprinter.domain.user.repository.UserRepository
 import com.swpp.footprinter.domain.footprint.service.FootprintService
+import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import java.lang.Math.*
 import java.util.*
 import javax.transaction.Transactional
 import kotlin.collections.ArrayList
@@ -30,10 +30,11 @@ import kotlin.math.sqrt
 interface TraceService {
     fun getAllTraces(): List<TraceResponse>
     fun createTrace(traceRequest: TraceRequest)
-    fun getTraceById(traceId: Long): TraceResponse
+    fun getTraceById(traceId: Long): TraceDetailResponse
     fun deleteTraceById(traceId: Long)
 
     fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<Long>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
+    fun getTraceByDate(date: String): TraceDetailResponse?
 }
 
 @Service
@@ -58,23 +59,23 @@ class TraceServiceImpl(
             traceTitle = traceRequest.title!!,
             traceDate = traceRequest.date!!,
             owner = userRepo.findByIdOrNull(3)!!, // TODO: 현재 user로 넣기
-            footprintList = mutableSetOf()
+            footprints = mutableSetOf()
         )
         traceRepo.save(newTrace)
 
-        //TODO: 여러 날의 footprint가 들어온 경우 handle
+        // TODO: 여러 날의 footprint가 들어온 경우 handle
         traceRequest.footprintList!!.forEach {
             // Create new footprints
             val footprint = footprintService.createFootprintAndReturn(it, newTrace)
 
             // Update newTrace
-            newTrace.footprintList.add(footprint)
+            newTrace.footprints.add(footprint)
         }
     }
 
-    override fun getTraceById(traceId: Long): TraceResponse {
-        val trace = traceRepo.findByIdOrNull(traceId) ?: TODO("존재하지 않는 trace")
-        return trace.toResponse()
+    override fun getTraceById(traceId: Long): TraceDetailResponse {
+        val trace = traceRepo.findByIdOrNull(traceId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
+        return trace.toDetailResponse()
     }
 
     override fun deleteTraceById(traceId: Long) {
@@ -83,32 +84,37 @@ class TraceServiceImpl(
 
     override fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<Long>): List<FootprintInitialTraceResponse> {
         val photoEntityList: List<Photo> = photoIds.map {
-            photoRepo.findByIdOrNull(it) ?: throw FootprinterException(ErrorType.NOT_FOUND) }
+            photoRepo.findByIdOrNull(it) ?: throw FootprinterException(ErrorType.NOT_FOUND)
+        }
 
         val initialTraceDTOList = groupPhotosWithLocationAndTimeAndReturnInitialTraceDTOList(photoEntityList)
 
-        addRecomendedPlaceToInitialTraceDTOList(initialTraceDTOList, radius=60)
+        addRecomendedPlaceToInitialTraceDTOList(initialTraceDTOList, radius = 60)
 
         return initialTraceDTOList
     }
 
+    override fun getTraceByDate(date: String): TraceDetailResponse? {
+        // TODO: 현재 유저 입력
+        return traceRepo.findTraceByOwnerAndTraceDate(userRepo.findByIdOrNull(1)!!, date)?.toDetailResponse()
+    }
 
     /**
-    * Assume GPS error is 30m, and 1 degree of lat/lng is 1112km.
-    * => Assume there is same place within 0.000027 degree of lat/lng.
-    */
+     * Assume GPS error is 30m, and 1 degree of lat/lng is 1112km.
+     * => Assume there is same place within 0.000027 degree of lat/lng.
+     */
     fun isNearEnough(photo: PhotoInitialTraceResponse, latitude: Double, longitude: Double): Boolean {
-        val deltaLatScaled = abs(photo.latitude - latitude) * 10000
-        val deltaLngScaled = abs(photo.longitude - longitude) * 10000
+        val deltaLatScaled = kotlin.math.abs(photo.latitude - latitude) * 10000
+        val deltaLngScaled = kotlin.math.abs(photo.longitude - longitude) * 10000
         val deltaScaled = sqrt(deltaLatScaled.pow(2.0) + deltaLngScaled.pow(2.0))
         return (deltaScaled < 2.7)
     }
 
     /**
-    * Set similar time when the difference is within 1 hour.
-    */
+     * Set similar time when the difference is within 1 hour.
+     */
     fun isSimilarTime(photo: PhotoInitialTraceResponse, time: Date): Boolean {
-        val diffTime = abs(photo.timestamp.time - time.time)
+        val diffTime = kotlin.math.abs(photo.timestamp.time - time.time)
         return diffTime < 3600000 // 1 hour
     }
 
@@ -116,25 +122,25 @@ class TraceServiceImpl(
      * Group photos by place and time.
      */
     // FIXME: Assumes all photos has perfect metadata
-    private fun groupPhotosWithLocationAndTimeAndReturnInitialTraceDTOList(photoEntityList: List<Photo>): MutableList<FootprintInitialTraceResponse>  {
+    private fun groupPhotosWithLocationAndTimeAndReturnInitialTraceDTOList(photoEntityList: List<Photo>): MutableList<FootprintInitialTraceResponse> {
         val footprintInitialTraceResponseList: MutableList<FootprintInitialTraceResponse> = mutableListOf()
 
-        photoEntityList.forEach{
+        photoEntityList.forEach {
             var isAdded = false
             val photo = PhotoInitialTraceResponse(
-                id=it.id!!,
-                imageUrl=  amazonS3Client.generatePresignedUrl(
+                id = it.id!!,
+                imageUrl = amazonS3Client.generatePresignedUrl(
                     bucketName,
                     it.imagePath,
-                    Calendar.getInstance().let{ // Set expiration day to 1 day
+                    Calendar.getInstance().let { // Set expiration day to 1 day
                         it.time = Date()
                         it.add(Calendar.DATE, 1)
                         it.time
                     },
                 ).toString(),
-                latitude= it.latitude,
-                longitude= it.longitude,
-                timestamp= it.timestamp,
+                latitude = it.latitude,
+                longitude = it.longitude,
+                timestamp = it.timestamp,
             )
             for (initialTraceDTO in footprintInitialTraceResponseList) {
                 // Check if place is near enough
@@ -180,7 +186,7 @@ class TraceServiceImpl(
      * Radius is meter.
      */
     private fun addRecomendedPlaceToInitialTraceDTOList(footprintInitialTraceResponseList: MutableList<FootprintInitialTraceResponse>, radius: Int) {
-        footprintInitialTraceResponseList.forEach{
+        footprintInitialTraceResponseList.forEach {
             for (category in listOf(CATEGORY_CODE.음식점, CATEGORY_CODE.관광명소, CATEGORY_CODE.문화시설, CATEGORY_CODE.카페, CATEGORY_CODE.숙박)) {
                 // Get places for each category and add to recommendedPlaceList
                 val responseEntityPlace = kakaoAPIService.coordToPlace(it.meanLongitude.toString(), it.meanLatitude.toString(), category.code, radius)
@@ -188,16 +194,18 @@ class TraceServiceImpl(
                 val body = objectMapper.readValue(responseEntityPlace.body, Map::class.java)
                 val documents = body["documents"] as ArrayList<Map<String, String>>
                 documents.forEach { map ->
-                    it.recommendedPlaceList.add(PlaceInitialTraceResponse(
-                        name = map["place_name"]!!,
-                        address = map["address_name"]!!,
-                        distance = map["distance"]!!.toInt(),
-                        category,
-                    ))
+                    it.recommendedPlaceList.add(
+                        PlaceInitialTraceResponse(
+                            name = map["place_name"]!!,
+                            address = map["address_name"]!!,
+                            distance = map["distance"]!!.toInt(),
+                            category,
+                        )
+                    )
                 }
             }
             // Sort by distance (shorter distance => higher priority)
-            it.recommendedPlaceList.sortBy{ place -> place.distance }
+            it.recommendedPlaceList.sortBy { place -> place.distance }
         }
     }
 }

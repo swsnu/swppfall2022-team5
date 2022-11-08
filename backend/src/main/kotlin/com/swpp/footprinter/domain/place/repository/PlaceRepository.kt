@@ -8,4 +8,3 @@ import org.springframework.stereotype.Repository
 interface PlaceRepository : JpaRepository<Place, Long> {
     fun findByNameAndAddress(name: String, address: String): Place?
 }
-

@@ -1,6 +1,7 @@
 package com.swpp.footprinter.domain.trace.api
 
 import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
+import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
 import com.swpp.footprinter.domain.trace.dto.TraceResponse
 import com.swpp.footprinter.domain.trace.service.TraceService
@@ -21,24 +22,32 @@ class TraceController(
         return service.getAllTraces()
     }
 
+    @GetMapping("/traces/date/{date}")
+    @ResponseBody
+    fun getTraceByDate(
+        @PathVariable date: String
+    ): TraceDetailResponse? {
+        return service.getTraceByDate(date)
+    }
+
     @PostMapping("/traces")
     fun createTrace(
         @RequestBody @Valid request: TraceRequest
     ): ResponseEntity<String> {
         service.createTrace(request)
-        return ResponseEntity<String>("Created", HttpStatus.OK)
+        return ResponseEntity<String>("Created", HttpStatus.CREATED)
     }
 
-    @GetMapping("/traces/{traceId}")
+    @GetMapping("/traces/id/{traceId}")
     fun getTraceDetail(
-        @PathVariable traceId: Long
-    ): TraceResponse {
+        @PathVariable(name = "traceId", required = true) traceId: Long
+    ): TraceDetailResponse {
         return service.getTraceById(traceId)
     }
 
-    @DeleteMapping("/traces/{traceId}")
+    @DeleteMapping("/traces/id/{traceId}")
     fun deleteTrace(
-        @PathVariable traceId: Long
+        @PathVariable(required = true) traceId: Long
     ) {
         service.deleteTraceById(traceId)
     }

@@ -33,7 +33,7 @@ class FootprintServiceImpl(
     private val tagRepo: TagRepository,
     private val photoRepo: PhotoRepository,
     private val photoService: PhotoService,
-    ) : FootprintService {
+) : FootprintService {
     override fun getFootprintById(footprintId: Long): FootprintResponse {
         val footprint = footprintRepo.findByIdOrNull(footprintId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
         return footprint.toResponse()
@@ -61,7 +61,7 @@ class FootprintServiceImpl(
                 tagRepo.findByTagName(t)
                     ?: Tag(tagName = t, taggedFootprints = mutableSetOf())
             },
-            photos = request.photos.map{
+            photos = request.photos.map {
                 photoRepo.findByImagePath(it.imagePath!!)
                     ?: Photo(
                         imagePath = it.imagePath,
@@ -97,7 +97,7 @@ class FootprintServiceImpl(
         target.rating = request.rating!!
         target.memo = request.memo!!
         // Remove footprint in original tag, and add new editted tag (if two of those are different.)
-        target.tag = target.tag.let{
+        target.tag = target.tag.let {
             if (it.tagName != request.tag!!) {
                 it.taggedFootprints.remove(target)
                 val editTag = tagRepo.findByTagName(request.tag)
@@ -115,8 +115,8 @@ class FootprintServiceImpl(
                 target.place.footprints.remove(target)
                 if (target.place.footprints.isEmpty()) { placeRepo.delete(target.place) }
                 // Change to new place.
-                val editPlace = placeRepo.findByNameAndAddress(it.name!!, it.address!!)
-                editPlace?.apply{ this.footprints.add(target) }
+                val editPlace = placeRepo.findByNameAndAddress(it.name, it.address!!)
+                editPlace?.apply { this.footprints.add(target) }
                     ?: Place(
                         name = it.name,
                         address = it.address,
