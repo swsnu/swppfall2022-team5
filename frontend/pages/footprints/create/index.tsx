@@ -24,24 +24,27 @@ const FootprintsCreate = () => {
           return <FootprintEdit key={prediction.startTime} {...prediction} />;
         })}
       </div>
-      <RectangleButton
-        onClick={() => {
-          mutation.mutate(
-            {
-              title: "테스트 제목입니다.",
-              date: pendingFootprintRequests[0].startTime,
-              footprintList: pendingFootprintRequests,
-            },
-            {
-              onSuccess: () => {
-                router.push("/footprints");
+      <div className="mx-6 flex">
+        <RectangleButton
+          onClick={() => {
+            mutation.mutate(
+              {
+                title: "테스트 제목입니다.",
+                date: pendingFootprintRequests[0].startTime,
+                footprintList: pendingFootprintRequests,
               },
-            },
-          );
-        }}
-        text={""}
-        isLoading={false}
-      />
+              {
+                onSuccess: () => {
+                  router.push("/footprints");
+                },
+              },
+            );
+          }}
+          text={"저장하기"}
+          isLoading={false}
+          className="grow"
+        />
+      </div>
     </Container>
   );
 };
