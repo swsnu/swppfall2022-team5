@@ -32,19 +32,29 @@ const FootprintEdit = (props: IProps) => {
         <Label text="장소" />
         <div className="flex gap-3 overflow-x-auto scrollbar-hide">
           {props.recommendedPlaces.map((place) => {
-            return <TagButton key={place.name} className="flex-shrink-0" text={place.name} onClick={() => {}} />;
+            return (
+              <TagButton
+                key={place.name}
+                className="flex-shrink-0"
+                text={place.name}
+                onClick={() => {
+                  updateFootprint({ place: { name: place.name, address: place.address } });
+                }}
+                isActive={place.name === props.place?.name && place.address === props.place.address}
+              />
+            );
           })}
         </div>
-        <div className="mt-2">
+        {/* <div className="mt-2">
           <TagButton text="직접 추가하기" icon={IconSearch} onClick={() => {}} />
-        </div>
+        </div> */}
 
-        <Label text="분류" />
+        {/* <Label text="분류" />
         <div className="flex flex-wrap gap-x-3 gap-y-2">
           {props.recommendedPlaces.map((place) => {
             return <TagButton key={place.name} text={place.name} onClick={() => {}} />;
           })}
-        </div>
+        </div> */}
 
         <Label text="메모" />
         <textarea
