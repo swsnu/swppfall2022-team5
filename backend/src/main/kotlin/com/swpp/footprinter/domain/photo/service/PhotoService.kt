@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import com.drew.metadata.Metadata
 import org.springframework.beans.factory.annotation.Value
+import java.util.*
 import javax.transaction.Transactional
 
 interface PhotoService {
@@ -40,7 +41,7 @@ class PhotoServiceImpl(
                 imagePath = path,
                 latitude = pdsLat,
                 longitude = pdsLon,
-                timestamp = exifDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL),
+                timestamp = exifDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL, TimeZone.getTimeZone("GMT+9")),
                 footprint = null,
             )
             photoRepo.save(photo)
