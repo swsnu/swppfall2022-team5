@@ -34,7 +34,7 @@ class DataInitializer(
 
         listOf("Trace1", "Trace2", "Trace3").forEach {
             if (!traceRepo.existsByTraceTitle(it)) {
-                traceRepo.save(Trace(traceTitle = it, traceDate = "2022-11-05", footprints = mutableSetOf(), owner = userRepo.findByIdOrNull(2)!!))
+                traceRepo.save(Trace(traceTitle = it, traceDate = "2022-11-05", footprints = mutableSetOf(), owner = userRepo.findByIdOrNull(1)!!))
             }
         }
 

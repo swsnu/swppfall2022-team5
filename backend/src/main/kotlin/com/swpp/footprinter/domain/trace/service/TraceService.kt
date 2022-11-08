@@ -65,7 +65,7 @@ class TraceServiceImpl(
         val newTrace = Trace(
             traceTitle = traceRequest.title!!,
             traceDate = traceRequest.date!!,
-            owner = userRepo.findByIdOrNull(3)!!, // TODO: 현재 user로 넣기
+            owner = userRepo.findByIdOrNull(1)!!, // TODO: 현재 user로 넣기
             footprints = mutableSetOf()
         )
         traceRepo.save(newTrace)
