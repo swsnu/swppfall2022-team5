@@ -13,6 +13,7 @@ import FloatingButton from "../../components/buttons/FloatingButton";
 import NavbarContainer from "../../components/containers/NavbarContainer";
 import { FootprintPreview } from "../../components/footprint/FootprintPreview";
 import UploadModal from "../../components/upload-footprint/UploadModal";
+import FootprintsNotFound from "../../components/placeholder/FootprintsNotFound";
 
 export default function Footprints() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,6 +21,7 @@ export default function Footprints() {
   const footprintsResult = useQuery(["footprints", selectedDate], () => {
     return fetchTraceByDate(selectedDate);
   });
+
   const dat = footprintsResult.data;
   return (
     <Container>
@@ -39,6 +41,8 @@ export default function Footprints() {
           className="fixed bottom-0 z-50 my-5 text-right"
         />
       </div>
+
+      {footprintsResult.isSuccess && !!!footprintsResult.data.footprints && <FootprintsNotFound />}
 
       <div className="divide-y divide-navy-700/50 pb-20">
         {footprintsResult.isSuccess &&
