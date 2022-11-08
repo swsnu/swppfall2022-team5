@@ -33,7 +33,7 @@ interface TraceService {
     fun getTraceById(traceId: Long): TraceDetailResponse
     fun deleteTraceById(traceId: Long)
 
-    fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<Long>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
+    fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
     fun getTraceByDate(date: String): TraceDetailResponse?
 }
 
