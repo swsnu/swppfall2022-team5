@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3Client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.swpp.footprinter.common.Km_PER_LATLNG_DEGREE
 import com.swpp.footprinter.common.PLACE_GRID_METER
+import com.swpp.footprinter.common.TAG_CODE
 import com.swpp.footprinter.common.TIME_GRID_SEC
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
@@ -11,7 +12,6 @@ import com.swpp.footprinter.domain.photo.model.Photo
 import com.swpp.footprinter.domain.photo.dto.PhotoInitialTraceResponse
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
 import com.swpp.footprinter.domain.place.dto.PlaceInitialTraceResponse
-import com.swpp.footprinter.domain.place.service.externalAPI.CATEGORY_CODE
 import com.swpp.footprinter.domain.place.service.externalAPI.KakaoAPIService
 import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
@@ -192,7 +192,7 @@ class TraceServiceImpl(
     private fun addRecomendedPlaceToInitialTraceDTOList(footprintInitialTraceResponseList: MutableList<FootprintInitialTraceResponse>, radius: Int) {
         footprintInitialTraceResponseList.forEach {
             val loop = { radius: Int ->
-                for (category in listOf(CATEGORY_CODE.음식점, CATEGORY_CODE.관광명소, CATEGORY_CODE.문화시설, CATEGORY_CODE.카페, CATEGORY_CODE.숙박)) {
+                for (category in listOf(TAG_CODE.음식점, TAG_CODE.관광명소, TAG_CODE.문화시설, TAG_CODE.카페, TAG_CODE.숙박)) {
                     // Get places for each category and add to recommendedPlaceList
                     val responseEntityPlace = kakaoAPIService.coordToPlace(it.meanLongitude.toString(), it.meanLatitude.toString(), category.code, radius)
                     val objectMapper = ObjectMapper()
