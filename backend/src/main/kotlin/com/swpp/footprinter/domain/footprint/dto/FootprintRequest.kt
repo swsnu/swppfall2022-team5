@@ -18,7 +18,7 @@ data class FootprintRequest(
     @field: NotNull
     val memo: String?,
     @field: NotNull
-    val tag: String?,
+    val tagId: Int?,
     @field: NotEmpty
     val photos: List<PhotoRequest>,
     @field: NotNull

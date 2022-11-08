@@ -4,7 +4,6 @@ import com.amazonaws.services.s3.AmazonS3Client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.swpp.footprinter.common.Km_PER_LATLNG_DEGREE
 import com.swpp.footprinter.common.PLACE_GRID_METER
-import com.swpp.footprinter.common.TAG_CODE
 import com.swpp.footprinter.common.TIME_GRID_SEC
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
@@ -20,6 +19,8 @@ import com.swpp.footprinter.domain.trace.model.Trace
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import com.swpp.footprinter.domain.user.repository.UserRepository
 import com.swpp.footprinter.domain.footprint.service.FootprintService
+import com.swpp.footprinter.domain.tag.TAG_CODE
+import com.swpp.footprinter.domain.tag.dto.TagResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
@@ -204,7 +205,7 @@ class TraceServiceImpl(
                                 name = map["place_name"]!!,
                                 address = map["address_name"]!!,
                                 distance = map["distance"]!!.toInt(),
-                                category,
+                                category = TagResponse(category.ordinal, category.name)
                             )
                         )
                     }
