@@ -26,14 +26,6 @@ export interface FootprintResponseType {
   startTime: string;
   endTime: string;
   rating: number;
-  memo: string;
-}
-
-export interface FootprintType {
-  id: number;
-  startTime: string;
-  endTime: string;
-  rating: number;
   photos: PhotoType[];
   place: PlaceType;
   tag: TagType;
