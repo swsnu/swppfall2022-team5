@@ -31,6 +31,7 @@ class Photo(
 ) : BaseEntity() {
     fun toResponse() = PhotoResponse(
         imagePath = imagePath,
+        imageUrl = "",
         longitude = longitude,
         latitude = latitude,
         timestamp = dateToString8601(timestamp),

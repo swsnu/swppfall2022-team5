@@ -9,4 +9,5 @@ interface TraceRepository : JpaRepository<Trace, Long> {
 
     fun findTracesByTraceDate(traceDate: String): MutableList<Trace>
     fun findTraceAllByOwner(user: User): MutableList<Trace>
+    fun existsByTraceTitle(title: String): Boolean
 }

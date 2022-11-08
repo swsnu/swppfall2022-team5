@@ -2,6 +2,7 @@ package com.swpp.footprinter.domain.footprint.service
 
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
+import com.swpp.footprinter.common.utils.ImageUrlUtil
 import com.swpp.footprinter.common.utils.stringToDate8601
 import com.swpp.footprinter.domain.footprint.dto.FootprintRequest
 import com.swpp.footprinter.domain.footprint.dto.FootprintResponse
@@ -12,11 +13,13 @@ import com.swpp.footprinter.domain.photo.repository.PhotoRepository
 import com.swpp.footprinter.domain.photo.service.PhotoService
 import com.swpp.footprinter.domain.place.model.Place
 import com.swpp.footprinter.domain.place.repository.PlaceRepository
-import com.swpp.footprinter.domain.tag.model.Tag
+import com.swpp.footprinter.domain.tag.TAG_CODE
 import com.swpp.footprinter.domain.tag.repository.TagRepository
 import com.swpp.footprinter.domain.trace.model.Trace
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.lang.IndexOutOfBoundsException
+import java.lang.NullPointerException
 import javax.transaction.Transactional
 
 interface FootprintService {
@@ -33,10 +36,15 @@ class FootprintServiceImpl(
     private val tagRepo: TagRepository,
     private val photoRepo: PhotoRepository,
     private val photoService: PhotoService,
+    private val imageUrlUtil: ImageUrlUtil,
 ) : FootprintService {
     override fun getFootprintById(footprintId: Long): FootprintResponse {
         val footprint = footprintRepo.findByIdOrNull(footprintId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
-        return footprint.toResponse()
+        return footprint.toResponse().apply {
+            photos.forEach {
+                it.imageUrl = imageUrlUtil.getImageURLfromImagePath(it.imagePath)
+            }
+        }
     }
 
     @Transactional
@@ -57,9 +65,16 @@ class FootprintServiceImpl(
                         footprints = mutableSetOf()
                     )
             },
-            tag = request.tag!!.let { t -> // If tag exists, use that one. Else, create new one
-                tagRepo.findByTagName(t)
-                    ?: Tag(tagName = t, taggedFootprints = mutableSetOf())
+            tag = request.tagId!!.let { tagId -> // Find the tag and match to it.
+                try {
+                    tagRepo.findByTagCode(TAG_CODE.values()[tagId])!!
+                } catch (e: Exception) {
+                    when (e) {
+                        is NullPointerException, is IndexOutOfBoundsException ->
+                            throw FootprinterException(ErrorType.WRONG_FORMAT)
+                        else -> throw e
+                    }
+                }
             },
             photos = request.photos.map {
                 photoRepo.findByImagePath(it.imagePath!!)
@@ -92,11 +107,18 @@ class FootprintServiceImpl(
         target.memo = request.memo!!
         // Remove footprint in original tag, and add new editted tag (if two of those are different.)
         target.tag = target.tag.let {
-            if (it.tagName != request.tag!!) {
-                it.taggedFootprints.remove(target)
-                val editTag = tagRepo.findByTagName(request.tag)
-                editTag?.apply { this.taggedFootprints.add(target) }
-                    ?: Tag(tagName = request.tag, taggedFootprints = mutableSetOf(target))
+            if (it.tagCode.ordinal != request.tagId!!) {
+                try {
+                    it.taggedFootprints.remove(target)
+                    val editTag = tagRepo.findByTagCode(TAG_CODE.values()[request.tagId])
+                    editTag!!.apply { this.taggedFootprints.add(target) }
+                } catch (e: Exception) {
+                    when (e) {
+                        is IndexOutOfBoundsException, is NullPointerException ->
+                            throw FootprinterException(ErrorType.WRONG_FORMAT)
+                        else -> throw e
+                    }
+                }
             } else {
                 it
             }
