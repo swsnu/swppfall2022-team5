@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "moment/locale/ko";
 import type { AppProps } from "next/app";
 import Head from "next/head";
@@ -6,11 +6,19 @@ import Script from "next/script";
 import { useState } from "react";
 import Moment from "react-moment";
 import "../styles/globals.css";
+import toast, { Toaster } from "react-hot-toast";
 
 Moment.globalLocale = "ko";
 
 const createQueryClient = () =>
-  new QueryClient({ defaultOptions: { queries: { retry: 0, refetchOnWindowFocus: false } } });
+  new QueryClient({
+    defaultOptions: { queries: { retry: 0, refetchOnWindowFocus: false } },
+    queryCache: new QueryCache({
+      onError: (error) => {
+        toast.error("무언가 잘못되었어요 😢");
+      },
+    }),
+  });
 
 export default function App({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(createQueryClient);
@@ -67,6 +75,7 @@ export default function App({ Component, pageProps }: AppProps) {
       />
       <QueryClientProvider client={queryClient}>
         <Component {...pageProps} />
+        <Toaster />
       </QueryClientProvider>
     </>
   );

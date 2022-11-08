@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import moment from "moment";
 import { useRouter } from "next/router";
+import toast from "react-hot-toast";
 import { createTrace } from "../../../api";
 import RectangleButton from "../../../components/buttons/RectangleButton";
 import Container from "../../../components/containers/Container";
@@ -40,6 +41,10 @@ const FootprintsCreate = () => {
                 onSuccess: () => {
                   setSelectedDate(new Date(pendingFootprintRequests[0].startTime));
                   router.push("/footprints");
+                  toast.success("발자취를 성공적으로 저장했어요!");
+                },
+                onError: () => {
+                  toast.error("장소를 선택해주세요.");
                 },
               },
             );
