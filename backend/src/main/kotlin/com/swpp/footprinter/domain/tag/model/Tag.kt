@@ -9,7 +9,6 @@ import javax.persistence.*
 @Entity
 class Tag(
 
-    @Column(name = "tag_name", unique = true)
     @Enumerated(value = EnumType.ORDINAL)
     val tagCode: TAG_CODE,
 
