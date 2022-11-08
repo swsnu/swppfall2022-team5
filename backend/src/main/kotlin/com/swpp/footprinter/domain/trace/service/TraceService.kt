@@ -1,6 +1,5 @@
 package com.swpp.footprinter.domain.trace.service
 
-import com.amazonaws.services.s3.AmazonS3Client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.swpp.footprinter.common.Km_PER_LATLNG_DEGREE
 import com.swpp.footprinter.common.PLACE_FIND_METER
@@ -21,7 +20,6 @@ import com.swpp.footprinter.domain.trace.model.Trace
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import com.swpp.footprinter.domain.user.repository.UserRepository
 import com.swpp.footprinter.domain.footprint.service.FootprintService
-import com.swpp.footprinter.domain.photo.service.PhotoService
 import com.swpp.footprinter.domain.tag.TAG_CODE
 import com.swpp.footprinter.domain.tag.dto.TagResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
@@ -83,7 +81,7 @@ class TraceServiceImpl(
     override fun getTraceById(traceId: Long): TraceDetailResponse {
         val trace = traceRepo.findByIdOrNull(traceId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
         return trace.toDetailResponse().apply {
-            footprints?.forEach{ fp ->
+            footprints?.forEach { fp ->
                 fp.photos.forEach { p ->
                     p.imageUrl = imageUrlUtil.getImageURLfromImagePath(p.imagePath)
                 }

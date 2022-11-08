@@ -1,11 +1,9 @@
 package com.swpp.footprinter.domain.photo.model
 
 import com.swpp.footprinter.common.model.BaseEntity
-import com.swpp.footprinter.common.utils.ImageUrlUtil
 import com.swpp.footprinter.common.utils.dateToString8601
 import com.swpp.footprinter.domain.footprint.model.Footprint
 import com.swpp.footprinter.domain.photo.dto.PhotoResponse
-import org.springframework.beans.factory.annotation.Autowired
 import java.util.*
 import javax.persistence.*
 

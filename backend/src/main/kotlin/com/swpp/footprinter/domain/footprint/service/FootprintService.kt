@@ -41,8 +41,8 @@ class FootprintServiceImpl(
     override fun getFootprintById(footprintId: Long): FootprintResponse {
         val footprint = footprintRepo.findByIdOrNull(footprintId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
         return footprint.toResponse().apply {
-            photos.forEach{
-                it.imageUrl =  imageUrlUtil.getImageURLfromImagePath(it.imagePath)
+            photos.forEach {
+                it.imageUrl = imageUrlUtil.getImageURLfromImagePath(it.imagePath)
             }
         }
     }
