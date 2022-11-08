@@ -15,7 +15,7 @@ export function FootprintPreview(props: IProps) {
       }}
     >
       <div className="mb-2 flex items-center gap-2">
-        <div className="text-2xl">{props.tag.emoji}</div>
+        {/* <div className="text-2xl">{props.tag.emoji}</div> */}
         <Moment className="text-sm" date={props.startTime} format="LT" />
       </div>
       <div className="flex gap-3 overflow-x-auto scrollbar-hide">
