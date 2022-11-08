@@ -36,8 +36,7 @@ export const dummyFootprints: FootprintType[] = [
     },
     tag: {
       id: 1,
-      emoji: "🍽️",
-      name: "맛집",
+      tagName: "맛집",
     },
     memo: "호무스가 독특했고 양갈비가 아주 맛있었는데 양이 너무 적었다! 그리고 너무 비싸다...",
   },

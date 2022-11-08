@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import Moment from "react-moment";
+import { tagToEmoji } from "../../data/emojiMap";
 import { FootprintType } from "../../dto/footprint";
 import Photo from "./Photo";
 
@@ -15,7 +16,7 @@ export function FootprintPreview(props: IProps) {
       }}
     >
       <div className="mb-2 flex items-center gap-2">
-        {/* <div className="text-2xl">{props.tag.emoji}</div> */}
+        <div className="text-2xl">{tagToEmoji[props.tag.tagName]}</div>
         <Moment className="text-sm" date={props.startTime} format="LT" />
       </div>
       <div className="flex gap-3 overflow-x-auto scrollbar-hide">
