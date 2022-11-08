@@ -2,6 +2,9 @@ package com.swpp.footprinter.domain.trace.service
 
 import com.amazonaws.services.s3.AmazonS3Client
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.swpp.footprinter.common.Km_PER_LATLNG_DEGREE
+import com.swpp.footprinter.common.PLACE_GRID_METER
+import com.swpp.footprinter.common.TIME_GRID_SEC
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.domain.photo.model.Photo
@@ -104,10 +107,11 @@ class TraceServiceImpl(
      * => Assume there is same place within 0.000027 degree of lat/lng.
      */
     fun isNearEnough(photo: PhotoInitialTraceResponse, latitude: Double, longitude: Double): Boolean {
+        val scaledGridSize = PLACE_GRID_METER * 10 / Km_PER_LATLNG_DEGREE
         val deltaLatScaled = kotlin.math.abs(photo.latitude - latitude) * 10000
         val deltaLngScaled = kotlin.math.abs(photo.longitude - longitude) * 10000
         val deltaScaled = sqrt(deltaLatScaled.pow(2.0) + deltaLngScaled.pow(2.0))
-        return (deltaScaled < 2.7)
+        return (deltaScaled < scaledGridSize)
     }
 
     /**
@@ -115,7 +119,7 @@ class TraceServiceImpl(
      */
     fun isSimilarTime(photo: PhotoInitialTraceResponse, time: Date): Boolean {
         val diffTime = kotlin.math.abs(photo.timestamp.time - time.time)
-        return diffTime < 3600000 // 1 hour
+        return diffTime < 1000 * TIME_GRID_SEC // 1 hour
     }
 
     /**
@@ -187,23 +191,31 @@ class TraceServiceImpl(
      */
     private fun addRecomendedPlaceToInitialTraceDTOList(footprintInitialTraceResponseList: MutableList<FootprintInitialTraceResponse>, radius: Int) {
         footprintInitialTraceResponseList.forEach {
-            for (category in listOf(CATEGORY_CODE.음식점, CATEGORY_CODE.관광명소, CATEGORY_CODE.문화시설, CATEGORY_CODE.카페, CATEGORY_CODE.숙박)) {
-                // Get places for each category and add to recommendedPlaceList
-                val responseEntityPlace = kakaoAPIService.coordToPlace(it.meanLongitude.toString(), it.meanLatitude.toString(), category.code, radius)
-                val objectMapper = ObjectMapper()
-                val body = objectMapper.readValue(responseEntityPlace.body, Map::class.java)
-                val documents = body["documents"] as ArrayList<Map<String, String>>
-                documents.forEach { map ->
-                    it.recommendedPlaceList.add(
-                        PlaceInitialTraceResponse(
-                            name = map["place_name"]!!,
-                            address = map["address_name"]!!,
-                            distance = map["distance"]!!.toInt(),
-                            category,
+            val loop = { radius: Int ->
+                for (category in listOf(CATEGORY_CODE.음식점, CATEGORY_CODE.관광명소, CATEGORY_CODE.문화시설, CATEGORY_CODE.카페, CATEGORY_CODE.숙박)) {
+                    // Get places for each category and add to recommendedPlaceList
+                    val responseEntityPlace = kakaoAPIService.coordToPlace(it.meanLongitude.toString(), it.meanLatitude.toString(), category.code, radius)
+                    val objectMapper = ObjectMapper()
+                    val body = objectMapper.readValue(responseEntityPlace.body, Map::class.java)
+                    val documents = body["documents"] as ArrayList<Map<String, String>>
+                    documents.forEach { map ->
+                        it.recommendedPlaceList.add(
+                            PlaceInitialTraceResponse(
+                                name = map["place_name"]!!,
+                                address = map["address_name"]!!,
+                                distance = map["distance"]!!.toInt(),
+                                category,
+                            )
                         )
-                    )
+                    }
                 }
             }
+            // Loop to find near places, by increasing radius until finds at least one place (maximum 10 loops)
+            for (i in 1..10) {
+                loop(radius * i)
+                if (it.recommendedPlaceList.isNotEmpty()) { break }
+            }
+
             // Sort by distance (shorter distance => higher priority)
             it.recommendedPlaceList.sortBy { place -> place.distance }
         }
