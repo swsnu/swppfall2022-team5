@@ -107,7 +107,17 @@ class TraceServiceImpl(
 
     override fun getTraceByDate(date: String): TraceDetailResponse? {
         // TODO: 현재 유저 입력
-        return traceRepo.findTracesByTraceDate(date).lastOrNull()?.toDetailResponse()
+        return traceRepo
+            .findTracesByTraceDate(date)
+            .lastOrNull()
+            ?.toDetailResponse()
+            ?.apply {
+                footprints?.forEach { fp ->
+                    fp.photos.forEach { p ->
+                        p.imageUrl = imageUrlUtil.getImageURLfromImagePath(p.imagePath)
+                    }
+                }
+            }
     }
 
     /**
