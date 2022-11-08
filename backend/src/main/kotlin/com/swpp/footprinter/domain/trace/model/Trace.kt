@@ -23,7 +23,7 @@ class Trace(
     @OneToMany(mappedBy = "trace", cascade = [CascadeType.ALL])
     val footprints: MutableSet<Footprint>,
 
-    ) : BaseEntity() {
+) : BaseEntity() {
     fun toResponse(): TraceResponse {
         return TraceResponse(
             id = id!!,

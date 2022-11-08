@@ -1,6 +1,6 @@
 package com.swpp.footprinter.domain.photo.dto
 
-data class PhotoResponse (
+data class PhotoResponse(
     val imagePath: String,
     val longitude: Double,
     val latitude: Double,

@@ -40,7 +40,7 @@ class TraceController(
 
     @GetMapping("/traces/id/{traceId}")
     fun getTraceDetail(
-        @PathVariable(name="traceId", required = true) traceId: Long
+        @PathVariable(name = "traceId", required = true) traceId: Long
     ): TraceDetailResponse {
         return service.getTraceById(traceId)
     }
