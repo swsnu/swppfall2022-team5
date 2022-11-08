@@ -27,7 +27,7 @@ const FootprintsCreate = () => {
           return <FootprintEdit key={prediction.startTime} {...prediction} />;
         })}
       </div>
-      <div className="mx-6 my-6 flex">
+      <div className="mx-6 flex py-6">
         <RectangleButton
           onClick={() => {
             mutation.mutate(
