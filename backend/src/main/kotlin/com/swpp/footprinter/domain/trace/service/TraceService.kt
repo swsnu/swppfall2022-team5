@@ -59,7 +59,7 @@ class TraceServiceImpl(
             traceTitle = traceRequest.title!!,
             traceDate = traceRequest.date!!,
             owner = userRepo.findByIdOrNull(3)!!, // TODO: 현재 user로 넣기
-            footprintList = mutableSetOf()
+            footprints = mutableSetOf()
         )
         traceRepo.save(newTrace)
 
@@ -69,7 +69,7 @@ class TraceServiceImpl(
             val footprint = footprintService.createFootprintAndReturn(it, newTrace)
 
             // Update newTrace
-            newTrace.footprintList.add(footprint)
+            newTrace.footprints.add(footprint)
         }
     }
 

@@ -22,7 +22,7 @@ class TraceController(
         return service.getAllTraces()
     }
 
-    @GetMapping("/traces/{date}")
+    @GetMapping("/traces/date/{date}")
     @ResponseBody
     fun getTraceByDate(
         @PathVariable date: String
@@ -38,16 +38,16 @@ class TraceController(
         return ResponseEntity<String>("Created", HttpStatus.CREATED)
     }
 
-    @GetMapping("/traces/{traceId}")
+    @GetMapping("/traces/id/{traceId}")
     fun getTraceDetail(
-        @PathVariable traceId: Long
+        @PathVariable(name="traceId", required = true) traceId: Long
     ): TraceDetailResponse {
         return service.getTraceById(traceId)
     }
 
-    @DeleteMapping("/traces/{traceId}")
+    @DeleteMapping("/traces/id/{traceId}")
     fun deleteTrace(
-        @PathVariable traceId: Long
+        @PathVariable(required = true) traceId: Long
     ) {
         service.deleteTraceById(traceId)
     }
