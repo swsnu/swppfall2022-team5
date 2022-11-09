@@ -1,3 +1,4 @@
+import { IconLoader2 } from "@tabler/icons";
 import classNames from "classnames";
 
 interface IProps {
@@ -19,7 +20,16 @@ const RectangleButton = ({ onClick, text, isLoading, className, disabled }: IPro
       onClick={onClick}
       disabled={disabled}
     >
-      <span className={classNames({ "opacity-20": disabled })}> {isLoading ? "로딩 중" : text}</span>
+      <span className={classNames({ "opacity-20": disabled })}>
+        {isLoading ? (
+          <div className="flex justify-center gap-x-3">
+            <IconLoader2 className="animate-spin" />
+            <span>로딩 중</span>
+          </div>
+        ) : (
+          text
+        )}
+      </span>
     </button>
   );
 };
