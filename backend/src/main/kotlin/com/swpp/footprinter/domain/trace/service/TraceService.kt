@@ -8,7 +8,6 @@ import com.swpp.footprinter.common.TIME_GRID_SEC
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.common.utils.ImageUrlUtil
-import com.swpp.footprinter.common.utils.stringToDate8601
 import com.swpp.footprinter.domain.photo.model.Photo
 import com.swpp.footprinter.domain.photo.dto.PhotoInitialTraceResponse
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
@@ -16,7 +15,6 @@ import com.swpp.footprinter.domain.place.dto.PlaceInitialTraceResponse
 import com.swpp.footprinter.domain.place.service.externalAPI.KakaoAPIService
 import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
-import com.swpp.footprinter.domain.trace.dto.TraceResponse
 import com.swpp.footprinter.domain.trace.model.Trace
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import com.swpp.footprinter.domain.user.repository.UserRepository
@@ -34,12 +32,13 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 interface TraceService {
-    fun getAllTraces(): List<TraceResponse>
+    fun getAllMyTraces(): List<TraceDetailResponse>
+    fun getAllOtherUsersTraces(): List<TraceDetailResponse>
     fun createTrace(traceRequest: TraceRequest)
     fun getTraceById(traceId: Long): TraceDetailResponse
-    fun deleteTraceById(traceId: Long)
 
-    fun createInitialTraceBasedOnPhotoIdListGiven(photoPathList: List<String>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
+    fun deleteTraceById(traceId: Long)
+    fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
     fun getTraceByDate(date: String): TraceDetailResponse?
 }
 
@@ -55,8 +54,16 @@ class TraceServiceImpl(
     @Value("\${cloud.aws.s3.bucket-name}")
     private val bucketName: String
 ) : TraceService {
-    override fun getAllTraces(): List<TraceResponse> {
-        return traceRepo.findAll().filter { it.owner != userRepo.findByIdOrNull(1)!! }.map { trace -> trace.toResponse() } // TODO: 현재 user로 넣기
+    override fun getAllMyTraces(): List<TraceDetailResponse> {
+        return traceRepo.findTraceAllByOwner(userRepo.findByIdOrNull(1)!!).map { trace -> trace.toDetailResponse().apply { footprints?.forEach { fp ->
+            fp.photos.forEach { p ->
+                p.imageUrl = imageUrlUtil.getImageURLfromImagePath(p.imagePath)
+            }
+        }} } // TODO: 현재 user로 넣기
+    }
+
+    override fun getAllOtherUsersTraces(): List<TraceDetailResponse> {
+        return traceRepo.findAll().filter { it.owner != userRepo.findByIdOrNull(1)!! }.map { trace -> trace.toDetailResponse() } // TODO: 현재 user로 넣기
     }
 
     @Transactional
@@ -94,8 +101,8 @@ class TraceServiceImpl(
         traceRepo.deleteById(traceId) // TODO: Authentication
     }
 
-    override fun createInitialTraceBasedOnPhotoIdListGiven(photoPathList: List<String>): List<FootprintInitialTraceResponse> {
-        val photoEntityList: List<Photo> = photoPathList.map {
+    override fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> {
+        val photoEntityList: List<Photo> = photoIds.map {
             photoRepo.findByImagePath(it) ?: throw FootprinterException(ErrorType.NOT_FOUND)
         }
 
@@ -103,7 +110,7 @@ class TraceServiceImpl(
 
         addRecomendedPlaceToInitialTraceDTOList(initialTraceDTOList, radius = PLACE_FIND_METER)
 
-        return initialTraceDTOList.sortedBy { it.meanTime }
+        return initialTraceDTOList
     }
 
     override fun getTraceByDate(date: String): TraceDetailResponse? {
@@ -118,7 +125,6 @@ class TraceServiceImpl(
                         p.imageUrl = imageUrlUtil.getImageURLfromImagePath(p.imagePath)
                     }
                 }
-                footprints = footprints?.sortedBy { stringToDate8601(it.startTime).time }
             }
     }
 
@@ -126,11 +132,10 @@ class TraceServiceImpl(
      * Assume GPS error is 30m, and 1 degree of lat/lng is 1112km.
      * => Assume there is same place within 0.000027 degree of lat/lng.
      */
-    // TODO: Improve algorithm
     fun isNearEnough(photo: PhotoInitialTraceResponse, latitude: Double, longitude: Double): Boolean {
-        val scaledGridSize = PLACE_GRID_METER / (Km_PER_LATLNG_DEGREE)
-        val deltaLatScaled = kotlin.math.abs(photo.latitude - latitude) * 1000
-        val deltaLngScaled = kotlin.math.abs(photo.longitude - longitude) * 1000
+        val scaledGridSize = PLACE_GRID_METER * 10 / Km_PER_LATLNG_DEGREE
+        val deltaLatScaled = kotlin.math.abs(photo.latitude - latitude) * 10000
+        val deltaLngScaled = kotlin.math.abs(photo.longitude - longitude) * 10000
         val deltaScaled = sqrt(deltaLatScaled.pow(2.0) + deltaLngScaled.pow(2.0))
         return (deltaScaled < scaledGridSize)
     }
@@ -195,7 +200,7 @@ class TraceServiceImpl(
             }
         }
 
-        return footprintInitialTraceResponseList.sortedBy { it.startTime }.toMutableList()
+        return footprintInitialTraceResponseList
     }
 
     /**

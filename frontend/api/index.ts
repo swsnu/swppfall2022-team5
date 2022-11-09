@@ -18,12 +18,20 @@ export const editFootprint = async (footprintId: number, footprintRequest: Footp
   return (await apiClient.put<String>(`/footprints/${footprintId}`, footprintRequest)).data;
 };
 
+export const fetchAllMyTraces = async () => {
+  return (await apiClient.get<TraceDetailResponse[]>("/traces")).data;
+}
+
+export const fetchAllOtherUsersTraces = async () => {
+  return (await apiClient.get<TraceDetailResponse[]>("/traces/explore")).data;
+}
+
 export const fetchTraceByDate = async (date: Date) => {
   return (await apiClient.get<TraceDetailResponse>(`/traces/date/${moment(date).format("YYYY-MM-DD")}`)).data;
 };
 
 export const fetchTraceById = async (traceId: number) => {
-  return await apiClient.get<TraceDetailResponse>(`/traces/id/${traceId}`);
+  return (await apiClient.get<TraceDetailResponse>(`/traces/id/${traceId}`)).data;
 };
 
 export const fetchTags = async () => {

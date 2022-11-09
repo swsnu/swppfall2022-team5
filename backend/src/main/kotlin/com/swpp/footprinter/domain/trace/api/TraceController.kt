@@ -3,7 +3,6 @@ package com.swpp.footprinter.domain.trace.api
 import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
-import com.swpp.footprinter.domain.trace.dto.TraceResponse
 import com.swpp.footprinter.domain.trace.service.TraceService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,8 +17,14 @@ class TraceController(
 
     @GetMapping("/traces")
     @ResponseBody
-    fun getTraces(): List<TraceResponse> {
-        return service.getAllTraces()
+    fun getMyTraces(): List<TraceDetailResponse> {
+        return service.getAllMyTraces()
+    }
+
+    @GetMapping("/traces/explore")
+    @ResponseBody
+    fun getOtherUsersTraces(): List<TraceDetailResponse> {
+        return service.getAllOtherUsersTraces()
     }
 
     @GetMapping("/traces/date/{date}")
