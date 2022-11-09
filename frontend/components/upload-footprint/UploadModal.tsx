@@ -50,6 +50,7 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
     const filePaths = files.map((file: FilePondFile) => file.serverId).filter((value) => !!value);
     mutation.mutateAsync(filePaths).then((data) => {
       setPendingFootprintRequest(data);
+      closeModal();
       router.push("/footprints/create");
     });
   };
@@ -114,7 +115,6 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
                   <RectangleButton
                     text="분석하기"
                     onClick={() => {
-                      closeModal();
                       startAnalysis();
                     }}
                     isLoading={mutation.isLoading}
