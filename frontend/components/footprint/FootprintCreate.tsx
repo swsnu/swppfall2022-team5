@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import Moment from "react-moment";
 import { fetchTags } from "../../api";
+import { tagToEmoji } from "../../data/emojiMap";
 import { FootprintRequestType } from "../../dto/footprint";
 import { useFootprintCreateStore } from "../../store/footprint";
 import TagButton from "../buttons/TagButton";
@@ -8,7 +9,7 @@ import Photo from "./Photo";
 
 interface IProps extends FootprintRequestType {}
 
-const Label = ({ text }: { text: string }) => {
+export const Label = ({ text }: { text: string }) => {
   return <div className="mt-3 mb-1 text-sm text-navy-500">{text}</div>;
 };
 
@@ -17,22 +18,24 @@ interface Rating {
   text: string;
 }
 
-const FootprintEdit = (props: IProps) => {
+export const ratings: Rating[] = [
+  { score: 2, text: "🤩 좋아요" },
+  { score: 1, text: "🤔 보통이에요" },
+  { score: 0, text: "😢 별로예요" },
+];
+
+const FootprintCreate = (props: IProps) => {
   const updateFootprint = useFootprintCreateStore((state) => state.setFootprintByIDWith)(props.uuid);
   const tagResult = useQuery(["tags"], fetchTags);
-
-  const ratings: Rating[] = [
-    { score: 2, text: "🤩 좋아요" },
-    { score: 1, text: "🤔 보통이에요" },
-    { score: 0, text: "😢 별로예요" },
-  ];
 
   return (
     <div className="p-5 text-navy-200 transition-colors">
       <div className="flex gap-3 overflow-x-auto scrollbar-hide">
-        {props.photos.map((photo) => {
-          return <Photo key={photo.imagePath} {...photo} />;
-        })}
+        {[...props.photos]
+          .sort((a, b) => a.imagePath.localeCompare(b.imagePath))
+          .map((photo) => {
+            return <Photo key={photo.imagePath} {...photo} />;
+          })}
       </div>
       <div className="px-1">
         <Label text="시간" />
@@ -69,7 +72,7 @@ const FootprintEdit = (props: IProps) => {
                 onClick={() => {
                   updateFootprint({ tagId: tag.tagId });
                 }}
-                text={tag.tagName}
+                text={`${tagToEmoji[tag.tagName] ?? "✨"} ${tag.tagName}`}
                 isActive={props.tagId === tag.tagId}
               />
             );
@@ -106,4 +109,4 @@ const FootprintEdit = (props: IProps) => {
   );
 };
 
-export default FootprintEdit;
+export default FootprintCreate;

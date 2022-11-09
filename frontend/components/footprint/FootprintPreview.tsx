@@ -20,9 +20,11 @@ export function FootprintPreview(props: IProps) {
         <Moment className="text-sm" date={props.startTime} format="LT" />
       </div>
       <div className="flex gap-3 overflow-x-auto scrollbar-hide">
-        {props.photos.map((photo) => {
-          return <Photo key={photo.id} {...photo} />;
-        })}
+        {[...props.photos]
+          .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+          .map((photo) => {
+            return <Photo key={photo.id} {...photo} />;
+          })}
       </div>
       <div className="ml-1">
         <div className="mt-2">{props.place.name}</div>

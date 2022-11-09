@@ -6,7 +6,7 @@ import { createTrace } from "../../../api";
 import RectangleButton from "../../../components/buttons/RectangleButton";
 import Container from "../../../components/containers/Container";
 import NavbarContainer from "../../../components/containers/NavbarContainer";
-import FootprintEdit from "../../../components/footprint/FootprintEdit";
+import FootprintCreate from "../../../components/footprint/FootprintCreate";
 import NavigationBar from "../../../components/navbar/NavigationBar";
 import { TraceRequestType } from "../../../dto/trace";
 import { useCalendarStore } from "../../../store/calendar";
@@ -14,6 +14,7 @@ import { useFootprintCreateStore } from "../../../store/footprint";
 
 const FootprintsCreate = () => {
   const pendingFootprintRequests = useFootprintCreateStore((state) => state.pendingFootprintRequests);
+  const setPendingFootprintRequests = useFootprintCreateStore((state) => state.setPendingFootprintRequests);
   const setSelectedDate = useCalendarStore((state) => state.setSelectedDate);
   const mutation = useMutation((traceRequest: TraceRequestType) => createTrace(traceRequest));
   const router = useRouter();
@@ -25,7 +26,7 @@ const FootprintsCreate = () => {
       </NavbarContainer>
       <div className="divide-y-2 divide-navy-700/50">
         {pendingFootprintRequests.map((prediction) => {
-          return <FootprintEdit key={prediction.startTime} {...prediction} />;
+          return <FootprintCreate key={prediction.startTime} {...prediction} />;
         })}
       </div>
       <div className="mx-6 flex py-6">
@@ -39,6 +40,7 @@ const FootprintsCreate = () => {
               },
               {
                 onSuccess: () => {
+                  setPendingFootprintRequests([]);
                   setSelectedDate(new Date(pendingFootprintRequests[0].startTime));
                   router.push("/footprints");
                   toast.success("발자취를 성공적으로 저장했어요!");

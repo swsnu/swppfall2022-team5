@@ -119,14 +119,7 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
                     }}
                     isLoading={mutation.isLoading}
                     disabled={files.length === 0 || confirmDisabled}
-                  />
-                  <RectangleButton
-                    text="분석 건너뛰고 편집 화면으로 가기 (테스트)"
-                    onClick={() => {
-                      closeModal();
-                      router.push("/footprints/create");
-                    }}
-                    isLoading={false}
+                    className="grow"
                   />
                 </div>
               </Dialog.Panel>

@@ -21,6 +21,19 @@ export interface FootprintRequestType {
   recommendedPlaces: RecommendedPlaceType[];
 }
 
+export interface FootprintEditRequestType {
+  startTime: string;
+  endTime: string;
+  rating: number;
+  photos: { imagePath: string }[];
+  place: {
+    name: string;
+    address: string;
+  };
+  tagId: number;
+  memo: string;
+}
+
 export interface FootprintResponseType {
   id: number;
   startTime: string;
