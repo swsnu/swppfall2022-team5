@@ -1,5 +1,4 @@
 export interface TagType {
-  id: number;
-  emoji: string;
-  name: string;
+  tagId: number;
+  tagName: string;
 }

@@ -38,7 +38,7 @@ interface TraceService {
     fun getTraceById(traceId: Long): TraceDetailResponse
     fun deleteTraceById(traceId: Long)
 
-    fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<Long>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
+    fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
     fun getTraceByDate(date: String): TraceDetailResponse?
 }
 
@@ -93,9 +93,9 @@ class TraceServiceImpl(
         traceRepo.deleteById(traceId) // TODO: Authentication
     }
 
-    override fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<Long>): List<FootprintInitialTraceResponse> {
+    override fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> {
         val photoEntityList: List<Photo> = photoIds.map {
-            photoRepo.findByIdOrNull(it) ?: throw FootprinterException(ErrorType.NOT_FOUND)
+            photoRepo.findByImagePath(it) ?: throw FootprinterException(ErrorType.NOT_FOUND)
         }
 
         val initialTraceDTOList = groupPhotosWithLocationAndTimeAndReturnInitialTraceDTOList(photoEntityList)
@@ -107,7 +107,17 @@ class TraceServiceImpl(
 
     override fun getTraceByDate(date: String): TraceDetailResponse? {
         // TODO: 현재 유저 입력
-        return traceRepo.findTraceByOwnerAndTraceDate(userRepo.findByIdOrNull(1)!!, date)?.toDetailResponse()
+        return traceRepo
+            .findTracesByTraceDate(date)
+            .lastOrNull()
+            ?.toDetailResponse()
+            ?.apply {
+                footprints?.forEach { fp ->
+                    fp.photos.forEach { p ->
+                        p.imageUrl = imageUrlUtil.getImageURLfromImagePath(p.imagePath)
+                    }
+                }
+            }
     }
 
     /**
@@ -141,6 +151,7 @@ class TraceServiceImpl(
             var isAdded = false
             val photo = PhotoInitialTraceResponse(
                 id = it.id!!,
+                imagePath = it.imagePath,
                 imageUrl = imageUrlUtil.getImageURLfromImagePath(it.imagePath),
                 latitude = it.latitude,
                 longitude = it.longitude,

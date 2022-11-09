@@ -1,19 +1,18 @@
 package com.swpp.footprinter.domain.photo.dto
 
 import javax.validation.constraints.NotEmpty
-import javax.validation.constraints.NotNull
 
 data class PhotoRequest(
     @field: NotEmpty
     val imagePath: String?,
 
-    @field: NotNull
+    // @field: NotNull
     val longitude: Double?,
 
-    @field: NotNull
+    // @field: NotNull
     val latitude: Double?,
 
     // Check manually in Iso8601Util
-    @field: NotEmpty
+    // @field: NotEmpty
     val timestamp: String?
 )

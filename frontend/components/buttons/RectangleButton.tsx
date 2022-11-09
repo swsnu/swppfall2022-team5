@@ -19,7 +19,7 @@ const RectangleButton = ({ onClick, text, isLoading, className, disabled }: IPro
       onClick={onClick}
       disabled={disabled}
     >
-      <span className={classNames({ "opacity-20": disabled })}>{text}</span>
+      <span className={classNames({ "opacity-20": disabled })}> {isLoading ? "로딩 중" : text}</span>
     </button>
   );
 };

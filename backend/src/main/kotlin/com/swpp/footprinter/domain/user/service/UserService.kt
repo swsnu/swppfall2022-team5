@@ -27,6 +27,6 @@ class UserServiceImpl(
 
     override fun getUserTraceByDate(userId: Long, date: String): TraceDetailResponse? {
         val user = userRepo.findByIdOrNull(userId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
-        return traceRepo.findTraceByOwnerAndTraceDate(user, date)?.toDetailResponse()
+        return traceRepo.findTracesByTraceDate(date).first().toDetailResponse()
     }
 }

@@ -41,7 +41,7 @@ class PhotoServiceImpl(
                 imagePath = path,
                 latitude = pdsLat,
                 longitude = pdsLon,
-                timestamp = exifDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL),
+                timestamp = exifDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL, TimeZone.getTimeZone("GMT+9")),
                 footprint = null,
             )
             photoRepo.save(photo)

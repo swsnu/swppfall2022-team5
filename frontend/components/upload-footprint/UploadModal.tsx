@@ -1,4 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
+import { useMutation } from "@tanstack/react-query";
 import { Fragment, useRef, useState } from "react";
 
 interface IProps {
@@ -23,6 +24,8 @@ import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 import { useRouter } from "next/router";
 import RectangleButton from "../buttons/RectangleButton";
+import { fetchInitialFootprints } from "../../api";
+import { useFootprintCreateStore } from "../../store/footprint";
 
 registerPlugin(
   FilePondPluginImageExifOrientation,
@@ -37,19 +40,23 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
   const [files, setFiles] = useState<any[]>([]);
   const [confirmDisabled, setConfirmDisabled] = useState(true);
   const router = useRouter();
-
+  const mutation = useMutation((photoIds: string[]) => fetchInitialFootprints(photoIds));
+  const setPendingFootprintRequest = useFootprintCreateStore((state) => state.setPendingFootprintRequests);
   const closeModal = () => {
     setIsOpen(false);
   };
 
   const startAnalysis = () => {
     const filePaths = files.map((file: FilePondFile) => file.serverId).filter((value) => !!value);
-    console.log(filePaths);
+    mutation.mutateAsync(filePaths).then((data) => {
+      setPendingFootprintRequest(data);
+      router.push("/footprints/create");
+    });
   };
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-30" onClose={closeModal}>
+      <Dialog as="div" className="relative z-50" onClose={closeModal}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -73,7 +80,7 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="max-h-[40rem] w-full max-w-md transform overflow-hidden overflow-y-scroll rounded-2xl border border-navy-200/5 bg-navy-800 px-6 py-5 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="max-h-[40rem] w-full max-w-lg transform overflow-hidden overflow-y-scroll rounded-2xl border border-navy-200/5 bg-navy-800 px-6 py-5 text-left align-middle shadow-xl transition-all">
                 <div className="text-lg font-medium leading-6 text-navy-200">사진을 업로드하세요</div>
                 <div className="mt-1 mb-4 text-sm text-navy-500">
                   사진의 정보를 분석해서 발자취를 쉽게 기록할 수 있도록 도와드려요.
@@ -110,16 +117,9 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
                       closeModal();
                       startAnalysis();
                     }}
-                    isLoading={false}
+                    isLoading={mutation.isLoading}
                     disabled={files.length === 0 || confirmDisabled}
-                  />
-                  <RectangleButton
-                    text="분석 건너뛰고 편집 화면으로 가기 (테스트)"
-                    onClick={() => {
-                      closeModal();
-                      router.push("/footprints/create");
-                    }}
-                    isLoading={false}
+                    className="grow"
                   />
                 </div>
               </Dialog.Panel>

@@ -1,9 +1,10 @@
 import { useRouter } from "next/router";
 import Moment from "react-moment";
-import { FootprintType } from "../../dto/footprint";
+import { tagToEmoji } from "../../data/emojiMap";
+import { FootprintResponseType } from "../../dto/footprint";
 import Photo from "./Photo";
 
-interface IProps extends FootprintType {}
+interface IProps extends FootprintResponseType {}
 
 export function FootprintPreview(props: IProps) {
   const router = useRouter();
@@ -15,13 +16,15 @@ export function FootprintPreview(props: IProps) {
       }}
     >
       <div className="mb-2 flex items-center gap-2">
-        <div className="text-2xl">{props.tag.emoji}</div>
+        <div className="text-2xl">{tagToEmoji[props.tag.tagName]}</div>
         <Moment className="text-sm" date={props.startTime} format="LT" />
       </div>
       <div className="flex gap-3 overflow-x-auto scrollbar-hide">
-        {props.photos.map((photo) => {
-          return <Photo key={photo.id} {...photo} />;
-        })}
+        {[...props.photos]
+          .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+          .map((photo) => {
+            return <Photo key={photo.id} {...photo} />;
+          })}
       </div>
       <div className="ml-1">
         <div className="mt-2">{props.place.name}</div>

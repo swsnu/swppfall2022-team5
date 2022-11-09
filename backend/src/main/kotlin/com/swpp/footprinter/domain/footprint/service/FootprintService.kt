@@ -78,13 +78,7 @@ class FootprintServiceImpl(
             },
             photos = request.photos.map {
                 photoRepo.findByImagePath(it.imagePath!!)
-                    ?: Photo(
-                        imagePath = it.imagePath,
-                        longitude = it.longitude!!,
-                        latitude = it.latitude!!,
-                        timestamp = stringToDate8601(it.timestamp!!),
-                        footprint = null,
-                    )
+                    ?: throw FootprinterException(ErrorType.NOT_FOUND)
             }.toMutableSet(),
         )
         footprintRepo.save(footprint)
