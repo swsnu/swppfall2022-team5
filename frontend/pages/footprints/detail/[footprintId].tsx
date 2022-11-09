@@ -14,6 +14,7 @@ import Photo from "../../../components/footprint/Photo";
 import NavigationBar from "../../../components/navbar/NavigationBar";
 import { tagToEmoji } from "../../../data/emojiMap";
 import { FootprintEditRequestType, FootprintRequestType, FootprintResponseType } from "../../../dto/footprint";
+import { Map, MapMarker, useInjectKakaoMapApi } from "react-kakao-maps-sdk";
 
 const FootprintDetail = () => {
   const router = useRouter();
@@ -68,6 +69,27 @@ const FootprintDetail = () => {
 
           <Label text="장소" />
           <div className="text-sm">{footprint.place.name}</div>
+          <div className="mt-2 overflow-hidden rounded-xl">
+            <Map
+              className="h-40"
+              center={{
+                lat: footprint.photos[0].latitude,
+                lng: footprint.photos[0].longitude,
+              }}
+            >
+              {footprint.photos.map((photo) => {
+                return (
+                  <MapMarker
+                    key={photo.imagePath}
+                    position={{
+                      lat: photo.latitude,
+                      lng: photo.longitude,
+                    }}
+                  />
+                );
+              })}
+            </Map>
+          </div>
           {/* <div className="mt-2">
           <TagButton text="직접 추가하기" icon={IconSearch} onClick={() => {}} />
         </div> */}
