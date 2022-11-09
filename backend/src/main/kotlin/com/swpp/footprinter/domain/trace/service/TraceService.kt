@@ -8,6 +8,7 @@ import com.swpp.footprinter.common.TIME_GRID_SEC
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.common.utils.ImageUrlUtil
+import com.swpp.footprinter.common.utils.stringToDate8601
 import com.swpp.footprinter.domain.photo.model.Photo
 import com.swpp.footprinter.domain.photo.dto.PhotoInitialTraceResponse
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
@@ -117,6 +118,7 @@ class TraceServiceImpl(
                         p.imageUrl = imageUrlUtil.getImageURLfromImagePath(p.imagePath)
                     }
                 }
+                footprints = footprints?.sortedBy{ stringToDate8601(it.startTime).time }
             }
     }
 
@@ -125,9 +127,9 @@ class TraceServiceImpl(
      * => Assume there is same place within 0.000027 degree of lat/lng.
      */
     fun isNearEnough(photo: PhotoInitialTraceResponse, latitude: Double, longitude: Double): Boolean {
-        val scaledGridSize = PLACE_GRID_METER * 10 / Km_PER_LATLNG_DEGREE
-        val deltaLatScaled = kotlin.math.abs(photo.latitude - latitude) * 10000
-        val deltaLngScaled = kotlin.math.abs(photo.longitude - longitude) * 10000
+        val scaledGridSize = PLACE_GRID_METER / (Km_PER_LATLNG_DEGREE)
+        val deltaLatScaled = kotlin.math.abs(photo.latitude - latitude) * 1000
+        val deltaLngScaled = kotlin.math.abs(photo.longitude - longitude) * 1000
         val deltaScaled = sqrt(deltaLatScaled.pow(2.0) + deltaLngScaled.pow(2.0))
         return (deltaScaled < scaledGridSize)
     }
@@ -192,7 +194,7 @@ class TraceServiceImpl(
             }
         }
 
-        return footprintInitialTraceResponseList
+        return footprintInitialTraceResponseList.sortedBy { it.startTime }.toMutableList()
     }
 
     /**

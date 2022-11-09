@@ -7,5 +7,5 @@ class TraceDetailResponse(
     val date: String?,
     val title: String?,
     val ownerId: Long?,
-    val footprints: List<FootprintResponse>?
+    var footprints: List<FootprintResponse>?
 )
