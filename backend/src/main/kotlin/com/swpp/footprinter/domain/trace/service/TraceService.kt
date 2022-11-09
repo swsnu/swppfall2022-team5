@@ -15,7 +15,6 @@ import com.swpp.footprinter.domain.place.dto.PlaceInitialTraceResponse
 import com.swpp.footprinter.domain.place.service.externalAPI.KakaoAPIService
 import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
-import com.swpp.footprinter.domain.trace.dto.TraceResponse
 import com.swpp.footprinter.domain.trace.model.Trace
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import com.swpp.footprinter.domain.user.repository.UserRepository
@@ -33,11 +32,12 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 interface TraceService {
-    fun getAllTraces(): List<TraceResponse>
+    fun getAllMyTraces(): List<TraceDetailResponse>
+    fun getAllOtherUsersTraces(): List<TraceDetailResponse>
     fun createTrace(traceRequest: TraceRequest)
     fun getTraceById(traceId: Long): TraceDetailResponse
-    fun deleteTraceById(traceId: Long)
 
+    fun deleteTraceById(traceId: Long)
     fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
     fun getTraceByDate(date: String): TraceDetailResponse?
 }
@@ -54,8 +54,16 @@ class TraceServiceImpl(
     @Value("\${cloud.aws.s3.bucket-name}")
     private val bucketName: String
 ) : TraceService {
-    override fun getAllTraces(): List<TraceResponse> {
-        return traceRepo.findAll().filter { it.owner != userRepo.findByIdOrNull(1)!! }.map { trace -> trace.toResponse() } // TODO: 현재 user로 넣기
+    override fun getAllMyTraces(): List<TraceDetailResponse> {
+        return traceRepo.findTraceAllByOwner(userRepo.findByIdOrNull(1)!!).map { trace -> trace.toDetailResponse().apply { footprints?.forEach { fp ->
+            fp.photos.forEach { p ->
+                p.imageUrl = imageUrlUtil.getImageURLfromImagePath(p.imagePath)
+            }
+        }} } // TODO: 현재 user로 넣기
+    }
+
+    override fun getAllOtherUsersTraces(): List<TraceDetailResponse> {
+        return traceRepo.findAll().filter { it.owner != userRepo.findByIdOrNull(1)!! }.map { trace -> trace.toDetailResponse() } // TODO: 현재 user로 넣기
     }
 
     @Transactional
