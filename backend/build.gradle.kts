@@ -16,7 +16,7 @@ class CustomCoverallsJacocoPlugin : Plugin<Project> {
             description = "Reports coverage to coveralls with service_number"
             doLast {
                 val serviceNumber = System.getenv("GITHUB_RUN_ID")
-                val path = Paths.get("./build/req.json")
+                val path = Paths.get("./backend/build/req.json")
                 var content = Files.readString(path, Charsets.UTF_8)
                 content = "${content.substring(0, content.length - 1)}, \"service_number\": $serviceNumber}"
                 send(content)
