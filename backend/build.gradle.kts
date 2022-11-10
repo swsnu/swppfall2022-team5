@@ -122,5 +122,5 @@ tasks.jacocoTestReport {
 
 coverallsJacoco {
     dryRun = true
-    coverallsRequest = File("build/req.json")
+    coverallsRequest = File("backend/build/req.json")
 }
