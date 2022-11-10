@@ -6,6 +6,9 @@ on:
       - ".github/workflows/*.yaml"
       - "backend/**"
       - "frontend/**"
+  push:
+    branches:
+      - main
 
 defaults:
   run:
@@ -30,6 +33,13 @@ jobs:
 
       - name: run test
         run: ./gradlew test jacocoTestReport
+
+      - name: reports coverage to coveralls with service_number
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          COVERALLS_PARALLEL: true
+          COVERALLS_FLAG_NAME: backend-coverage-${{ github.run_id }}
+        run: ./gradlew customCoverallsJacoco
 
       - name: upload coverage report
         uses: actions/upload-artifact@v3
@@ -63,11 +73,33 @@ jobs:
         run: yarn test:unit --coverage
         working-directory: ./frontend
 
+      - name: reports coverage to coveralls with service_number
+        uses: coverallsapp/github-action@master
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        with:
+          github-token: ${{ secrets.github_token  }}
+          path-to-lcov: frontend/coverage/lcov.info
+          base-path: frontend
+          flag-name: frontend-coverage-${{ github.run_id }}
+          parallel: true
+
       - name: upload coverage report
         uses: actions/upload-artifact@v3
         with:
           name: frontend-coverage
           path: frontend/coverage/lcov.info
+
+  coveralls:
+    name: Coveralls
+    needs: [backend-test, frontend-unittest]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Coveralls Finished
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.github_token }}
+        parallel-finished: true
 
   sonarcloud:
     name: SonarCloud
