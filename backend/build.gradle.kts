@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 import java.nio.file.Files
-import java.nio.file.Paths
+import java.nio.file.Path
 import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.ContentType
@@ -16,7 +16,7 @@ class CustomCoverallsJacocoPlugin : Plugin<Project> {
             description = "Reports coverage to coveralls with service_number"
             doLast {
                 val serviceNumber = System.getenv("GITHUB_RUN_ID")
-                val path = Paths.get("./backend/build/req.json")
+                val path = Path.of("./build/req.json")
                 var content = Files.readString(path, Charsets.UTF_8)
                 content = "${content.substring(0, content.length - 1)}, \"service_number\": $serviceNumber}"
                 send(content)
@@ -122,5 +122,5 @@ tasks.jacocoTestReport {
 
 coverallsJacoco {
     dryRun = true
-    coverallsRequest = File("backend/build/req.json")
+    coverallsRequest = File("build/req.json")
 }
