@@ -11,7 +11,7 @@ import org.springframework.web.client.exchange
 
 @Service
 class KakaoAPIService(
-    @Value("\${kakao_apikey}")
+    @Value("\${kakao_apikey: default null}")
     private val kakao_apikey: String
 ) {
     fun coordToRegion(longitude: String, latitude: String): ResponseEntity<String> {
