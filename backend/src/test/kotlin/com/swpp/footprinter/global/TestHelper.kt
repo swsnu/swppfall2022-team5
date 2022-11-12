@@ -36,7 +36,7 @@ class TestHelper @Autowired constructor (
     ) = Place(name, address, footprints).also { placeRepo.save(it) }
 
     fun createTag(
-        tagCode: TAG_CODE, taggedFootprints: MutableSet<Footprint>
+        tagCode: TAG_CODE, taggedFootprints: MutableSet<Footprint> = mutableSetOf()
     ) = Tag(tagCode, taggedFootprints).also { tagRepo.save(it) }
 
     fun createPhoto(
@@ -53,4 +53,9 @@ class TestHelper @Autowired constructor (
         traceTitle: String, traceDate: String, owner: User, footprints: MutableSet<Footprint>,
     ) = Trace(traceTitle, traceDate, owner, footprints).also { traceRepo.save(it) }
 
+    fun initializeTag() {
+        for (tagCode in TAG_CODE.values()) {
+            createTag(tagCode)
+        }
+    }
 }
