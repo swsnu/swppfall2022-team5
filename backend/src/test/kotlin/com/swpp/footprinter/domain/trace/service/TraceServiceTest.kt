@@ -1,6 +1,9 @@
 package com.swpp.footprinter.domain.trace.service
 
+import com.swpp.footprinter.common.exception.ErrorType
+import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.common.utils.dateToString8601
+import com.swpp.footprinter.common.utils.stringToDate8601
 import com.swpp.footprinter.domain.footprint.dto.FootprintRequest
 import com.swpp.footprinter.domain.footprint.repository.FootprintRepository
 import com.swpp.footprinter.domain.footprint.service.FootprintService
@@ -8,18 +11,15 @@ import com.swpp.footprinter.domain.photo.dto.PhotoRequest
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
 import com.swpp.footprinter.domain.place.dto.PlaceRequest
 import com.swpp.footprinter.domain.place.repository.PlaceRepository
-import com.swpp.footprinter.domain.tag.TAG_CODE
 import com.swpp.footprinter.domain.tag.repository.TagRepository
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import com.swpp.footprinter.domain.user.repository.UserRepository
 import com.swpp.footprinter.global.TestHelper
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
@@ -27,6 +27,7 @@ import java.util.*
 import javax.transaction.Transactional
 
 @SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TraceServiceTest @Autowired constructor(
     private val testHelper: TestHelper,
     private val footprintRepo: FootprintRepository,
@@ -52,6 +53,11 @@ class TraceServiceTest @Autowired constructor(
         placeRepo.deleteAll()
     }
 
+    @BeforeAll
+    fun initialSetup() {
+        testHelper.createUser("testuser", "test@email.com")
+    }
+
     /**
      * Testing createTrace
      */
@@ -59,7 +65,7 @@ class TraceServiceTest @Autowired constructor(
     @Test
     fun `Can create trace`() {
         // given
-        val currentUser = testHelper.createUser("testuser", "test@email.com")
+        val currentUser = userRepo.findByIdOrNull(1)!!
         val current = Date()
 
         testHelper.createPhoto("testpath", 0.0, 0.0, current)
@@ -133,5 +139,40 @@ class TraceServiceTest @Autowired constructor(
         assertThat(createdPhoto).extracting{it.latitude}.isEqualTo(0.0)
         assertThat(createdPhoto).extracting{it.timestamp}.isEqualTo(current)
         assertThat(createdPhoto).extracting{it.footprint?.id}.isEqualTo(createdFootprint.id)
+    }
+
+
+    /**
+     * Testing getTraceById
+     */
+    @Test
+    @Transactional
+    fun `Could get trace by Id`() {
+        // given
+        val date = Date()
+        val user = userRepo.findByIdOrNull(1)!!
+        val trace = testHelper.createTrace(
+            "testTraceTitle",
+            dateToString8601(date),
+            user,
+            mutableSetOf()
+        )
+
+        // when
+        val searchedTrace = traceService.getTraceById(trace.id!!)
+
+        // then
+        assertThat(searchedTrace.id).isEqualTo(trace.id)
+        assertThat(searchedTrace.date).isEqualTo(trace.traceDate)
+        assertThat(searchedTrace.title).isEqualTo(trace.traceTitle)
+        assertThat(searchedTrace.ownerId).isEqualTo(trace.owner.id)
+        assertThat(searchedTrace.footprints).isEmpty()
+    }
+
+    @Test
+    @Transactional
+    fun `Throw NOT_FOUND when there is no trace for given id while get trace by id`() {
+        val exception = assertThrows<FootprinterException>{traceService.getTraceById(1)}
+        assertEquals(exception.errorType, ErrorType.NOT_FOUND)
     }
 }
