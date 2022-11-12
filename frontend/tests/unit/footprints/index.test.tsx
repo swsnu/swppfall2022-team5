@@ -5,7 +5,7 @@ import Footprints from "../../../pages/footprints";
 
 const queryClient = new QueryClient();
 
-describe("Home", () => {
+describe("Footprints", () => {
   it("should render main page without errors", () => {
     render(
       <QueryClientProvider client={queryClient}>
