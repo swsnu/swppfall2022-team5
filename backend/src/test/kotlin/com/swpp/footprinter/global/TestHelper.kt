@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class TestHelper @Autowired constructor (
+class TestHelper @Autowired constructor(
     private val footprintRepo: FootprintRepository,
     private val placeRepo: PlaceRepository,
     private val tagRepo: TagRepository,
@@ -28,29 +28,47 @@ class TestHelper @Autowired constructor (
 ) {
 
     fun createUser(
-        username: String, email: String, myTrace: MutableSet<Trace> = mutableSetOf()
+        username: String,
+        email: String,
+        myTrace: MutableSet<Trace> = mutableSetOf()
     ) = User(username, email).also { userRepo.save(it) }
 
     fun createPlace(
-        name: String, address: String, footprints: MutableSet<Footprint> = mutableSetOf()
+        name: String,
+        address: String,
+        footprints: MutableSet<Footprint> = mutableSetOf()
     ) = Place(name, address, footprints).also { placeRepo.save(it) }
 
     fun createTag(
-        tagCode: TAG_CODE, taggedFootprints: MutableSet<Footprint> = mutableSetOf()
+        tagCode: TAG_CODE,
+        taggedFootprints: MutableSet<Footprint> = mutableSetOf()
     ) = Tag(tagCode, taggedFootprints).also { tagRepo.save(it) }
 
     fun createPhoto(
-        imagePath: String, longitude: Double, latitude: Double, timestamp: Date, footprint: Footprint? = null
-    ) = Photo(imagePath, longitude, latitude, timestamp, footprint).also{ photoRepo.save(it) }
+        imagePath: String,
+        longitude: Double,
+        latitude: Double,
+        timestamp: Date,
+        footprint: Footprint? = null
+    ) = Photo(imagePath, longitude, latitude, timestamp, footprint).also { photoRepo.save(it) }
 
     fun createFootprint(
-        startTime: Date, endTime: Date, rating: Int, trace: Trace,
-        place: Place, tag: Tag, memo: String, photos: MutableSet<Photo> = mutableSetOf()
+        startTime: Date,
+        endTime: Date,
+        rating: Int,
+        trace: Trace,
+        place: Place,
+        tag: Tag,
+        memo: String,
+        photos: MutableSet<Photo> = mutableSetOf()
     ) = Footprint(startTime, endTime, rating, trace, place, tag, memo, photos)
         .also { footprintRepo.save(it) }
 
     fun createTrace(
-        traceTitle: String, traceDate: String, owner: User, footprints: MutableSet<Footprint>,
+        traceTitle: String,
+        traceDate: String,
+        owner: User,
+        footprints: MutableSet<Footprint>,
     ) = Trace(traceTitle, traceDate, owner, footprints).also { traceRepo.save(it) }
 
     fun initializeTag() {
