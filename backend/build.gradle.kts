@@ -94,6 +94,10 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("com.h2database:h2")
     implementation("com.drewnoakes:metadata-extractor:2.18.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testImplementation("io.mockk:mockk:1.13.2")
+    testImplementation("io.kotest:kotest-runner-junit5:5.5.4")
+    testImplementation("io.kotest:kotest-assertions-core:5.5.4")
 }
 
 tasks.withType<KotlinCompile> {
@@ -116,7 +120,7 @@ tasks.jacocoTestReport {
     reports {
         xml.required.set(true)
         csv.required.set(false)
-        html.required.set(false)
+        html.required.set(true)
     }
 }
 
