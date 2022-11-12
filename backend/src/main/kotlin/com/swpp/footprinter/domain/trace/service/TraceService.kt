@@ -118,7 +118,7 @@ class TraceServiceImpl(
                         p.imageUrl = imageUrlUtil.getImageURLfromImagePath(p.imagePath)
                     }
                 }
-                footprints = footprints?.sortedBy{ stringToDate8601(it.startTime).time }
+                footprints = footprints?.sortedBy { stringToDate8601(it.startTime).time }
             }
     }
 
