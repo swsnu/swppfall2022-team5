@@ -13,6 +13,8 @@ const customJestConfig = {
     "pages/**/*.{js,jsx,ts,tsx}",
     "api/**/*.{js,jsx,ts,tsx}",
     "components/**/*.{js,jsx,ts,tsx}",
+    "store/**/*.{js,jsx,ts,tsx}",
+    "!pages/_app.tsx",
   ],
 };
 
