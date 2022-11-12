@@ -175,4 +175,31 @@ class TraceServiceTest @Autowired constructor(
         val exception = assertThrows<FootprinterException>{traceService.getTraceById(1)}
         assertEquals(exception.errorType, ErrorType.NOT_FOUND)
     }
+
+
+    /**
+     * Test deleteTraceById
+     */
+    @Test
+    @Transactional
+    fun `Could delete trace by id`() {
+        // given
+        val date = Date()
+        val user = userRepo.findByIdOrNull(1)!!
+        val trace = testHelper.createTrace(
+            "testTraceTitle",
+            dateToString8601(date),
+            user,
+            mutableSetOf()
+        )
+
+        // when
+        traceService.deleteTraceById(trace.id!!)
+
+        // then
+        assertThat(traceRepo.findByIdOrNull(trace.id!!)).isNull()
+    }
+
+    //TODO: add testcase about authentication failure after implemented user authentication
+
 }
