@@ -13,7 +13,7 @@ class Tag(
     val tagCode: TAG_CODE,
 
     @OneToMany(mappedBy = "tag")
-    val taggedFootprints: MutableSet<Footprint>,
+    val taggedFootprints: MutableSet<Footprint> = mutableSetOf()
 
 ) : BaseEntity() {
     fun toResponse() = TagResponse(tagCode.ordinal, tagCode.name)
