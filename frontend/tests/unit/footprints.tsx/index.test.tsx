@@ -7,10 +7,11 @@ const queryClient = new QueryClient();
 
 describe("Home", () => {
   it("should render main page without errors", () => {
-    render(<QueryClientProvider client={queryClient}>
-      <Footprints />
-    </QueryClientProvider>
-    )
+    render(
+      <QueryClientProvider client={queryClient}>
+        <Footprints />
+      </QueryClientProvider>,
+    );
     expect(window).toBeTruthy();
   });
 });
