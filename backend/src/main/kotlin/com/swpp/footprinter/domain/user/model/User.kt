@@ -14,7 +14,7 @@ class User(
     val email: String,
 
     @OneToMany(mappedBy = "owner", cascade = [CascadeType.ALL])
-    val myTrace: MutableSet<Trace>,
+    val myTrace: MutableSet<Trace> = mutableSetOf(),
 
 ) : BaseEntity()
 

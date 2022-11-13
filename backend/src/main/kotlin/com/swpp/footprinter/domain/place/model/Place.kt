@@ -20,7 +20,7 @@ class Place(
 //    val tag: Tag,
 
     @OneToMany(mappedBy = "place")
-    val footprints: MutableSet<Footprint>,
+    val footprints: MutableSet<Footprint> = mutableSetOf(),
 
 ) : BaseEntity() {
     fun toResponse() = PlaceResponse(name, address)
