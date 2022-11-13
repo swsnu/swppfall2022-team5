@@ -86,8 +86,8 @@ class TestHelper @Autowired constructor(
         tag: Tag,
         memo: String,
         photos: MutableSet<Photo> = mutableSetOf()
-    ) = Footprint(startTime, endTime, rating, trace, place, tag, memo, photos)
-        .run {
+    ) = createFootprint(startTime, endTime, rating, trace, place, tag, memo, photos)
+        .apply {
             place.footprints.add(this)
             placeRepo.save(place)
             tag.taggedFootprints.add(this)
@@ -96,6 +96,5 @@ class TestHelper @Autowired constructor(
             photoRepo.saveAll(photos)
             trace.footprints.add(this)
             traceRepo.save(trace)
-            footprintRepo.save(this)
         }
 }
