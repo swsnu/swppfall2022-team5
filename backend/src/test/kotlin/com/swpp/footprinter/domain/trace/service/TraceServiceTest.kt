@@ -7,6 +7,7 @@ import com.swpp.footprinter.common.utils.dateToString8601
 import com.swpp.footprinter.common.utils.stringToDate8601
 import com.swpp.footprinter.domain.footprint.dto.FootprintRequest
 import com.swpp.footprinter.domain.footprint.repository.FootprintRepository
+import com.swpp.footprinter.domain.photo.dto.PhotoInitialTraceResponse
 import com.swpp.footprinter.domain.photo.dto.PhotoRequest
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
 import com.swpp.footprinter.domain.place.dto.PlaceRequest
@@ -21,7 +22,7 @@ import io.kotest.common.runBlocking
 import kotlinx.coroutines.delay
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.*
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
@@ -41,7 +42,7 @@ class TraceServiceTest @Autowired constructor(
     private val userRepo: UserRepository,
     private val traceRepo: TraceRepository,
     private val photoRepo: PhotoRepository,
-    private val traceService: TraceService,
+    private val traceService: TraceServiceImpl,
     @MockBean val mockImageUrlUtil: ImageUrlUtil,
 ) {
     // TODO: After implementing user authentication, should cleanup user entities too.
@@ -287,5 +288,64 @@ class TraceServiceTest @Autowired constructor(
         assertThat(searchedTrace.footprints).isSortedAccordingTo { o1, o2 ->
             stringToDate8601(o1.startTime).compareTo(stringToDate8601(o2.startTime))
         }
+    }
+
+    /**
+     * Test isNearEnough
+     */
+    @Transactional
+    @Test
+    fun `Could return photo location is near enough to given coordinate`() {
+        // given
+        val current = Date()
+        val (longitude, latitude) = Pair(126.9490999, 37.4590445)
+        val photoInitialTraceResponseNear = PhotoInitialTraceResponse(
+            1, "testpath", "testurl", 126.9490947, 37.4590318, current
+        )
+        val photoInitialTraceResponseFar = PhotoInitialTraceResponse(
+            1, "testpath", "testurl", 126.9505863, 37.4592141, current
+        )
+
+        // when
+        val nearResult = traceService.isNearEnough(photoInitialTraceResponseNear, latitude, longitude)
+        val farResult = traceService.isNearEnough(photoInitialTraceResponseFar, latitude, longitude)
+
+        // then
+        assertTrue(nearResult)
+        assertFalse(farResult)
+    }
+
+    /**
+     * Test isSimilarTime
+     */
+    @Transactional
+    @Test
+    fun `Could return whether time is similar between photo's and given`() {
+        // given
+        val current = Date()
+        val cal = Calendar.getInstance()
+
+        cal.time = current
+        cal.add(Calendar.MINUTE, 30)
+        val currentNear = cal.time
+
+        cal.time = current
+        cal.add(Calendar.HOUR, 3)
+        val currentFar = cal.time
+
+        val photoInitialTraceResponseNear = PhotoInitialTraceResponse(
+            1, "testpath", "testurl", 126.9490947, 37.4590318, currentNear
+        )
+        val photoInitialTraceResponseFar = PhotoInitialTraceResponse(
+            2, "testpath", "testurl", 126.9490947, 37.4590318, currentFar
+        )
+
+        // when
+        val nearTime = traceService.isSimilarTime(photoInitialTraceResponseNear, current)
+        val farTime = traceService.isSimilarTime(photoInitialTraceResponseFar, current)
+
+        // then
+        assertTrue(nearTime)
+        assertFalse(farTime)
     }
 }
