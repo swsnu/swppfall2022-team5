@@ -68,7 +68,7 @@ class TestHelper @Autowired constructor(
         traceTitle: String,
         traceDate: String,
         owner: User,
-        footprints: MutableSet<Footprint>,
+        footprints: MutableSet<Footprint> = mutableSetOf(),
     ) = Trace(traceTitle, traceDate, owner, footprints).also { traceRepo.save(it) }
 
     fun initializeTag() {
@@ -76,4 +76,26 @@ class TestHelper @Autowired constructor(
             createTag(tagCode)
         }
     }
+
+    fun createFootprintAndUpdateElements(
+        startTime: Date,
+        endTime: Date,
+        rating: Int,
+        trace: Trace,
+        place: Place,
+        tag: Tag,
+        memo: String,
+        photos: MutableSet<Photo> = mutableSetOf()
+    ) = Footprint(startTime, endTime, rating, trace, place, tag, memo, photos)
+        .run {
+            place.footprints.add(this)
+            placeRepo.save(place)
+            tag.taggedFootprints.add(this)
+            tagRepo.save(tag)
+            photos.forEach { it.footprint = this }
+            photoRepo.saveAll(photos)
+            trace.footprints.add(this)
+            traceRepo.save(trace)
+            footprintRepo.save(this)
+        }
 }
