@@ -9,7 +9,7 @@ interface CalendarState {
     year: number;
     month: number;
   };
-  setCalendarExpanded: (value: boolean) => void;
+  setPreviewYearMonth: (year: number, month: number) => void;
   setSelectedDate: (date: Date) => void;
   selectNextMonth: () => void;
   selectPrevMonth: () => void;
@@ -26,10 +26,11 @@ export const useCalendarStore = create<CalendarState>()((set, get) => ({
     year: new Date().getFullYear(),
     month: new Date().getMonth(),
   },
-  setCalendarExpanded: (value) => {
+  setPreviewYearMonth: (year, month) => {
     set(
       produce((state) => {
-        state.calendarExpanded = value;
+        state.previewYearMonth.year = year;
+        state.previewYearMonth.month = month;
       }),
     );
   },
