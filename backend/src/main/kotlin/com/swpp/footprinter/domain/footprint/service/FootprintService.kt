@@ -133,10 +133,12 @@ class FootprintServiceImpl(
                 // Change to new place.
                 val editPlace = placeRepo.findByNameAndAddress(it.name, it.address!!)
                 editPlace?.apply { this.footprints.add(target) }
-                    ?: Place(
-                        name = it.name,
-                        address = it.address,
-                        footprints = mutableSetOf(target)
+                    ?: placeRepo.save(
+                        Place(
+                            name = it.name,
+                            address = it.address,
+                            footprints = mutableSetOf(target)
+                        )
                     )
             } else {
                 target.place
