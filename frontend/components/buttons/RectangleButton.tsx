@@ -12,6 +12,7 @@ interface IProps {
 const RectangleButton = ({ onClick, text, isLoading, className, disabled }: IProps) => {
   return (
     <button
+      data-testid={text}
       className={classNames(
         className,
         "rounded-lg border border-navy-200/5 bg-navy-700 p-3 text-navy-200 transition-colors ",
