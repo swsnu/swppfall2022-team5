@@ -5,14 +5,18 @@ import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.common.utils.ImageUrlUtil
 import com.swpp.footprinter.common.utils.dateToString8601
 import com.swpp.footprinter.common.utils.stringToDate8601
+import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
 import com.swpp.footprinter.domain.footprint.dto.FootprintRequest
 import com.swpp.footprinter.domain.footprint.repository.FootprintRepository
 import com.swpp.footprinter.domain.photo.dto.PhotoInitialTraceResponse
 import com.swpp.footprinter.domain.photo.dto.PhotoRequest
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
+import com.swpp.footprinter.domain.place.dto.PlaceInitialTraceResponse
 import com.swpp.footprinter.domain.place.dto.PlaceRequest
 import com.swpp.footprinter.domain.place.repository.PlaceRepository
+import com.swpp.footprinter.domain.place.service.externalAPI.KakaoAPIService
 import com.swpp.footprinter.domain.tag.TAG_CODE
+import com.swpp.footprinter.domain.tag.dto.TagResponse
 import com.swpp.footprinter.domain.tag.repository.TagRepository
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
@@ -20,15 +24,19 @@ import com.swpp.footprinter.domain.user.repository.UserRepository
 import com.swpp.footprinter.global.TestHelper
 import io.kotest.common.runBlocking
 import kotlinx.coroutines.delay
+import net.minidev.json.JSONObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
+import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import java.util.*
 import javax.transaction.Transactional
 
@@ -44,6 +52,7 @@ class TraceServiceTest @Autowired constructor(
     private val photoRepo: PhotoRepository,
     private val traceService: TraceServiceImpl,
     @MockBean val mockImageUrlUtil: ImageUrlUtil,
+    @MockBean val mockKakaoApiService: KakaoAPIService,
 ) {
     // TODO: After implementing user authentication, should cleanup user entities too.
     @BeforeEach
@@ -347,5 +356,118 @@ class TraceServiceTest @Autowired constructor(
         // then
         assertTrue(nearTime)
         assertFalse(farTime)
+    }
+
+    /**
+     * Test createInitialTraceBasedOnPhotoIdListGiven
+     * ( and groupPhotosWithLocationAndTimeAndReturnInitialTraceDTOList)
+     * ( and addRecomendedPlaceToInitialDTOList)
+     */
+    @Test
+    @Transactional
+    fun `Could create initial trace response based on photo id list given`() {
+        // given
+        val current = Date()
+
+        val coordCreater = { i: Int ->
+            (i * 0.000000001) + (0.1 * (i / 2))
+        }
+        val timeCreator = { i: Int ->
+            val cal = Calendar.getInstance()
+            cal.time = current
+            cal.add(Calendar.MINUTE, i)
+            cal.add(Calendar.HOUR, i / 2)
+            cal.time
+        }
+
+        // Create 6 Photo Enitities
+        val photos = (0 until 6).map { i ->
+            testHelper.createPhoto(
+                imagePath = "path$i",
+                longitude = coordCreater(i),
+                latitude = coordCreater(i),
+                timestamp = timeCreator(i),
+            )
+        }
+
+        // Mock KakaoApiService
+        `when`(mockKakaoApiService.coordToPlace(anyString(), anyString(), anyString(), anyInt()))
+            .thenReturn(
+                ResponseEntity(
+                    JSONObject.toJSONString(
+                        mapOf(
+                            "documents" to listOf(
+                                mapOf(
+                                    "place_name" to "place1",
+                                    "address_name" to "addr1",
+                                    "distance" to "1"
+                                ),
+                                mapOf(
+                                    "place_name" to "place2",
+                                    "address_name" to "addr2",
+                                    "distance" to "2"
+                                ),
+                            )
+                        )
+                    ),
+                    HttpStatus.OK
+                )
+            )
+
+        // Mock getImageURLfromImagePath
+        `when`(mockImageUrlUtil.getImageURLfromImagePath(anyString())).thenReturn("testurl")
+
+        // when
+        val initialDTOListReturned = traceService.createInitialTraceBasedOnPhotoIdListGiven(
+            photos.map { it.imagePath }
+        )
+
+        // then
+        // Expected value
+        val initialDTOListExpected = (0 until 3).map { i ->
+            FootprintInitialTraceResponse(
+                photoList = ((i * 2)..(i * 2 + 1)).map { j ->
+                    photos[j].run {
+                        PhotoInitialTraceResponse(
+                            id!!,
+                            imagePath,
+                            imageUrl = "testurl",
+                            longitude,
+                            latitude,
+                            timestamp
+                        )
+                    }
+                }.toMutableList(),
+                meanLatitude = (coordCreater(i * 2 + 1) + coordCreater(i * 2)) / 2,
+                meanLongitude = (coordCreater(i * 2 + 1) + coordCreater(i * 2)) / 2,
+                meanTime = Date((photos[i * 2 + 1].timestamp.time + photos[i * 2].timestamp.time) / 2),
+                startTime = photos[i * 2].timestamp,
+                endTime = photos[i * 2 + 1].timestamp,
+                recommendedPlaceList = listOf(
+                    TAG_CODE.음식점, TAG_CODE.관광명소, TAG_CODE.문화시설, TAG_CODE.카페, TAG_CODE.숙박
+                ).map { tagCode ->
+                    PlaceInitialTraceResponse(
+                        name = "place1",
+                        address = "addr1",
+                        distance = 1,
+                        category = TagResponse(tagCode.ordinal, tagCode.name)
+                    )
+                }.toMutableList().also {
+                    it.addAll(
+                        listOf(TAG_CODE.음식점, TAG_CODE.관광명소, TAG_CODE.문화시설, TAG_CODE.카페, TAG_CODE.숙박).map { tagCode ->
+                            PlaceInitialTraceResponse(
+                                name = "place2",
+                                address = "addr2",
+                                distance = 2,
+                                category = TagResponse(tagCode.ordinal, tagCode.name)
+                            )
+                        }
+                    )
+                },
+            )
+        }
+
+        // assertion
+        assertThat(initialDTOListReturned).isEqualTo(initialDTOListExpected)
     }
 }
