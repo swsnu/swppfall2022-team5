@@ -24,12 +24,12 @@ import java.util.*
 @SpringBootTest
 @Transactional
 internal class FootprintServiceTest @Autowired constructor(
-    @Autowired private val footprintService: FootprintService,
-    @Autowired private val footprintRepo: FootprintRepository,
-    @Autowired private val placeRepo: PlaceRepository,
-    @Autowired private val tagRepo: TagRepository,
-    @Autowired private val userRepo: UserRepository,
-    @Autowired private val traceRepo: TraceRepository
+    private val footprintService: FootprintService,
+    private val footprintRepo: FootprintRepository,
+    private val placeRepo: PlaceRepository,
+    private val tagRepo: TagRepository,
+    private val userRepo: UserRepository,
+    private val traceRepo: TraceRepository
 ) {
 
     @BeforeEach
