@@ -54,8 +54,8 @@ class TraceController(
 
     @PostMapping("/traces/create")
     fun createNewTrace(
-        @RequestBody photoIdLists: List<String>,
+        @RequestBody photoPathList: List<String>,
     ): List<FootprintInitialTraceResponse> {
-        return service.createInitialTraceBasedOnPhotoIdListGiven(photoIdLists)
+        return service.createInitialTraceBasedOnPhotoIdListGiven(photoPathList)
     }
 }

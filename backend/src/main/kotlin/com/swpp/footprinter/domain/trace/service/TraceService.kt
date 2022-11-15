@@ -39,7 +39,7 @@ interface TraceService {
     fun getTraceById(traceId: Long): TraceDetailResponse
     fun deleteTraceById(traceId: Long)
 
-    fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
+    fun createInitialTraceBasedOnPhotoIdListGiven(photoPathList: List<String>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
     fun getTraceByDate(date: String): TraceDetailResponse?
 }
 
@@ -94,8 +94,8 @@ class TraceServiceImpl(
         traceRepo.deleteById(traceId) // TODO: Authentication
     }
 
-    override fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> {
-        val photoEntityList: List<Photo> = photoIds.map {
+    override fun createInitialTraceBasedOnPhotoIdListGiven(photoPathList: List<String>): List<FootprintInitialTraceResponse> {
+        val photoEntityList: List<Photo> = photoPathList.map {
             photoRepo.findByImagePath(it) ?: throw FootprinterException(ErrorType.NOT_FOUND)
         }
 
@@ -103,7 +103,7 @@ class TraceServiceImpl(
 
         addRecomendedPlaceToInitialTraceDTOList(initialTraceDTOList, radius = PLACE_FIND_METER)
 
-        return initialTraceDTOList
+        return initialTraceDTOList.sortedBy { it.meanTime }
     }
 
     override fun getTraceByDate(date: String): TraceDetailResponse? {
