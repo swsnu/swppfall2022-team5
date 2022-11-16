@@ -3,18 +3,19 @@ import produce from "immer";
 import moment from "moment";
 import { useRouter } from "next/router";
 import { useState } from "react";
+
 import Moment from "react-moment";
 import { editFootprint, fetchFootprintById, fetchTags } from "../../../api";
 import RectangleButton from "../../../components/buttons/RectangleButton";
 import TagButton from "../../../components/buttons/TagButton";
 import Container from "../../../components/containers/Container";
 import NavbarContainer from "../../../components/containers/NavbarContainer";
-import FootprintCreate, { Label, ratings } from "../../../components/footprint/FootprintCreate";
+import { Label, ratings } from "../../../components/footprint/FootprintCreate";
 import Photo from "../../../components/footprint/Photo";
+import KakaoMap from "../../../components/map/KakaoMap";
 import NavigationBar from "../../../components/navbar/NavigationBar";
 import { tagToEmoji } from "../../../data/emojiMap";
-import { FootprintEditRequestType, FootprintRequestType, FootprintResponseType } from "../../../dto/footprint";
-import { Map, MapMarker, useInjectKakaoMapApi } from "react-kakao-maps-sdk";
+import { FootprintEditRequestType, FootprintResponseType } from "../../../dto/footprint";
 
 const FootprintDetail = () => {
   const router = useRouter();
@@ -70,25 +71,7 @@ const FootprintDetail = () => {
           <Label text="장소" />
           <div className="text-sm">{footprint.place.name}</div>
           <div className="mt-2 overflow-hidden rounded-xl">
-            <Map
-              className="h-40"
-              center={{
-                lat: footprint.photos[0].latitude,
-                lng: footprint.photos[0].longitude,
-              }}
-            >
-              {footprint.photos.map((photo) => {
-                return (
-                  <MapMarker
-                    key={photo.imagePath}
-                    position={{
-                      lat: photo.latitude,
-                      lng: photo.longitude,
-                    }}
-                  />
-                );
-              })}
-            </Map>
+            <KakaoMap photos={footprint.photos} />
           </div>
           {/* <div className="mt-2">
           <TagButton text="직접 추가하기" icon={IconSearch} onClick={() => {}} />
