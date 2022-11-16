@@ -22,7 +22,6 @@ import org.mockito.InjectMocks
 import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.io.InputStream
@@ -71,14 +70,10 @@ internal class PhotoServiceTest @Autowired constructor(
             mockedMetadataReader.`when`<Any> { ImageMetadataReader.readMetadata(any(InputStream::class.java)) }.thenReturn(mockedMetadata)
             photoService.processMetadataAndSaveAsPhoto(mockedMultipartFile, "testPath")
 
-            val createdPhoto = photoRepo.findByIdOrNull(1)!!
+            val createdPhoto = photoRepo.findByImagePath("testPath")!!
             assertThat(createdPhoto).extracting("imagePath").isEqualTo("testPath")
             assertThat(createdPhoto).extracting("latitude").isEqualTo(127.0)
             assertThat(createdPhoto).extracting("longitude").isEqualTo(36.0)
         }
-    }
-
-    @Test
-    fun deletePhotoFromDatabaseAndServer() {
     }
 }
