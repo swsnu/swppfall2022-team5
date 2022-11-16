@@ -5,9 +5,7 @@ import { getWeeksInMonth } from "../../utils/calendar";
 import IconButton from "../buttons/IconButton";
 import WeekCalendar from "./WeekCalendar";
 
-interface IProps {}
-
-const FullCalendar = ({}: IProps) => {
+const FullCalendar = (props = {}) => {
   const { selectedDate, selectedWeek, setSelectedDate, previewYearMonth, selectNextMonth, selectPrevMonth } =
     useCalendarStore((state) => state, shallow);
 
