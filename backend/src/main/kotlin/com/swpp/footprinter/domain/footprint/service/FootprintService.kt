@@ -127,16 +127,18 @@ class FootprintServiceImpl(
         // Also, remove place when no footprint joined to place
         target.place = request.place!!.let {
             if (!(it.name!! == target.place.name && it.address!! == target.place.address)) {
-                // Remove footprint in original place, and clean original place if possible
-                target.place.footprints.remove(target)
-                if (target.place.footprints.isEmpty()) { placeRepo.delete(target.place) }
+                // TODO: Remove footprint in original place, and clean original place if possible
+//                target.place.footprints.remove(target)
+//                if (target.place.footprints.isEmpty()) { placeRepo.delete(target.place) }
                 // Change to new place.
                 val editPlace = placeRepo.findByNameAndAddress(it.name, it.address!!)
                 editPlace?.apply { this.footprints.add(target) }
-                    ?: Place(
-                        name = it.name,
-                        address = it.address,
-                        footprints = mutableSetOf(target)
+                    ?: placeRepo.save(
+                        Place(
+                            name = it.name,
+                            address = it.address,
+                            footprints = mutableSetOf(target)
+                        )
                     )
             } else {
                 target.place
