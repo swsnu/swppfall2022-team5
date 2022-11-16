@@ -82,6 +82,7 @@ class UserServiceTest @Autowired constructor(
     }
 
     @Test
+    @Transactional
     fun `Throw NOT_FOUND when user given by id is not exist while getting user by id`() {
         // given //when //then
         val exception = assertThrows<FootprinterException> { userService.getUserTraces(9999) }
@@ -137,6 +138,7 @@ class UserServiceTest @Autowired constructor(
     }
 
     @Test
+    @Transactional
     fun `Throw NOT_FOUND when user given by id is not exist while getting user by id and date`() {
         // given // when // then
         val exception = assertThrows<FootprinterException> { userService.getUserTraceByDate(9999, "") }
