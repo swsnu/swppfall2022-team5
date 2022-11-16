@@ -39,7 +39,7 @@ interface TraceService {
     fun getTraceById(traceId: Long): TraceDetailResponse
     fun deleteTraceById(traceId: Long)
 
-    fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
+    fun createInitialTraceBasedOnPhotoIdListGiven(photoPathList: List<String>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
     fun getTraceByDate(date: String): TraceDetailResponse?
 }
 
@@ -94,8 +94,8 @@ class TraceServiceImpl(
         traceRepo.deleteById(traceId) // TODO: Authentication
     }
 
-    override fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> {
-        val photoEntityList: List<Photo> = photoIds.map {
+    override fun createInitialTraceBasedOnPhotoIdListGiven(photoPathList: List<String>): List<FootprintInitialTraceResponse> {
+        val photoEntityList: List<Photo> = photoPathList.map {
             photoRepo.findByImagePath(it) ?: throw FootprinterException(ErrorType.NOT_FOUND)
         }
 
@@ -103,7 +103,7 @@ class TraceServiceImpl(
 
         addRecomendedPlaceToInitialTraceDTOList(initialTraceDTOList, radius = PLACE_FIND_METER)
 
-        return initialTraceDTOList
+        return initialTraceDTOList.sortedBy { it.meanTime }
     }
 
     override fun getTraceByDate(date: String): TraceDetailResponse? {
@@ -126,6 +126,7 @@ class TraceServiceImpl(
      * Assume GPS error is 30m, and 1 degree of lat/lng is 1112km.
      * => Assume there is same place within 0.000027 degree of lat/lng.
      */
+    // TODO: Improve algorithm
     fun isNearEnough(photo: PhotoInitialTraceResponse, latitude: Double, longitude: Double): Boolean {
         val scaledGridSize = PLACE_GRID_METER / (Km_PER_LATLNG_DEGREE)
         val deltaLatScaled = kotlin.math.abs(photo.latitude - latitude) * 1000

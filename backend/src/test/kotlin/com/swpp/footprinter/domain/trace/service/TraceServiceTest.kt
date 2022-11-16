@@ -1,0 +1,496 @@
+package com.swpp.footprinter.domain.trace.service
+
+import com.swpp.footprinter.common.exception.ErrorType
+import com.swpp.footprinter.common.exception.FootprinterException
+import com.swpp.footprinter.common.utils.ImageUrlUtil
+import com.swpp.footprinter.common.utils.dateToString8601
+import com.swpp.footprinter.common.utils.stringToDate8601
+import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
+import com.swpp.footprinter.domain.footprint.dto.FootprintRequest
+import com.swpp.footprinter.domain.footprint.repository.FootprintRepository
+import com.swpp.footprinter.domain.photo.dto.PhotoInitialTraceResponse
+import com.swpp.footprinter.domain.photo.dto.PhotoRequest
+import com.swpp.footprinter.domain.photo.repository.PhotoRepository
+import com.swpp.footprinter.domain.place.dto.PlaceInitialTraceResponse
+import com.swpp.footprinter.domain.place.dto.PlaceRequest
+import com.swpp.footprinter.domain.place.repository.PlaceRepository
+import com.swpp.footprinter.domain.place.service.externalAPI.KakaoAPIService
+import com.swpp.footprinter.domain.tag.TAG_CODE
+import com.swpp.footprinter.domain.tag.dto.TagResponse
+import com.swpp.footprinter.domain.tag.repository.TagRepository
+import com.swpp.footprinter.domain.trace.dto.TraceRequest
+import com.swpp.footprinter.domain.trace.repository.TraceRepository
+import com.swpp.footprinter.domain.user.repository.UserRepository
+import com.swpp.footprinter.global.TestHelper
+import io.kotest.common.runBlocking
+import kotlinx.coroutines.delay
+import net.minidev.json.JSONObject
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.*
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito.`when`
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import java.util.*
+import javax.transaction.Transactional
+
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class TraceServiceTest @Autowired constructor(
+    private val testHelper: TestHelper,
+    private val footprintRepo: FootprintRepository,
+    private val placeRepo: PlaceRepository,
+    private val tagRepo: TagRepository,
+    private val userRepo: UserRepository,
+    private val traceRepo: TraceRepository,
+    private val photoRepo: PhotoRepository,
+    private val traceService: TraceServiceImpl,
+    @MockBean val mockImageUrlUtil: ImageUrlUtil,
+    @MockBean val mockKakaoApiService: KakaoAPIService,
+) {
+    // TODO: After implementing user authentication, should cleanup user entities too.
+    @BeforeEach
+    fun setup() {
+        testHelper.initializeTag()
+    }
+
+    @AfterEach
+    fun cleanUp() {
+        userRepo.findAll().forEach { it.myTrace.clear() }
+        traceRepo.deleteAll()
+        footprintRepo.deleteAll()
+        photoRepo.deleteAll()
+        placeRepo.deleteAll()
+    }
+
+    @BeforeAll
+    fun initialSetup() {
+        testHelper.createUser("testuser", "test@email.com")
+    }
+
+    /**
+     * Testing createTrace
+     */
+    @Transactional
+    @Test
+    fun `Can create trace`() {
+        // given
+        val currentUser = userRepo.findByIdOrNull(1)!!
+        val current = Date()
+
+        testHelper.createPhoto("testpath", 0.0, 0.0, current)
+
+        val photoRequest = PhotoRequest(
+            imagePath = "testpath",
+            longitude = 0.0,
+            latitude = 0.0,
+            timestamp = dateToString8601(current)
+        )
+        val placeRequest = PlaceRequest(
+            name = "testplace",
+            address = "testaddr"
+        )
+        val footprintRequest = FootprintRequest(
+            startTime = dateToString8601(current),
+            endTime = dateToString8601(current),
+            rating = 1,
+            memo = "testmemo",
+            tagId = 0,
+            photos = listOf(photoRequest),
+            place = placeRequest,
+        )
+
+        // TODO: Change to current user after user authentication is implemented
+        val traceRequest = TraceRequest(
+            "titleTrace",
+            dateToString8601(current),
+            footprintList = listOf(footprintRequest),
+        )
+        assertThat(traceRepo.count()).isEqualTo(0)
+
+        // when
+        traceService.createTrace(traceRequest)
+
+        // then
+        // Check trace
+        assertThat(traceRepo.count()).isEqualTo(1)
+        val createdTrace = traceRepo.findByIdOrNull(1)!!
+        assertThat(createdTrace).extracting("traceTitle").isEqualTo("titleTrace")
+        assertThat(createdTrace).extracting("traceDate").isEqualTo(dateToString8601(current))
+        // TODO: After implementing user authentication, check whether current user
+        assertThat(createdTrace).extracting { it.owner.id }.isEqualTo(currentUser.id)
+
+        // Check footprints
+        assertThat(createdTrace.footprints).hasSize(1)
+        val createdFootprint = createdTrace.footprints.first()
+        assertThat(createdFootprint).extracting("startTime").isEqualTo(current)
+        assertThat(createdFootprint).extracting("endTime").isEqualTo(current)
+        assertThat(createdFootprint).extracting("rating").isEqualTo(1)
+        assertThat(createdFootprint).extracting { it.memo }.isEqualTo("testmemo")
+
+        // Check place
+        val createdPlace = createdFootprint.place
+        assertThat(createdPlace).extracting { it.name }.isEqualTo("testplace")
+        assertThat(createdPlace).extracting { it.address }.isEqualTo("testaddr")
+        assertThat(createdPlace.footprints).contains(createdFootprint)
+
+        // Check tag
+        val createdTag = createdFootprint.tag
+        assertThat(createdTag).extracting { it.tagCode.ordinal }.isEqualTo(0)
+        assertThat(createdTag.taggedFootprints).contains(createdFootprint)
+
+        // Check photos
+        assertThat(createdFootprint.photos).hasSize(1)
+        val createdPhoto = createdFootprint.photos.first()
+        assertThat(createdPhoto).extracting { it.imagePath }.isEqualTo("testpath")
+        assertThat(createdPhoto).extracting { it.longitude }.isEqualTo(0.0)
+        assertThat(createdPhoto).extracting { it.latitude }.isEqualTo(0.0)
+        assertThat(createdPhoto).extracting { it.timestamp }.isEqualTo(current)
+        assertThat(createdPhoto).extracting { it.footprint?.id }.isEqualTo(createdFootprint.id)
+    }
+
+    /**
+     * Testing getTraceById
+     */
+    @Test
+    @Transactional
+    fun `Could get trace by Id`() {
+        // given
+        val date = Date()
+        val user = userRepo.findByIdOrNull(1)!!
+        val trace = testHelper.createTrace(
+            "testTraceTitle",
+            dateToString8601(date),
+            user,
+        )
+        val footprint = testHelper.createFootprintAndUpdateElements(
+            startTime = date,
+            endTime = date,
+            rating = 1,
+            memo = "testmemo",
+            place = testHelper.createPlace("testplace", "testaddr"),
+            tag = testHelper.createTag(TAG_CODE.음식점),
+            trace = trace,
+            photos = mutableSetOf(
+                testHelper.createPhoto("testpath", 0.0, 0.0, date)
+            )
+        )
+
+        `when`(mockImageUrlUtil.getImageURLfromImagePath(anyString())).thenReturn("testurl")
+
+        // when
+        val searchedTrace = traceService.getTraceById(trace.id!!)
+
+        // then
+        // Trace
+        assertThat(searchedTrace.id).isEqualTo(trace.id)
+        assertThat(searchedTrace.date).isEqualTo(trace.traceDate)
+        assertThat(searchedTrace.title).isEqualTo(trace.traceTitle)
+        assertThat(searchedTrace.ownerId).isEqualTo(trace.owner.id)
+        assertThat(searchedTrace.footprints).hasSize(1)
+        // Footprint
+        assertThat(searchedTrace.footprints?.first()?.id).isEqualTo(footprint.id)
+        val photoList = searchedTrace.footprints?.first()?.photos
+        // Photo (transfered to url)
+        assertThat(photoList).hasSize(1)
+        assertThat(photoList?.first()?.imageUrl).isEqualTo("testurl")
+    }
+
+    @Test
+    @Transactional
+    fun `Throw NOT_FOUND when there is no trace for given id while get trace by id`() {
+        val exception = assertThrows<FootprinterException> { traceService.getTraceById(1) }
+        assertEquals(exception.errorType, ErrorType.NOT_FOUND)
+    }
+
+    /**
+     * Test deleteTraceById
+     */
+    @Test
+    @Transactional
+    fun `Could delete trace by id`() {
+        // given
+        val date = Date()
+        val user = userRepo.findByIdOrNull(1)!!
+        val trace = testHelper.createTrace(
+            "testTraceTitle",
+            dateToString8601(date),
+            user,
+            mutableSetOf()
+        )
+
+        // when
+        traceService.deleteTraceById(trace.id!!)
+
+        // then
+        assertThat(traceRepo.findByIdOrNull(trace.id!!)).isNull()
+    }
+
+    // TODO: add testcase about authentication failure after implemented user authentication
+
+    /**
+     * Testing getTraceByDate
+     */
+    @Test
+    @Transactional
+    fun `Could get trace by date`() {
+        // given
+        val date = Date()
+        val user = userRepo.findByIdOrNull(1)!!
+        val trace = testHelper.createTrace(
+            "testTraceTitle",
+            dateToString8601(date),
+            user,
+        )
+        val footprint = testHelper.createFootprintAndUpdateElements(
+            startTime = date,
+            endTime = date,
+            rating = 1,
+            memo = "testmemo",
+            place = testHelper.createPlace("testplace", "testaddr"),
+            tag = testHelper.createTag(TAG_CODE.음식점),
+            trace = trace,
+            photos = mutableSetOf(
+                testHelper.createPhoto("testpath", 0.0, 0.0, date)
+            )
+        )
+        runBlocking { delay(1000) }
+        val dateLater = Date()
+        val footprintLater = testHelper.createFootprintAndUpdateElements(
+            startTime = dateLater,
+            endTime = dateLater,
+            rating = 1,
+            memo = "testmemo2",
+            place = testHelper.createPlace("testplace2", "testaddr2"),
+            tag = testHelper.createTag(TAG_CODE.음식점),
+            trace = trace,
+            photos = mutableSetOf(
+                testHelper.createPhoto("testpath2", 0.0, 0.0, date)
+            )
+        )
+
+        `when`(mockImageUrlUtil.getImageURLfromImagePath(anyString())).thenReturn("testurl")
+
+        // when
+        val searchedTrace = traceService.getTraceByDate(dateToString8601(date))
+
+        // then
+        // Trace
+        assertEquals(trace.id, searchedTrace!!.id)
+        assertThat(searchedTrace.date).isEqualTo(trace.traceDate)
+        assertThat(searchedTrace.title).isEqualTo(trace.traceTitle)
+        assertThat(searchedTrace.ownerId).isEqualTo(trace.owner.id)
+        assertThat(searchedTrace.footprints).hasSize(2)
+        // Footprint
+        assertThat(searchedTrace.footprints?.first()?.id).isEqualTo(footprint.id)
+        val photoList = searchedTrace.footprints?.first()?.photos
+        // Photo (transfered to url)
+        assertThat(photoList).hasSize(1)
+        assertThat(photoList?.first()?.imageUrl).isEqualTo("testurl")
+        // Check sorted
+        assertThat(searchedTrace.footprints).isSortedAccordingTo { o1, o2 ->
+            stringToDate8601(o1.startTime).compareTo(stringToDate8601(o2.startTime))
+        }
+    }
+
+    /**
+     * Test isNearEnough
+     */
+    @Transactional
+    @Test
+    fun `Could return photo location is near enough to given coordinate`() {
+        // given
+        val current = Date()
+        val (longitude, latitude) = Pair(126.9490999, 37.4590445)
+        val photoInitialTraceResponseNear = PhotoInitialTraceResponse(
+            1, "testpath", "testurl", 126.9490947, 37.4590318, current
+        )
+        val photoInitialTraceResponseFar = PhotoInitialTraceResponse(
+            1, "testpath", "testurl", 126.9505863, 37.4592141, current
+        )
+
+        // when
+        val nearResult = traceService.isNearEnough(photoInitialTraceResponseNear, latitude, longitude)
+        val farResult = traceService.isNearEnough(photoInitialTraceResponseFar, latitude, longitude)
+
+        // then
+        assertTrue(nearResult)
+        assertFalse(farResult)
+    }
+
+    /**
+     * Test isSimilarTime
+     */
+    @Transactional
+    @Test
+    fun `Could return whether time is similar between photo's and given`() {
+        // given
+        val current = Date()
+        val cal = Calendar.getInstance()
+
+        cal.time = current
+        cal.add(Calendar.MINUTE, 30)
+        val currentNear = cal.time
+
+        cal.time = current
+        cal.add(Calendar.HOUR, 3)
+        val currentFar = cal.time
+
+        val photoInitialTraceResponseNear = PhotoInitialTraceResponse(
+            1, "testpath", "testurl", 126.9490947, 37.4590318, currentNear
+        )
+        val photoInitialTraceResponseFar = PhotoInitialTraceResponse(
+            2, "testpath", "testurl", 126.9490947, 37.4590318, currentFar
+        )
+
+        // when
+        val nearTime = traceService.isSimilarTime(photoInitialTraceResponseNear, current)
+        val farTime = traceService.isSimilarTime(photoInitialTraceResponseFar, current)
+
+        // then
+        assertTrue(nearTime)
+        assertFalse(farTime)
+    }
+
+    /**
+     * Test createInitialTraceBasedOnPhotoIdListGiven
+     * ( and groupPhotosWithLocationAndTimeAndReturnInitialTraceDTOList)
+     * ( and addRecomendedPlaceToInitialDTOList)
+     */
+    @Test
+    @Transactional
+    fun `Could create initial trace response based on photo id list given`() {
+        // given
+        val current = Date()
+
+        val coordCreater = { i: Int ->
+            (i * 0.000000001) + (0.1 * (i / 2))
+        }
+        val timeCreator = { i: Int ->
+            val cal = Calendar.getInstance()
+            cal.time = current
+            cal.add(Calendar.MINUTE, i)
+            cal.add(Calendar.HOUR, i / 2)
+            cal.time
+        }
+
+        // Create 6 Photo Enitities
+        val photos = (0 until 6).map { i ->
+            testHelper.createPhoto(
+                imagePath = "path$i",
+                longitude = coordCreater(i),
+                latitude = coordCreater(i),
+                timestamp = timeCreator(i),
+            )
+        }
+
+        // Mock KakaoApiService
+        `when`(mockKakaoApiService.coordToPlace(anyString(), anyString(), anyString(), anyInt()))
+            .thenReturn(
+                ResponseEntity(
+                    JSONObject.toJSONString(
+                        mapOf(
+                            "documents" to listOf(
+                                mapOf(
+                                    "place_name" to "place1",
+                                    "address_name" to "addr1",
+                                    "distance" to "1"
+                                ),
+                                mapOf(
+                                    "place_name" to "place2",
+                                    "address_name" to "addr2",
+                                    "distance" to "2"
+                                ),
+                            )
+                        )
+                    ),
+                    HttpStatus.OK
+                )
+            )
+
+        // Mock getImageURLfromImagePath
+        `when`(mockImageUrlUtil.getImageURLfromImagePath(anyString())).thenReturn("testurl")
+
+        // when
+        val initialDTOListReturned = traceService.createInitialTraceBasedOnPhotoIdListGiven(
+            photos.map { it.imagePath }
+        )
+
+        // then
+        // Expected value
+        val initialDTOListExpected = (0 until 3).map { i ->
+            FootprintInitialTraceResponse(
+                photoList = ((i * 2)..(i * 2 + 1)).map { j ->
+                    photos[j].run {
+                        PhotoInitialTraceResponse(
+                            id!!,
+                            imagePath,
+                            imageUrl = "testurl",
+                            longitude,
+                            latitude,
+                            timestamp
+                        )
+                    }
+                }.toMutableList(),
+                meanLatitude = (coordCreater(i * 2 + 1) + coordCreater(i * 2)) / 2,
+                meanLongitude = (coordCreater(i * 2 + 1) + coordCreater(i * 2)) / 2,
+                meanTime = Date((photos[i * 2 + 1].timestamp.time + photos[i * 2].timestamp.time) / 2),
+                startTime = photos[i * 2].timestamp,
+                endTime = photos[i * 2 + 1].timestamp,
+                recommendedPlaceList = listOf(
+                    TAG_CODE.음식점, TAG_CODE.관광명소, TAG_CODE.문화시설, TAG_CODE.카페, TAG_CODE.숙박
+                ).map { tagCode ->
+                    PlaceInitialTraceResponse(
+                        name = "place1",
+                        address = "addr1",
+                        distance = 1,
+                        category = TagResponse(tagCode.ordinal, tagCode.name)
+                    )
+                }.toMutableList().also {
+                    it.addAll(
+                        listOf(TAG_CODE.음식점, TAG_CODE.관광명소, TAG_CODE.문화시설, TAG_CODE.카페, TAG_CODE.숙박).map { tagCode ->
+                            PlaceInitialTraceResponse(
+                                name = "place2",
+                                address = "addr2",
+                                distance = 2,
+                                category = TagResponse(tagCode.ordinal, tagCode.name)
+                            )
+                        }
+                    )
+                },
+            )
+        }
+
+        // assertion
+        assertThat(initialDTOListReturned).isEqualTo(initialDTOListExpected)
+    }
+
+    @Test
+    @Transactional
+    fun `Throw NOT_FOUND when photo with given path doesn't exist while creating initial trace based on photo path given`() {
+        // given
+        val current = Date()
+
+        // Create 6 Photo Enitities
+        val photos = (0 until 1).map { i ->
+            testHelper.createPhoto(
+                imagePath = "path$i",
+                longitude = 0.0,
+                latitude = 0.0,
+                timestamp = current,
+            )
+        }
+
+        // when // then
+        val exception = assertThrows<FootprinterException> {
+            traceService.createInitialTraceBasedOnPhotoIdListGiven(listOf("null"))
+        }
+        assertEquals(exception.errorType, ErrorType.NOT_FOUND)
+    }
+}
