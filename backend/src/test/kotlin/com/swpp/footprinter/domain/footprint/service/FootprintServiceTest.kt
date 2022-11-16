@@ -2,12 +2,14 @@ package com.swpp.footprinter.domain.footprint.service
 
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
+import com.swpp.footprinter.common.utils.ImageUrlUtil
 import com.swpp.footprinter.common.utils.dateToString8601
 import com.swpp.footprinter.domain.footprint.dto.FootprintRequest
 import com.swpp.footprinter.domain.footprint.dto.FootprintResponse
 import com.swpp.footprinter.domain.footprint.repository.FootprintRepository
 import com.swpp.footprinter.domain.photo.dto.PhotoRequest
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
+import com.swpp.footprinter.domain.photo.service.PhotoService
 import com.swpp.footprinter.domain.place.dto.PlaceRequest
 import com.swpp.footprinter.domain.place.repository.PlaceRepository
 import com.swpp.footprinter.domain.tag.TAG_CODE
@@ -20,8 +22,12 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.InjectMocks
+import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -31,19 +37,22 @@ import java.util.*
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class FootprintServiceTest @Autowired constructor(
     private val testHelper: TestHelper,
-    private val footprintService: FootprintService,
+    @MockBean val mockImageUrlUtil: ImageUrlUtil,
+    @MockBean val mockPhotoService: PhotoService,
+    @InjectMocks private val footprintService: FootprintService,
     private val footprintRepo: FootprintRepository,
     private val placeRepo: PlaceRepository,
     private val tagRepo: TagRepository,
     private val userRepo: UserRepository,
     private val traceRepo: TraceRepository,
-    private val photoRepo: PhotoRepository
+    private val photoRepo: PhotoRepository,
 ) {
 
     @BeforeAll
     fun initialSetup() {
         testHelper.createUser("testUser", "test@snu.ac.kr")
         testHelper.initializeTag()
+        `when`(mockImageUrlUtil.getImageURLfromImagePath(anyString())).thenReturn("testURL")
     }
 
     @AfterEach
