@@ -470,4 +470,27 @@ class TraceServiceTest @Autowired constructor(
         // assertion
         assertThat(initialDTOListReturned).isEqualTo(initialDTOListExpected)
     }
+
+    @Test
+    @Transactional
+    fun `Throw NOT_FOUND when photo with given path doesn't exist while creating initial trace based on photo path given`() {
+        // given
+        val current = Date()
+
+        // Create 6 Photo Enitities
+        val photos = (0 until 1).map { i ->
+            testHelper.createPhoto(
+                imagePath = "path$i",
+                longitude = 0.0,
+                latitude = 0.0,
+                timestamp = current,
+            )
+        }
+
+        // when // then
+        val exception = assertThrows<FootprinterException> {
+            traceService.createInitialTraceBasedOnPhotoIdListGiven(listOf("null"))
+        }
+        assertEquals(exception.errorType, ErrorType.NOT_FOUND)
+    }
 }
