@@ -50,7 +50,12 @@ spring:
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
+
+auth.jwt:
+  issuer: com.swpp.footprinter
+  jwtSecret: THIS_IS_THE_SECRET_KEY_FOR_THE_WAFFLE_SEMINAR2_ASSIGNMENT_SPRING_PROJECT
+  jwtExpiration: 3600000
 
 ---
 
