@@ -27,7 +27,7 @@ class DataInitializer(
     override fun run(args: ApplicationArguments) {
         listOf("User1", "User2", "User3").forEach {
             if (!userRepo.existsByUsername(it)) {
-                userRepo.save(User(username = it, email = "$it@snu.ac.kr", myTrace = mutableSetOf()))
+                userRepo.save(User(username = it, password = "encoded-password", myTrace = mutableSetOf()))
             }
         }
         userRepo.findAll().forEach { println(it.username) }

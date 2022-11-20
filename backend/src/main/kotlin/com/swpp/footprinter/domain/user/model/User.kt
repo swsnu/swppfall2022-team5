@@ -6,12 +6,11 @@ import javax.persistence.*
 
 @Entity
 class User(
-
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     val username: String,
 
-    @Column(name = "email")
-    val email: String,
+    @Column(name = "password")
+    val password: String,
 
     @OneToMany(mappedBy = "owner", cascade = [CascadeType.ALL])
     val myTrace: MutableSet<Trace> = mutableSetOf(),
