@@ -43,7 +43,13 @@ class TokenVerifyInterceptor(
         if (HttpMethod.OPTIONS.matches(request.method)) {
             return true
         }
+
+        // Throw exception when cannot extract token
         val token = authTokenService.getAccessToken(request.getHeader("Authorization")) ?: throw FootprinterException(ErrorType.UNAUTHORIZED)
-        return authTokenService.verifyToken(token)
+
+        // Throw exception when verification of token fails
+        if (!authTokenService.verifyToken(token)) { throw FootprinterException(ErrorType.UNAUTHORIZED) }
+
+        return true
     }
 }
