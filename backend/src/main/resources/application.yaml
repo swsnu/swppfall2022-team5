@@ -50,7 +50,12 @@ spring:
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
+
+auth.jwt:
+  issuer: com.swpp.footprinter
+  jwtSecret: SECRET_KEY_FOR_MIGHTY_MARVELOUS_FOOTPRINTER_SERVICE
+  jwtExpiration: 3600000
 
 ---
 
