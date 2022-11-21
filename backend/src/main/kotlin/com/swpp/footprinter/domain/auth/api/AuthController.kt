@@ -11,7 +11,7 @@ import com.swpp.footprinter.domain.auth.service.AuthTokenService
 import com.swpp.footprinter.domain.user.dto.UserResponse
 import com.swpp.footprinter.domain.user.model.User
 import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.validation.Errors
+import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -23,8 +23,8 @@ class AuthController(
 ) {
 
     @PostMapping("/signup")
-    fun signUp(@Valid @RequestBody signUpRequest: SignUpRequest, errors: Errors): AuthResponse {
-        if (errors.hasErrors()) {
+    fun signUp(@Valid @RequestBody signUpRequest: SignUpRequest, bindingResult: BindingResult): AuthResponse {
+        if (bindingResult.hasErrors()) {
             throw FootprinterException(ErrorType.WRONG_FORMAT)
         }
 
@@ -34,11 +34,11 @@ class AuthController(
     }
 
     @PostMapping("/signin")
-    fun logIn(@Valid @RequestBody signInRequest: SignInRequest, errors: Errors): AuthResponse {
-        if (errors.hasErrors()) {
+    fun logIn(@Valid @RequestBody signInRequest: SignInRequest, bindingResult: BindingResult): AuthResponse {
+        if (bindingResult.hasErrors()) {
             throw FootprinterException(ErrorType.WRONG_FORMAT)
         }
-        val user = authService.findUser(username = signInRequest.username, password = signInRequest.password) ?: throw FootprinterException(ErrorType.INVALID_USER_INFO)
+        val user = authService.findUser(username = signInRequest.username!!, password = signInRequest.password!!) ?: throw FootprinterException(ErrorType.INVALID_USER_INFO)
 
         val jwt = authTokenService.generateTokenByUsername(username = user.username)
         return AuthResponse(accessToken = jwt)

@@ -18,7 +18,7 @@ class AuthServiceImpl(
     private val passwordEncoder: PasswordEncoder
 ) : AuthService {
     override fun createUser(signUpRequest: SignUpRequest): User {
-        return userRepo.save(User(username = signUpRequest.username, password = passwordEncoder.encode(signUpRequest.password)))
+        return userRepo.save(User(username = signUpRequest.username!!, password = passwordEncoder.encode(signUpRequest.password)))
     }
 
     override fun findUser(username: String, password: String): User? {
