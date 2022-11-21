@@ -54,7 +54,7 @@ spring:
 
 auth.jwt:
   issuer: com.swpp.footprinter
-  jwtSecret: THIS_IS_THE_SECRET_KEY_FOR_THE_WAFFLE_SEMINAR2_ASSIGNMENT_SPRING_PROJECT
+  jwtSecret: SECRET_KEY_FOR_MIGHTY_MARVELOUS_FOOTPRINTER_SERVICE
   jwtExpiration: 3600000
 
 ---
