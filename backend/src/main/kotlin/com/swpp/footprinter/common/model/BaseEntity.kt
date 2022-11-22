@@ -9,7 +9,7 @@ open class BaseEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    open val id: Long? = null,
+    open val id: Long = 0,
 
     @Column(name = "created_at", nullable = false)
     open val createdAt: LocalDateTime = LocalDateTime.now(),

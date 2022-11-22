@@ -24,7 +24,6 @@ import com.swpp.footprinter.domain.footprint.service.FootprintService
 import com.swpp.footprinter.domain.tag.TAG_CODE
 import com.swpp.footprinter.domain.tag.dto.TagResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*
@@ -51,9 +50,6 @@ class TraceServiceImpl(
     private val photoRepo: PhotoRepository,
     private val kakaoAPIService: KakaoAPIService,
     private val imageUrlUtil: ImageUrlUtil,
-
-    @Value("\${cloud.aws.s3.bucket-name}")
-    private val bucketName: String
 ) : TraceService {
     override fun getAllTraces(): List<TraceResponse> {
         return traceRepo.findAll().filter { it.owner != userRepo.findByIdOrNull(1)!! }.map { trace -> trace.toResponse() } // TODO: 현재 user로 넣기
