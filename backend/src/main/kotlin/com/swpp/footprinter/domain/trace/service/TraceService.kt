@@ -8,45 +8,43 @@ import com.swpp.footprinter.common.TIME_GRID_SEC
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.common.utils.ImageUrlUtil
-import com.swpp.footprinter.domain.photo.model.Photo
+import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
+import com.swpp.footprinter.domain.footprint.service.FootprintService
 import com.swpp.footprinter.domain.photo.dto.PhotoInitialTraceResponse
+import com.swpp.footprinter.domain.photo.model.Photo
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
 import com.swpp.footprinter.domain.place.dto.PlaceInitialTraceResponse
 import com.swpp.footprinter.domain.place.service.externalAPI.KakaoAPIService
-import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
-import com.swpp.footprinter.domain.trace.dto.TraceRequest
-import com.swpp.footprinter.domain.trace.model.Trace
-import com.swpp.footprinter.domain.trace.repository.TraceRepository
-import com.swpp.footprinter.domain.user.repository.UserRepository
-import com.swpp.footprinter.domain.footprint.service.FootprintService
 import com.swpp.footprinter.domain.tag.TAG_CODE
 import com.swpp.footprinter.domain.tag.dto.TagResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
+import com.swpp.footprinter.domain.trace.dto.TraceRequest
+import com.swpp.footprinter.domain.trace.model.Trace
+import com.swpp.footprinter.domain.trace.repository.TraceRepository
+import com.swpp.footprinter.domain.user.model.User
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*
 import javax.transaction.Transactional
-import kotlin.collections.ArrayList
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 interface TraceService {
-    fun getAllMyTraces(): List<TraceDetailResponse>
-    fun getAllOtherUsersTraces(): List<TraceDetailResponse>
-    fun createTrace(traceRequest: TraceRequest)
+    fun getAllMyTraces(loginUser: User): List<TraceDetailResponse>
+    fun getAllOtherUsersTraces(loginUser: User): List<TraceDetailResponse>
+    fun createTrace(traceRequest: TraceRequest, loginUser: User)
     fun getTraceById(traceId: Long): TraceDetailResponse
 
-    fun deleteTraceById(traceId: Long)
+    fun deleteTraceById(traceId: Long, loginUser: User)
     fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
-    fun getTraceByDate(date: String): TraceDetailResponse?
+    fun getTraceByDate(date: String, loginUser: User): TraceDetailResponse?
 }
 
 @Service
 class TraceServiceImpl(
     private val traceRepo: TraceRepository,
     private val footprintService: FootprintService,
-    private val userRepo: UserRepository,
     private val photoRepo: PhotoRepository,
     private val kakaoAPIService: KakaoAPIService,
     private val imageUrlUtil: ImageUrlUtil,
@@ -54,24 +52,37 @@ class TraceServiceImpl(
     @Value("\${cloud.aws.s3.bucket-name}")
     private val bucketName: String
 ) : TraceService {
-    override fun getAllMyTraces(): List<TraceDetailResponse> {
-        return traceRepo.findTraceAllByOwner(userRepo.findByIdOrNull(1)!!).map { trace -> trace.toDetailResponse().apply { footprints?.forEach { fp ->
-            fp.photos.forEach { p ->
-                p.imageUrl = imageUrlUtil.getImageURLfromImagePath(p.imagePath)
+    override fun getAllMyTraces(loginUser: User): List<TraceDetailResponse> {
+        return traceRepo.findTraceAllByOwner(loginUser).map { trace ->
+            trace.toDetailResponse().apply {
+                footprints?.forEach { footprint ->
+                    footprint.photos.forEach {
+                        it.imageUrl = imageUrlUtil.getImageURLfromImagePath(it.imagePath)
+                    }
+                }
             }
-        }} } // TODO: 현재 user로 넣기
+        }
     }
 
-    override fun getAllOtherUsersTraces(): List<TraceDetailResponse> {
-        return traceRepo.findAll().filter { it.owner != userRepo.findByIdOrNull(1)!! }.map { trace -> trace.toDetailResponse() } // TODO: 현재 user로 넣기
+    override fun getAllOtherUsersTraces(loginUser: User): List<TraceDetailResponse> {
+        return traceRepo.findAll().filter { it.owner != loginUser && it.public }.map { trace ->
+            trace.toDetailResponse().apply {
+                footprints?.forEach { footprint ->
+                    footprint.photos.forEach {
+                        it.imageUrl = imageUrlUtil.getImageURLfromImagePath(it.imagePath)
+                    }
+                }
+            }
+        }
     }
 
     @Transactional
-    override fun createTrace(traceRequest: TraceRequest) {
+    override fun createTrace(traceRequest: TraceRequest, loginUser: User) {
         val newTrace = Trace(
             traceTitle = traceRequest.title!!,
             traceDate = traceRequest.date!!,
-            owner = userRepo.findByIdOrNull(1)!!, // TODO: 현재 user로 넣기
+            public = traceRequest.public!!,
+            owner = loginUser,
             footprints = mutableSetOf()
         )
         traceRepo.save(newTrace)
@@ -97,8 +108,14 @@ class TraceServiceImpl(
         }
     }
 
-    override fun deleteTraceById(traceId: Long) {
-        traceRepo.deleteById(traceId) // TODO: Authentication
+    override fun deleteTraceById(traceId: Long, loginUser: User) {
+        val targetTrace = traceRepo.findByIdOrNull(traceId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
+
+        if (targetTrace.owner != loginUser) {
+            throw FootprinterException(ErrorType.FORBIDDEN)
+        }
+
+        traceRepo.deleteById(traceId)
     }
 
     override fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> {
@@ -113,16 +130,14 @@ class TraceServiceImpl(
         return initialTraceDTOList
     }
 
-    override fun getTraceByDate(date: String): TraceDetailResponse? {
-        // TODO: 현재 유저 입력
+    override fun getTraceByDate(date: String, loginUser: User): TraceDetailResponse? {
         return traceRepo
-            .findTracesByTraceDate(date)
-            .lastOrNull()
+            .findTraceAllByOwner(loginUser).lastOrNull { it.traceDate == date }
             ?.toDetailResponse()
             ?.apply {
-                footprints?.forEach { fp ->
-                    fp.photos.forEach { p ->
-                        p.imageUrl = imageUrlUtil.getImageURLfromImagePath(p.imagePath)
+                footprints?.forEach { footprint ->
+                    footprint.photos.forEach {
+                        it.imageUrl = imageUrlUtil.getImageURLfromImagePath(it.imagePath)
                     }
                 }
             }
