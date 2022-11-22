@@ -493,4 +493,65 @@ class TraceServiceTest @Autowired constructor(
         }
         assertEquals(exception.errorType, ErrorType.NOT_FOUND)
     }
+
+    @Test
+    @Transactional
+    fun `should get all my traces`() {
+        val date = Date()
+        val user = userRepo.findByIdOrNull(1)!!
+
+        val trace = testHelper.createTrace(
+            "testMyTraceTitle",
+            dateToString8601(date),
+            user,
+        )
+
+        val footprint = testHelper.createFootprintAndUpdateElements(
+            startTime = date,
+            endTime = date,
+            rating = 0,
+            memo = "testMemo",
+            place = testHelper.createPlace("testPlace", "testAddress"),
+            tag = testHelper.createTag(TAG_CODE.음식점),
+            trace = trace,
+            photos = mutableSetOf(
+                testHelper.createPhoto("testPath", 0.0, 0.0, date)
+            )
+        )
+
+        runBlocking { delay(1000) }
+        val dateLater = Date()
+        val traceLater = testHelper.createTrace(
+            "testAnotherTraceTitle",
+            dateToString8601(dateLater),
+            user,
+        )
+
+        val footprintLater = testHelper.createFootprintAndUpdateElements(
+            startTime = dateLater,
+            endTime = dateLater,
+            rating = 2,
+            memo = "testAnotherMemo",
+            place = testHelper.createPlace("testAnotherPlace", "testAnotherAddress"),
+            tag = testHelper.createTag(TAG_CODE.카페),
+            trace = traceLater,
+            photos = mutableSetOf(
+                testHelper.createPhoto("testAnotherPath", 0.0, 0.0, dateLater)
+            )
+        )
+
+        `when`(mockImageUrlUtil.getImageURLfromImagePath(anyString())).thenReturn("testurl")
+
+        val myTraces = traceService.getAllMyTraces(user)
+        assertThat(myTraces).hasSize(2)
+
+        val firstTrace = if (myTraces[0].date!! < myTraces[1].date!!) myTraces[0] else myTraces[1]
+        val lastTrace = if (myTraces[0].date!! < myTraces[1].date!!) myTraces[1] else myTraces[0]
+
+        assertThat(firstTrace).extracting("date").isEqualTo(trace.traceDate)
+        assertThat(firstTrace).extracting("title").isEqualTo(trace.traceTitle)
+
+        assertThat(lastTrace).extracting("date").isEqualTo(traceLater.traceDate)
+        assertThat(lastTrace).extracting("title").isEqualTo(traceLater.traceTitle)
+    }
 }
