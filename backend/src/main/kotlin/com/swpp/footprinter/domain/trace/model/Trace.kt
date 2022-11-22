@@ -23,6 +23,9 @@ class Trace(
     @OneToMany(mappedBy = "trace", cascade = [CascadeType.ALL])
     val footprints: MutableSet<Footprint>,
 
+    @Column(name = "likes_count", columnDefinition = "integer default 0")
+    var likesCount: Int = 0,
+
 ) : BaseEntity() {
     fun toResponse(): TraceResponse {
         return TraceResponse(
