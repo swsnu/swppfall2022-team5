@@ -1,9 +1,11 @@
 package com.swpp.footprinter.domain.trace.api
 
+import com.swpp.footprinter.common.annotations.UserContext
 import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
 import com.swpp.footprinter.domain.trace.service.TraceService
+import com.swpp.footprinter.domain.user.model.User
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -17,29 +19,31 @@ class TraceController(
 
     @GetMapping("/traces")
     @ResponseBody
-    fun getMyTraces(): List<TraceDetailResponse> {
-        return service.getAllMyTraces()
+    fun getMyTraces(@UserContext user: User): List<TraceDetailResponse> {
+        return service.getAllMyTraces(user)
     }
 
     @GetMapping("/traces/explore")
     @ResponseBody
-    fun getOtherUsersTraces(): List<TraceDetailResponse> {
-        return service.getAllOtherUsersTraces()
+    fun getOtherUsersTraces(@UserContext user: User): List<TraceDetailResponse> {
+        return service.getAllOtherUsersTraces(user)
     }
 
     @GetMapping("/traces/date/{date}")
     @ResponseBody
     fun getTraceByDate(
-        @PathVariable date: String
+        @PathVariable date: String,
+        @UserContext user: User
     ): TraceDetailResponse? {
-        return service.getTraceByDate(date)
+        return service.getTraceByDate(date, user)
     }
 
     @PostMapping("/traces")
     fun createTrace(
-        @RequestBody @Valid request: TraceRequest
+        @RequestBody @Valid request: TraceRequest,
+        @UserContext user: User
     ): ResponseEntity<String> {
-        service.createTrace(request)
+        service.createTrace(request, user)
         return ResponseEntity<String>("Created", HttpStatus.CREATED)
     }
 
@@ -52,9 +56,10 @@ class TraceController(
 
     @DeleteMapping("/traces/id/{traceId}")
     fun deleteTrace(
-        @PathVariable(required = true) traceId: Long
+        @PathVariable(required = true) traceId: Long,
+        @UserContext user: User
     ) {
-        service.deleteTraceById(traceId)
+        service.deleteTraceById(traceId, user)
     }
 
     @PostMapping("/traces/create")
