@@ -26,7 +26,7 @@ yarn test:unit --coverage
 ### Run
 ```bash
 cd backend
-./gradlew run
+./gradlew bootRun
 ```
 
 ### Test
