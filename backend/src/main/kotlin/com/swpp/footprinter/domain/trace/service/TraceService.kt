@@ -8,6 +8,7 @@ import com.swpp.footprinter.common.TIME_GRID_SEC
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.common.utils.ImageUrlUtil
+import com.swpp.footprinter.common.utils.stringToDate8601
 import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
 import com.swpp.footprinter.domain.footprint.service.FootprintService
 import com.swpp.footprinter.domain.photo.dto.PhotoInitialTraceResponse
@@ -132,13 +133,16 @@ class TraceServiceImpl(
 
     override fun getTraceByDate(date: String, loginUser: User): TraceDetailResponse? {
         return traceRepo
-            .findTraceAllByOwner(loginUser).lastOrNull { it.traceDate == date }
+            .findTraceByOwnerAndTraceDate(loginUser, date).lastOrNull()
             ?.toDetailResponse()
             ?.apply {
                 footprints?.forEach { footprint ->
                     footprint.photos.forEach {
                         it.imageUrl = imageUrlUtil.getImageURLfromImagePath(it.imagePath)
                     }
+                }
+                footprints = footprints?.sortedBy {
+                    stringToDate8601(it.startTime).time
                 }
             }
     }
