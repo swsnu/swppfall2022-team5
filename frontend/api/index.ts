@@ -4,6 +4,8 @@ import { apiClient } from "./client";
 import moment from "moment";
 import { TagType } from "../dto/tag";
 import { FootprintEditRequestType, FootprintRequestType, FootprintResponseType } from "../dto/footprint";
+import { SigninRequestType, SigninResponseType } from "../dto/auth";
+import { useAuthStore } from "../store/auth";
 
 export const fetchInitialFootprints = async (photoIds: string[]) => {
   return (await apiClient.post<FootprintPredictionType[]>("/traces/create", photoIds)).data;
@@ -18,7 +20,8 @@ export const editFootprint = async (footprintId: number, footprintRequest: Footp
 };
 
 export const fetchTraceByDate = async (date: Date) => {
-  return (await apiClient.get<TraceDetailResponse>(`/traces/date/${moment(date).format("YYYY-MM-DD")}`)).data;
+  const token = useAuthStore.getState().userToken
+  return (await apiClient.get<TraceDetailResponse>(`/traces/date/${moment(date).format("YYYY-MM-DD")}`, { headers: {'Authorization': `Bearer ${token}`} })).data;
 };
 
 export const fetchTraceById = async (traceId: number) => {
@@ -31,4 +34,12 @@ export const fetchTags = async () => {
 
 export const fetchFootprintById = async (footprintId: number) => {
   return (await apiClient.get<FootprintResponseType>(`/footprints/${footprintId}`)).data;
+};
+
+export const postSignin = async (signinRequest: SigninRequestType) => {
+  return (await apiClient.post<SigninResponseType>("/signin", signinRequest)).data;
+};
+
+export const postSignUp = async (signinRequest: SigninRequestType) => {
+  return (await apiClient.post<SigninResponseType>("/signup", signinRequest)).data;
 };
