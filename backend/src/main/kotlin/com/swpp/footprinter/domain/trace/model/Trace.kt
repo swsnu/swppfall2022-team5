@@ -16,6 +16,9 @@ class Trace(
     @Column(name = "trace_date", nullable = false)
     val traceDate: String,
 
+    @Column(name = "public", nullable = false)
+    var public: Boolean = true,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id", name = "userId")
     val owner: User,
