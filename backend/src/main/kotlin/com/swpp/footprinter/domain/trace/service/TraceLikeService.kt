@@ -7,8 +7,8 @@ import com.swpp.footprinter.domain.trace.repository.TraceLikeRepository
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import com.swpp.footprinter.domain.user.model.User
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException
 import org.springframework.stereotype.Service
-import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
 
 interface TraceLikeService {
@@ -24,7 +24,7 @@ class TraceLikeServiceImpl(
 
 //    @Transactional
     override fun likeTraceById(user: User, traceId: Long): Int {
-        val trace = try { traceRepository.getReferenceById(traceId) } catch (e: EntityNotFoundException) { throw FootprinterException(ErrorType.NOT_FOUND) }
+        val trace = try { traceRepository.getReferenceById(traceId) } catch (e: JpaObjectRetrievalFailureException) { throw FootprinterException(ErrorType.NOT_FOUND) }
         val newTraceLike = TraceLike(
             trace = trace,
             user = user
@@ -41,7 +41,7 @@ class TraceLikeServiceImpl(
 
     @Transactional
     override fun unlikeTraceById(user: User, traceId: Long): Int {
-        val trace = try { traceRepository.getReferenceById(traceId) } catch (e: EntityNotFoundException) { throw FootprinterException(ErrorType.NOT_FOUND) }
+        val trace = try { traceRepository.getReferenceById(traceId) } catch (e: JpaObjectRetrievalFailureException) { throw FootprinterException(ErrorType.NOT_FOUND) }
         val traceLike = traceLikeRepository.findByTraceIdAndUserId(traceId, user.id) ?: return trace.likesCount
         trace.likesCount -= 1
         traceRepository.save(trace)

@@ -1,5 +1,6 @@
 package com.swpp.footprinter.domain.trace.service
 
+import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.domain.trace.repository.TraceLikeRepository
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import com.swpp.footprinter.domain.user.repository.UserRepository
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.assertThrows
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -47,5 +49,17 @@ class TraceLikeTest(
         likesCount = traceLikeService.unlikeTraceById(user2, trace.id)
         assertThat(likesCount).isEqualTo(0)
         assertThat(traceLikeRepository.findAllByTraceId(traceId = trace.id).count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `test - like and unlike non-existent trace`() {
+        val user = userRepository.findByUsername("testuser")!!
+        assertThrows<FootprinterException> {
+            traceLikeService.likeTraceById(user, traceId = 2)
+        }
+
+        assertThrows<FootprinterException> {
+            traceLikeService.unlikeTraceById(user, traceId = 2)
+        }
     }
 }
