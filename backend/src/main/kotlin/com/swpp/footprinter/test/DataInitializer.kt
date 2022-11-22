@@ -1,16 +1,14 @@
 package com.swpp.footprinter.test
 
+import com.swpp.footprinter.domain.auth.dto.SignUpRequest
+import com.swpp.footprinter.domain.auth.service.AuthService
 import com.swpp.footprinter.domain.tag.TAG_CODE
 import com.swpp.footprinter.domain.tag.model.Tag
 import com.swpp.footprinter.domain.tag.repository.TagRepository
-import com.swpp.footprinter.domain.trace.model.Trace
-import com.swpp.footprinter.domain.trace.repository.TraceRepository
-import com.swpp.footprinter.domain.user.model.User
 import com.swpp.footprinter.domain.user.repository.UserRepository
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.Profile
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import javax.transaction.Transactional
 
@@ -19,7 +17,7 @@ import javax.transaction.Transactional
 @Profile("!test")
 class DataInitializer(
     private val userRepo: UserRepository,
-    private val traceRepo: TraceRepository,
+    private val authService: AuthService,
     private val tagRepo: TagRepository,
 ) : ApplicationRunner {
 
@@ -27,7 +25,7 @@ class DataInitializer(
     override fun run(args: ApplicationArguments) {
         listOf("User1", "User2", "User3").forEach {
             if (!userRepo.existsByUsername(it)) {
-                userRepo.save(User(username = it, password = "encoded-password", myTrace = mutableSetOf()))
+                authService.createUser(SignUpRequest(username = it, password = "encoded-password"))
             }
         }
         userRepo.findAll().forEach { println(it.username) }
