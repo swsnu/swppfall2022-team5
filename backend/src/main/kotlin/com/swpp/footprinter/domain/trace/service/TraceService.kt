@@ -54,7 +54,7 @@ class TraceServiceImpl(
     private val bucketName: String
 ) : TraceService {
     override fun getAllMyTraces(loginUser: User): List<TraceDetailResponse> {
-        return traceRepo.findTraceAllByOwner(loginUser).map { trace ->
+        return loginUser.myTrace.map { trace ->
             trace.toDetailResponse().apply {
                 footprints?.forEach { footprint ->
                     footprint.photos.forEach {
