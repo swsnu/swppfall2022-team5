@@ -10,6 +10,7 @@ enum class ErrorType(
     WRONG_FORMAT(4000, HttpStatus.BAD_REQUEST, "양식이 잘못되었습니다."),
     MISSING_REQUEST_BODY(4001, HttpStatus.BAD_REQUEST, "요청 데이터가 존재하지 않습니다."),
     DUPLICATE_USERNAME(4002, HttpStatus.BAD_REQUEST, "이미 가입된 아이디입니다."),
+    FORBIDDEN(4003, HttpStatus.FORBIDDEN, "허용되지 않은 요청입니다."),
     NOT_FOUND(4004, HttpStatus.NOT_FOUND, "서버상에 데이터가 존재하지 않습니다."),
     UNAUTHORIZED(4005, HttpStatus.UNAUTHORIZED, "인증되지 않은 요청입니다."),
     INVALID_USER_INFO(4006, HttpStatus.UNAUTHORIZED, "잘못된 아이디 또는 비밀번호입니다."),
