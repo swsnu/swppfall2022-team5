@@ -115,7 +115,7 @@ class TraceServiceTest @Autowired constructor(
         assertThat(traceRepo.count()).isEqualTo(0)
 
         // when
-        traceService.createTrace(traceRequest)
+        traceService.createTrace(traceRequest, currentUser)
 
         // then
         // Check trace
@@ -226,7 +226,7 @@ class TraceServiceTest @Autowired constructor(
         )
 
         // when
-        traceService.deleteTraceById(trace.id!!)
+        traceService.deleteTraceById(trace.id!!, user)
 
         // then
         assertThat(traceRepo.findByIdOrNull(trace.id!!)).isNull()
@@ -278,7 +278,7 @@ class TraceServiceTest @Autowired constructor(
         `when`(mockImageUrlUtil.getImageURLfromImagePath(anyString())).thenReturn("testurl")
 
         // when
-        val searchedTrace = traceService.getTraceByDate(dateToString8601(date))
+        val searchedTrace = traceService.getTraceByDate(dateToString8601(date), user)
 
         // then
         // Trace
