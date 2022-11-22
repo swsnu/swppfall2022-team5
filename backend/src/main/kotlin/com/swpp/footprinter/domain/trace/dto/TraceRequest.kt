@@ -9,6 +9,7 @@ class TraceRequest(
     val title: String?,
     @field: NotBlank
     val date: String?,
+    val public: Boolean? = true,
     @field: NotEmpty
     val footprintList: List<FootprintRequest>?
 )
