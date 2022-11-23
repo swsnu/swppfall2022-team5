@@ -23,6 +23,7 @@ import com.swpp.footprinter.domain.trace.dto.TraceRequest
 import com.swpp.footprinter.domain.trace.model.Trace
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import com.swpp.footprinter.domain.user.model.User
+import com.swpp.footprinter.domain.user.repository.UserRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -32,7 +33,7 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 interface TraceService {
-    fun getAllMyTraces(loginUser: User): List<TraceDetailResponse>
+    fun getAllUserTraces(loginUser: User, username: String): List<TraceDetailResponse>
     fun getAllOtherUsersTraces(loginUser: User): List<TraceDetailResponse>
     fun createTrace(traceRequest: TraceRequest, loginUser: User)
     fun getTraceById(traceId: Long): TraceDetailResponse
@@ -49,16 +50,30 @@ class TraceServiceImpl(
     private val photoRepo: PhotoRepository,
     private val kakaoAPIService: KakaoAPIService,
     private val imageUrlUtil: ImageUrlUtil,
+    private val userRepo: UserRepository,
 
     @Value("\${cloud.aws.s3.bucket-name}")
     private val bucketName: String
 ) : TraceService {
-    override fun getAllMyTraces(loginUser: User): List<TraceDetailResponse> {
-        return loginUser.myTrace.map { trace ->
-            trace.toDetailResponse().apply {
-                footprints?.forEach { footprint ->
-                    footprint.photos.forEach {
-                        it.imageUrl = imageUrlUtil.getImageURLfromImagePath(it.imagePath)
+    override fun getAllUserTraces(loginUser: User, username: String): List<TraceDetailResponse> {
+        if (loginUser.username == username) {
+            return loginUser.myTrace.map { trace ->
+                trace.toDetailResponse().apply {
+                    footprints?.forEach { footprint ->
+                        footprint.photos.forEach {
+                            it.imageUrl = imageUrlUtil.getImageURLfromImagePath(it.imagePath)
+                        }
+                    }
+                }
+            }
+        } else {
+            val user = userRepo.findByUsername(username) ?: throw FootprinterException(ErrorType.NOT_FOUND)
+            return user.myTrace.filter { trace -> trace.public }.map { trace ->
+                trace.toDetailResponse().apply {
+                    footprints?.forEach { footprint ->
+                        footprint.photos.forEach {
+                            it.imageUrl = imageUrlUtil.getImageURLfromImagePath(it.imagePath)
+                        }
                     }
                 }
             }
