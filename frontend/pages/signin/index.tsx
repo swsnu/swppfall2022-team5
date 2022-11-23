@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import { useAuthStore } from '../../store/auth';
 import { apiClient } from "../../api/client";
 import { ErrorType } from "../../api/exception/errorType";
+import Image from "next/image";
 
 
 export default function Signin() {
@@ -23,39 +24,41 @@ export default function Signin() {
     return (
         <Container>
             <div className='mx-5'>
-                <div className="mt-10 text-xl font-bold">
+                <div className="pt-20 text-2xl font-bold">
                     당신의 발자취를 이곳에 기록하세요
                 </div>
-                <div className="mt-2 text-xs font-light">
-                    적당히 멋진 문구
+                <div className="mt-2 text-xs text-gray-400">
+                    추억이 담긴 사진을 편하게 정리하고, 열람하세요.
                 </div>
-                <div className="text-xs font-light">
-                    적당히 멋진 문구 2
+                <div className="text-xs text-gray-400">
+                    사진을 한번에 업로드하세요. 자동으로 분류하여 정리해 드립니다.
                 </div>
-                <div className='flex justify-center mt-6 w-4/6 h-4/6 '>
-                    적당한 이미지
-                    {/* <Image
-                        src={SamplePic}
-                        alt=""
-                    /> */}
-                </div>
-                
-                <div className="mt-10">
-                    <label className="block text-white-900 text-sm font-bold mb-2">
-                    아이디
-                    </label>
+
+                <Image
+                    className="mt-10 flex justify-center"
+                    src=""
+                    alt="Sample Image"
+                    width={500}
+                    height={300}
+                >
+                </Image>
+
+                <div className="mt-20 grid grid-cols-1 place-items-center">
+                    {/* <label className="text-white-900 text-sm font-bold p-2">
+                        아이디
+                    </label> */}
                     <input 
-                        className="text-white-900 bg-black focus:outline-none"
+                        className="text-white-900 bg-black w-3/5 p-3 enabled:hover:border-white-400"
                         placeholder='아이디를 입력하세요.'
                         onChange={event => setInputId(event.currentTarget.value)}
                     />
-                </div>
-                <div className="mt-3">
-                    <label className="block text-white-900 text-sm font-bold mb-2">
-                    비밀번호
-                    </label>
+                
+                
+                    {/* <label className="block text-white-900 text-sm font-bold mt-3 p-2">
+                        비밀번호
+                    </label> */}
                     <input 
-                        className="text-white-900 bg-black focus:outline-none"
+                        className="text-white-900 bg-black w-3/5 p-3 enabled:hover:border-white-400 mt-2"
                         placeholder='비밀번호를 입력하세요.'
                         type='password'
                         onChange={event => setInputPassword(event.currentTarget.value)}
@@ -74,6 +77,7 @@ export default function Signin() {
                                     onSuccess: (response) => {
                                         apiClient.defaults.headers.common['Authorization'] = `Bearer ${response.accessToken}`
                                         setToken(response.accessToken)
+                                        toast.success("로그인되었습니다.")
                                         router.push("/footprints")
                                     },
                                     onError: (error) => {
@@ -90,12 +94,12 @@ export default function Signin() {
                         }}
                         text={"로그인"}
                         isLoading={false}
-                        className=''
+                        className='w-3/5 p-2'
                         disabled={false}
                     />
                 </div>
 
-                <div className='flex justify-center mt-5'>
+                <div className='flex justify-center mt-3'>
                     <RectangleButton
                         onClick={() => {
                             signupMutation.mutate(
@@ -108,6 +112,7 @@ export default function Signin() {
                                         apiClient.defaults.headers.common['Authorization'] = `Bearer ${response.accessToken}`
                                         setToken(response.accessToken)
                                         router.push("/footprints")
+                                        toast.success("회원가입에 성공하였습니다.")
                                     },
                                     onError: (error) => {
                                         if((error as any).response.data.error['code'] == ErrorType.DUPLICATE_USERNAME) {
@@ -123,7 +128,7 @@ export default function Signin() {
                         }}
                         text={"회원가입"}
                         isLoading={false}
-                        className=''
+                        className='w-3/5 p-2'
                         disabled={false}
                     />
                 </div>

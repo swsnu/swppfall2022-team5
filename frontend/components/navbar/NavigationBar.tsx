@@ -20,8 +20,10 @@ const NavigationBar = ({ title }: IProps) => {
         onClickSignout={() => {
           setToken("")
           router.push("/signin")
-          toast("로그아웃 되었습니다.")
+          toast.success("로그아웃 되었습니다.")
         }}
+        onClickInfo={()=>{}}
+        onClickMypage={()=>{}}
       />
     </div>
   );
