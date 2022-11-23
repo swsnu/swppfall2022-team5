@@ -29,7 +29,6 @@ export const fetchAllUserTraces = async (username: string) => {
 
 export const fetchAllOtherUsersTraces = async () => {
   return (await apiClient.get<TraceDetailResponseType[]>("/traces/explore")).data;
-}
 
 export const fetchTraceByDate = async (date: Date) => {
   return (await apiClient.get<TraceDetailResponseType>(`/traces/date/${moment(date).format("YYYY-MM-DD")}`)).data;
