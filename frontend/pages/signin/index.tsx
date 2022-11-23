@@ -1,7 +1,4 @@
-import Image from 'next/image'
 import Container from "../../components/containers/Container";
-import SamplePic from '../../../../../../../Downloads/KakaoTalk_Photo_2022-11-22-22-57-10.png'
-import { Rectangle } from 'react-kakao-maps-sdk';
 import RectangleButton from '../../components/buttons/RectangleButton';
 import { useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -10,6 +7,7 @@ import { postSignin, postSignUp } from '../../api';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../../store/auth';
+import { apiClient } from "../../api/client";
 
 
 export default function Signin() {
@@ -72,6 +70,7 @@ export default function Signin() {
                                 },
                                 {
                                     onSuccess: (response) => {
+                                        apiClient.defaults.headers.common['Authorization'] = `Bearer ${response.accessToken}`
                                         setToken(response.accessToken)
                                         router.push("/footprints")
                                     },

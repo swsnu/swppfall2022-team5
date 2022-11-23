@@ -8,6 +8,8 @@ import Moment from "react-moment";
 import "../styles/globals.css";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/router";
+import { useAuthStore } from "../store/auth";
+import { apiClient } from "../api/client";
 
 Moment.globalLocale = "ko";
 
@@ -28,6 +30,8 @@ const createQueryClient = (goBackToSigninPage: () => void) =>
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
   const [queryClient] = useState(createQueryClient(() => { router.push('/signin')}));
+
+  apiClient.defaults.headers.common['Authorization'] = `Bearer ${useAuthStore.getState().userToken}`
   return (
     <>
       <Head>

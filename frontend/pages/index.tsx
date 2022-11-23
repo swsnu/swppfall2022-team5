@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { checkToken } from "../api";
+import { apiClient } from "../api/client";
 import Container from "../components/containers/Container";
 import { useAuthStore } from "../store/auth";
 

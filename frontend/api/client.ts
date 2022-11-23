@@ -1,14 +1,4 @@
 import axios from "axios";
-import { useAuthStore } from "../store/auth";
+import toast from "react-hot-toast";
 
-export const apiClient = () =>  {
-    const token = useAuthStore.getState().userToken
-    return axios.create(
-        { 
-            baseURL: process.env.NEXT_PUBLIC_API_URL,
-            headers: {
-                'Authorization' : `Bearer ${token}`
-            },
-        }
-    )
-};
+export const apiClient = axios.create({ baseURL: process.env.NEXT_PUBLIC_API_URL });
