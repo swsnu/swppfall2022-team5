@@ -1,10 +1,12 @@
 package com.swpp.footprinter.domain.trace.api
 
+import com.swpp.footprinter.common.annotations.UserContext
 import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
 import com.swpp.footprinter.domain.trace.dto.TraceResponse
 import com.swpp.footprinter.domain.trace.service.TraceService
+import com.swpp.footprinter.domain.user.model.User
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -32,9 +34,10 @@ class TraceController(
 
     @PostMapping("/traces")
     fun createTrace(
-        @RequestBody @Valid request: TraceRequest
+        @RequestBody @Valid request: TraceRequest,
+        @UserContext user: User,
     ): ResponseEntity<String> {
-        service.createTrace(request)
+        service.createTrace(request, user)
         return ResponseEntity<String>("Created", HttpStatus.CREATED)
     }
 

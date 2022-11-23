@@ -24,6 +24,7 @@ import com.swpp.footprinter.domain.footprint.service.FootprintService
 import com.swpp.footprinter.domain.tag.TAG_CODE
 import com.swpp.footprinter.domain.tag.dto.TagResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
+import com.swpp.footprinter.domain.user.model.User
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -35,7 +36,7 @@ import kotlin.math.sqrt
 
 interface TraceService {
     fun getAllTraces(): List<TraceResponse>
-    fun createTrace(traceRequest: TraceRequest)
+    fun createTrace(traceRequest: TraceRequest, user: User)
     fun getTraceById(traceId: Long): TraceDetailResponse
     fun deleteTraceById(traceId: Long)
 
@@ -60,11 +61,11 @@ class TraceServiceImpl(
     }
 
     @Transactional
-    override fun createTrace(traceRequest: TraceRequest) {
+    override fun createTrace(traceRequest: TraceRequest, user: User) {
         val newTrace = Trace(
             traceTitle = traceRequest.title!!,
             traceDate = traceRequest.date!!,
-            owner = userRepo.findByIdOrNull(1)!!, // TODO: 현재 user로 넣기
+            owner = user,
             footprints = mutableSetOf()
         )
         traceRepo.save(newTrace)
