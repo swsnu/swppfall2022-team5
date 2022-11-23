@@ -1,18 +1,20 @@
 import Container from "../../components/containers/Container";
 import RectangleButton from '../../components/buttons/RectangleButton';
 import { useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { SigninRequestType } from '../../dto/auth';
 import { postSignin, postSignUp } from '../../api';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../../store/auth';
 import { apiClient } from "../../api/client";
+import { ErrorType } from "../../api/exception/errorType";
 
 
 export default function Signin() {
     const [inputId, setInputId] = useState("")
     const [inputPassword, setInputPassword] = useState("")
+    const queryClient = useQueryClient()
     const mutation = useMutation((signinRequest: SigninRequestType) => postSignin(signinRequest))
     const signupMutation = useMutation((signinRequest: SigninRequestType) => postSignUp(signinRequest))
     const router = useRouter();
@@ -74,8 +76,13 @@ export default function Signin() {
                                         setToken(response.accessToken)
                                         router.push("/footprints")
                                     },
-                                    onError: () => {
-                                        toast.error("올바른 아이디 혹은 비밀번호를 입력해주세요.")
+                                    onError: (error) => {
+                                        if((error as any).response.data.error['code'] == ErrorType.INVALID_USER_INFO) {
+                                            toast.error("아이디 혹은 비밀번호가 잘못되었어요 😢");
+                                        }
+                                        else {
+                                            toast.error("무언가 잘못되었어요 😢");
+                                        }
                                     }
                                 }
                             )
@@ -98,11 +105,17 @@ export default function Signin() {
                                 },
                                 {
                                     onSuccess: (response) => {
+                                        apiClient.defaults.headers.common['Authorization'] = `Bearer ${response.accessToken}`
                                         setToken(response.accessToken)
                                         router.push("/footprints")
                                     },
-                                    onError: () => {
-                                        toast.error("회원가입에 실패했습니다.")
+                                    onError: (error) => {
+                                        if((error as any).response.data.error['code'] == ErrorType.DUPLICATE_USERNAME) {
+                                            toast.error("이미 존재하는 아이디입니다.");
+                                        }
+                                        else {
+                                            toast.error("무언가 잘못되었어요 😢");
+                                        }
                                     }
                                 }
                             )
