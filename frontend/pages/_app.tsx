@@ -7,21 +7,27 @@ import { useState } from "react";
 import Moment from "react-moment";
 import "../styles/globals.css";
 import toast, { Toaster } from "react-hot-toast";
+import { useRouter } from "next/router";
 
 Moment.globalLocale = "ko";
 
-const createQueryClient = () =>
+const createQueryClient = (goBackToSigninPage: () => void) =>
   new QueryClient({
     defaultOptions: { queries: { retry: 0, refetchOnWindowFocus: false } },
     queryCache: new QueryCache({
-      onError: (error) => {
-        toast.error("무언가 잘못되었어요 😢");
+      onError: (error: any) => {
+        if (error.response.data.error['code'] == 4005) {
+          toast("로그인 페이지로 이동합니다.")
+          goBackToSigninPage()
+        }
+        else toast.error("무언가 잘못되었어요 😢");
       },
     }),
   });
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [queryClient] = useState(createQueryClient);
+  const router = useRouter()
+  const [queryClient] = useState(createQueryClient(() => { router.push('/signin')}));
   return (
     <>
       <Head>
