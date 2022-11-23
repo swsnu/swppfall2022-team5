@@ -12,57 +12,60 @@ import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/traces")
 class TraceController(
     private val service: TraceService
 ) {
 
-    @GetMapping("/traces")
+    @GetMapping("/user/{username}")
     @ResponseBody
-    fun getMyTraces(@UserContext user: User): List<TraceDetailResponse> {
-        return service.getAllMyTraces(user)
+    fun getTraces(
+        @UserContext loginUser: User,
+        @PathVariable username: String
+    ): List<TraceDetailResponse> {
+        return service.getAllUserTraces(loginUser, username)
     }
 
-    @GetMapping("/traces/explore")
+    @GetMapping("/explore")
     @ResponseBody
-    fun getOtherUsersTraces(@UserContext user: User): List<TraceDetailResponse> {
-        return service.getAllOtherUsersTraces(user)
+    fun getOtherUsersTraces(@UserContext loginUser: User): List<TraceDetailResponse> {
+        return service.getAllOtherUsersTraces(loginUser)
     }
 
-    @GetMapping("/traces/date/{date}")
+    @GetMapping("/date/{date}")
     @ResponseBody
     fun getTraceByDate(
         @PathVariable date: String,
-        @UserContext user: User
+        @UserContext loginUser: User
     ): TraceDetailResponse? {
-        return service.getTraceByDate(date, user)
+        return service.getTraceByDate(date, loginUser)
     }
 
-    @PostMapping("/traces")
+    @PostMapping
     fun createTrace(
         @RequestBody @Valid request: TraceRequest,
-        @UserContext user: User
+        @UserContext loginUser: User
     ): ResponseEntity<String> {
-        service.createTrace(request, user)
+        service.createTrace(request, loginUser)
         return ResponseEntity<String>("Created", HttpStatus.CREATED)
     }
 
-    @GetMapping("/traces/id/{traceId}")
+    @GetMapping("/id/{traceId}")
     fun getTraceDetail(
         @PathVariable(name = "traceId", required = true) traceId: Long
     ): TraceDetailResponse {
         return service.getTraceById(traceId)
     }
 
-    @DeleteMapping("/traces/id/{traceId}")
+    @DeleteMapping("/id/{traceId}")
     fun deleteTrace(
         @PathVariable(required = true) traceId: Long,
-        @UserContext user: User
+        @UserContext loginUser: User
     ) {
-        service.deleteTraceById(traceId, user)
+        service.deleteTraceById(traceId, loginUser)
     }
 
-    @PostMapping("/traces/create")
+    @PostMapping("/create")
     fun createNewTrace(
         @RequestBody photoPathList: List<String>,
     ): List<FootprintInitialTraceResponse> {

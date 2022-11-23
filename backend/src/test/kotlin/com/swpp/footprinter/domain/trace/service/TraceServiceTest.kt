@@ -120,7 +120,7 @@ class TraceServiceTest @Autowired constructor(
         // then
         // Check trace
         assertThat(traceRepo.count()).isEqualTo(1)
-        val createdTrace = traceRepo.findByIdOrNull(1)!!
+        val createdTrace = traceRepo.findAll().first()
         assertThat(createdTrace).extracting("traceTitle").isEqualTo("titleTrace")
         assertThat(createdTrace).extracting("traceDate").isEqualTo(dateToString8601(current))
         // TODO: After implementing user authentication, check whether current user
@@ -496,9 +496,14 @@ class TraceServiceTest @Autowired constructor(
 
     @Test
     @Transactional
-    fun `should get all my traces`() {
+    fun `should get all user's traces`() {
         val date = Date()
         val user = userRepo.findByIdOrNull(1)!!
+        val user2 = testHelper.createUser(
+            username = "tester",
+            password = "testpw",
+            myTrace = mutableSetOf()
+        )
 
         val trace = testHelper.createTrace(
             "testMyTraceTitle",
@@ -542,7 +547,7 @@ class TraceServiceTest @Autowired constructor(
 
         `when`(mockImageUrlUtil.getImageURLfromImagePath(anyString())).thenReturn("testurl")
 
-        val myTraces = traceService.getAllMyTraces(user)
+        val myTraces = traceService.getAllUserTraces(user, user.username)
         assertThat(myTraces).hasSize(2)
 
         val firstTrace = if (myTraces[0].date!! < myTraces[1].date!!) myTraces[0] else myTraces[1]
@@ -553,5 +558,8 @@ class TraceServiceTest @Autowired constructor(
 
         assertThat(lastTrace).extracting("date").isEqualTo(traceLater.traceDate)
         assertThat(lastTrace).extracting("title").isEqualTo(traceLater.traceTitle)
+
+        val otherUserTraces = traceService.getAllUserTraces(user2, user.username)
+        assertThat(otherUserTraces).hasSize(2)
     }
 }
