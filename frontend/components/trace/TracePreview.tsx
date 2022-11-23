@@ -1,8 +1,8 @@
 import { useRouter } from "next/router";
-import { TraceDetailResponse } from "../../dto/trace";
+import { TraceDetailResponseType } from "../../dto/trace";
 import PhotoPreview from "../trace/PhotoPreview";
 
-interface IProps extends TraceDetailResponse {}
+interface IProps extends TraceDetailResponseType {}
 
 export function TracePreview(props: IProps) {
     const router = useRouter();
