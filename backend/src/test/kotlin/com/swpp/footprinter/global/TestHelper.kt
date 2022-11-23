@@ -29,9 +29,9 @@ class TestHelper @Autowired constructor(
 
     fun createUser(
         username: String,
-        email: String,
+        password: String,
         myTrace: MutableSet<Trace> = mutableSetOf()
-    ) = User(username, email).also { userRepo.save(it) }
+    ) = User(username, password).also { userRepo.save(it) }
 
     fun createPlace(
         name: String,
