@@ -21,14 +21,15 @@ export const editFootprint = async (footprintId: number, footprintRequest: Footp
 
 export const whoAmI = async () => {
   return (await apiClient.get<UserResponseType>("/me")).data;
-}
+};
 
 export const fetchAllUserTraces = async (username: string) => {
   return (await apiClient.get<TraceDetailResponseType[]>(`/traces/user/${username}`)).data;
-}
+};
 
 export const fetchAllOtherUsersTraces = async () => {
   return (await apiClient.get<TraceDetailResponseType[]>("/traces/explore")).data;
+};
 
 export const fetchTraceByDate = async (date: Date) => {
   return (await apiClient.get<TraceDetailResponseType>(`/traces/date/${moment(date).format("YYYY-MM-DD")}`)).data;
