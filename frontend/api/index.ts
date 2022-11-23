@@ -4,7 +4,7 @@ import { apiClient } from "./client";
 import moment from "moment";
 import { TagType } from "../dto/tag";
 import { FootprintEditRequestType, FootprintRequestType, FootprintResponseType } from "../dto/footprint";
-import { SigninRequestType, SigninResponseType } from "../dto/auth";
+import { SigninRequestType, SigninResponseType, TokenVerifyRequestType, TokenVerifyResponseType } from "../dto/auth";
 
 export const fetchInitialFootprints = async (photoIds: string[]) => {
   return (await apiClient().post<FootprintPredictionType[]>("/traces/create", photoIds)).data;
@@ -40,4 +40,8 @@ export const postSignin = async (signinRequest: SigninRequestType) => {
 
 export const postSignUp = async (signinRequest: SigninRequestType) => {
   return (await apiClient().post<SigninResponseType>("/signup", signinRequest)).data;
+};
+
+export const checkToken = async (tokenVerifyRequest: TokenVerifyRequestType) => {
+  return (await apiClient().post<TokenVerifyResponseType>("/token", tokenVerifyRequest)).data;
 };

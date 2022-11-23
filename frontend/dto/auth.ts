@@ -8,3 +8,11 @@ export interface SigninRequestType {
 export interface SigninResponseType {
     accessToken: string;
 };
+
+export interface TokenVerifyRequestType {
+    token: string;
+};
+
+export interface TokenVerifyResponseType {
+    valid: boolean;
+};
