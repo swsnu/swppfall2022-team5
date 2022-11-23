@@ -1,19 +1,27 @@
-import create from "zustand";
+import create, { StateCreator } from "zustand";
 import produce from "immer";
+import { persist, PersistOptions } from "zustand/middleware"
 
-interface AuthState {
+export interface AuthState {
     userToken: string,
     setToken: (token: string) => void,
 }
 
+export type authPersist = (
+    config: StateCreator<AuthState>,
+    options: PersistOptions<AuthState>
+) => StateCreator<AuthState>
 
-export const useAuthStore = create<AuthState>()((set, get) => ({
-    userToken: "",
-    setToken: (token) => {
-        set(
-            produce((state: AuthState) => {
-                state.userToken = token
-            })
-        )
-    },
-}))
+export const useAuthStore = create<AuthState>(
+    (persist as authPersist) (
+        (set) => ({
+            userToken: "",
+            setToken: (token: string) => {
+                set((state) => ({...state, userToken: token}))
+            }
+        }),
+        {
+            name: 'userToken'
+        }
+    )
+)
