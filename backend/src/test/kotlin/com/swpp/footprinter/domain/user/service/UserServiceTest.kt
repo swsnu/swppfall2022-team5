@@ -14,10 +14,8 @@ import com.swpp.footprinter.global.TestHelper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import java.util.*
 import javax.transaction.Transactional
 
 @SpringBootTest
@@ -55,7 +53,7 @@ class UserServiceTest @Autowired constructor(
         // given
         val user = testHelper.createUser(
             username = "testname",
-            email = "testemail",
+            password = "testpassword",
             myTrace = mutableSetOf(),
         )
         val trace = testHelper.createTrace(
@@ -98,7 +96,7 @@ class UserServiceTest @Autowired constructor(
         // given
         val user = testHelper.createUser(
             username = "testname",
-            email = "testemail",
+            password = "testpassword",
             myTrace = mutableSetOf(),
         )
 
@@ -143,5 +141,80 @@ class UserServiceTest @Autowired constructor(
         // given // when // then
         val exception = assertThrows<FootprinterException> { userService.getUserTraceByDate(9999, "") }
         assertEquals(exception.errorType, ErrorType.NOT_FOUND)
+    }
+
+    @Test
+    @Transactional
+    fun `Could follow and unfollow user`() {
+        val user1 = testHelper.createUser(
+            username = "BTS",
+            password = "testpassword",
+            myTrace = mutableSetOf(),
+        )
+
+        val user2 = testHelper.createUser(
+            username = "tester",
+            password = "testpassword",
+            myTrace = mutableSetOf(),
+        )
+
+        val user3 = testHelper.createUser(
+            username = "tester2",
+            password = "testpassword",
+            myTrace = mutableSetOf(),
+        )
+
+        userService.followUser(user2, user1.username)
+        userService.followUser(user3, user1.username)
+
+        val followerList = userService.getUserFollowers(user1, user1.username)
+        assertThat(followerList).hasSize(2)
+
+        val followingList1 = userService.getUserFollowings(user2, user2.username)
+        assertThat(followingList1).hasSize(1)
+        assertThat(followingList1).first().extracting("username").isEqualTo("BTS")
+
+        val followingList2 = userService.getUserFollowings(user3, user3.username)
+        assertThat(followingList2).hasSize(1)
+        assertThat(followingList2).first().extracting("username").isEqualTo("BTS")
+
+        userService.unfollowUser(user2, "BTS")
+        try {
+            userService.unfollowUser(user2, "BTS")
+        } catch (e: FootprinterException) {
+            assertThat(e).extracting("errorType").isEqualTo(ErrorType.NOT_FOUND)
+        }
+
+        userService.deleteFollower(user1, "tester2")
+        try {
+            userService.deleteFollower(user1, "tester2")
+        } catch (e: FootprinterException) {
+            assertThat(e).extracting("errorType").isEqualTo(ErrorType.NOT_FOUND)
+        }
+
+        val followerListAfter = userService.getUserFollowers(user1, user1.username)
+        assertThat(followerListAfter).hasSize(0)
+    }
+
+    @Test
+    @Transactional
+    fun `Throw NOT_FOUND when follow or unfollow non-existing user`() {
+        val user = testHelper.createUser(
+            username = "user",
+            password = "testpassword",
+            myTrace = mutableSetOf(),
+        )
+
+        try {
+            userService.followUser(user, "non-existing")
+        } catch (e: FootprinterException) {
+            assertThat(e).extracting("errorType").isEqualTo(ErrorType.NOT_FOUND)
+        }
+
+        try {
+            userService.unfollowUser(user, "non-existing")
+        } catch (e: FootprinterException) {
+            assertThat(e).extracting("errorType").isEqualTo(ErrorType.NOT_FOUND)
+        }
     }
 }
