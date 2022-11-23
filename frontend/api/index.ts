@@ -1,10 +1,11 @@
 import { FootprintPredictionType } from "../dto/recommendations";
-import { TraceDetailResponse, TraceRequestType } from "../dto/trace";
+import { TraceDetailResponseType, TraceRequestType } from "../dto/trace";
 import { apiClient } from "./client";
 import moment from "moment";
 import { TagType } from "../dto/tag";
 import { FootprintEditRequestType, FootprintRequestType, FootprintResponseType } from "../dto/footprint";
 import { SigninRequestType, SigninResponseType, TokenVerifyRequestType, TokenVerifyResponseType } from "../dto/auth";
+import { UserResponseType } from "../dto/user";
 
 export const fetchInitialFootprints = async (photoIds: string[]) => {
   return (await apiClient.post<FootprintPredictionType[]>("/traces/create", photoIds)).data;
@@ -18,20 +19,24 @@ export const editFootprint = async (footprintId: number, footprintRequest: Footp
   return (await apiClient.put<String>(`/footprints/${footprintId}`, footprintRequest)).data;
 };
 
-export const fetchAllMyTraces = async () => {
-  return (await apiClient.get<TraceDetailResponse[]>("/traces")).data;
+export const whoAmI = async () => {
+  return (await apiClient.get<UserResponseType>("/me")).data;
+}
+
+export const fetchAllUserTraces = async (username: string) => {
+  return (await apiClient.get<TraceDetailResponseType[]>(`/traces/user/${username}`)).data;
 }
 
 export const fetchAllOtherUsersTraces = async () => {
-  return (await apiClient.get<TraceDetailResponse[]>("/traces/explore")).data;
+  return (await apiClient.get<TraceDetailResponseType[]>("/traces/explore")).data;
 }
 
 export const fetchTraceByDate = async (date: Date) => {
-  return (await apiClient.get<TraceDetailResponse>(`/traces/date/${moment(date).format("YYYY-MM-DD")}`)).data;
+  return (await apiClient.get<TraceDetailResponseType>(`/traces/date/${moment(date).format("YYYY-MM-DD")}`)).data;
 };
 
 export const fetchTraceById = async (traceId: number) => {
-  return (await apiClient.get<TraceDetailResponse>(`/traces/id/${traceId}`)).data;
+  return (await apiClient.get<TraceDetailResponseType>(`/traces/id/${traceId}`)).data;
 };
 
 export const fetchTags = async () => {
