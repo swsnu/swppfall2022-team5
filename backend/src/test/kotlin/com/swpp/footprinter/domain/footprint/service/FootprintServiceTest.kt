@@ -197,6 +197,8 @@ internal class FootprintServiceTest @Autowired constructor(
             photos = mutableSetOf(testHelper.createPhoto("TestPath", 0.0, 0.0, Date(), null))
         )
 
+        testHelper.createPhoto(imagePath = "TestPath2", 0.0, 0.0, Date())
+
         val footprintRequest = FootprintRequest(
             startTime = dateToString8601(Date()),
             endTime = dateToString8601(Date()),
@@ -207,7 +209,7 @@ internal class FootprintServiceTest @Autowired constructor(
             photos = listOf(PhotoRequest("TestPath2", 0.0, 0.0, dateToString8601(Date())))
         )
 
-        val wrongTagRequest = FootprintRequest(
+        val wrongFootprintRequest = FootprintRequest(
             startTime = dateToString8601(Date()),
             endTime = dateToString8601(Date()),
             memo = "TESTEDIT",
@@ -225,7 +227,7 @@ internal class FootprintServiceTest @Autowired constructor(
         }
 
         try {
-            footprintService.editFootprint(testFootprint.id!!, wrongTagRequest)
+            footprintService.editFootprint(testFootprint.id!!, wrongFootprintRequest)
             assertThat(true).isFalse
         } catch (e: FootprinterException) {
             assertThat(e).extracting("errorType").isEqualTo(ErrorType.WRONG_FORMAT)
