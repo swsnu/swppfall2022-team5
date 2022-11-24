@@ -3,11 +3,12 @@ import { IconChevronDown, IconUser } from "@tabler/icons";
 import { Fragment } from "react";
 
 interface IProps {
-    onClickSignout: () => void
-    onClickMyPage: () => void
+    onClickSignout: () => void,
+    onClickMyPage: () => void,
+    onClickInfo: () => void,
 }
 
-const UserDropdown = ({onClickSignout, onClickMyPage}: IProps) => {
+const UserDropdown = ({onClickSignout, onClickMyPage, onClickInfo}: IProps) => {
     return (
         <div className="mt-1 mr-2">
             <Popover>
