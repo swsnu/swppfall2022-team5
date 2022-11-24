@@ -185,7 +185,7 @@ class TraceServiceTest @Autowired constructor(
         `when`(mockImageUrlUtil.getImageURLfromImagePath(anyString())).thenReturn("testurl")
 
         // when
-        val searchedTrace = traceService.getTraceById(trace.id!!)
+        val searchedTrace = traceService.getTraceById(trace.id)
 
         // then
         // Trace
@@ -229,7 +229,7 @@ class TraceServiceTest @Autowired constructor(
         traceService.deleteTraceById(trace.id!!, user)
 
         // then
-        assertThat(traceRepo.findByIdOrNull(trace.id!!)).isNull()
+        assertThat(traceRepo.findByIdOrNull(trace.id)).isNull()
     }
 
     // TODO: add testcase about authentication failure after implemented user authentication
@@ -429,7 +429,7 @@ class TraceServiceTest @Autowired constructor(
                 photoList = ((i * 2)..(i * 2 + 1)).map { j ->
                     photos[j].run {
                         PhotoInitialTraceResponse(
-                            id!!,
+                            id,
                             imagePath,
                             imageUrl = "testurl",
                             longitude,

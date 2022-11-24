@@ -51,9 +51,6 @@ class TraceServiceImpl(
     private val kakaoAPIService: KakaoAPIService,
     private val imageUrlUtil: ImageUrlUtil,
     private val userRepo: UserRepository,
-
-    @Value("\${cloud.aws.s3.bucket-name}")
-    private val bucketName: String
 ) : TraceService {
     override fun getAllUserTraces(loginUser: User, username: String): List<TraceDetailResponse> {
         if (loginUser.username == username) {
