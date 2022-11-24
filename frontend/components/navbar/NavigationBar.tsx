@@ -25,6 +25,7 @@ const NavigationBar = ({ title }: IProps) => {
           router.push("/signin");
           toast("로그아웃 되었습니다.");
         } }
+        onClickInfo={()=>{}}
         onClickMyPage={() => {
           router.push(`/user/${myName.data?.username}`)
         } }
