@@ -52,9 +52,6 @@ class TraceServiceImpl(
     private val photoRepo: PhotoRepository,
     private val kakaoAPIService: KakaoAPIService,
     private val imageUrlUtil: ImageUrlUtil,
-
-    @Value("\${cloud.aws.s3.bucket-name}")
-    private val bucketName: String
 ) : TraceService {
     override fun getAllTraces(): List<TraceResponse> {
         return traceRepo.findAll().filter { it.owner != userRepo.findByIdOrNull(1)!! }.map { trace -> trace.toResponse() } // TODO: 현재 user로 넣기
