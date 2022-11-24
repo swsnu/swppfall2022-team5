@@ -115,7 +115,7 @@ class TraceServiceTest @Autowired constructor(
         assertThat(traceRepo.count()).isEqualTo(0)
 
         // when
-        traceService.createTrace(traceRequest)
+        traceService.createTrace(traceRequest, currentUser)
 
         // then
         // Check trace
