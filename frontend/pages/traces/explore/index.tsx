@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchAllOtherUsersTraces, fetchUsernameById } from "../../../api";
+import { fetchAllOtherUsersTraces } from "../../../api";
 import Container from "../../../components/containers/Container";
 import NavbarContainer from "../../../components/containers/NavbarContainer";
 import NavigationBar from "../../../components/navbar/NavigationBar";
