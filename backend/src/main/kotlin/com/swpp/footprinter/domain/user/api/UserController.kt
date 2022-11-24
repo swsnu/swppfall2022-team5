@@ -2,6 +2,7 @@ package com.swpp.footprinter.domain.user.api
 
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import com.swpp.footprinter.domain.trace.dto.TraceResponse
+import com.swpp.footprinter.domain.user.dto.UserResponse
 import com.swpp.footprinter.domain.user.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -14,6 +15,14 @@ import org.springframework.web.bind.annotation.RestController
 class UserController(
     private val service: UserService
 ) {
+
+    @GetMapping("/{userId}")
+    @ResponseBody
+    fun getUsernameById(
+        @PathVariable userId: Long
+    ): UserResponse {
+        return service.getUsernameById(userId)
+    }
 
     @GetMapping("/{userId}/traces")
     @ResponseBody
