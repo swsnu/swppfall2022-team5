@@ -5,7 +5,7 @@ const UserProfile = (profile: {username: String}) => {
         <div className="flex">
             <div className="px-7 pt-7">
                 <ProfilePhoto imageUrl={""} ></ProfilePhoto>
-                <div className="px-5 py-1 text-xl font-semibold">{profile.username}</div>
+                <div className="text-center py-1 text-xl font-semibold">{profile.username}</div>
             </div>
             <div className="px-7 py-8 text-xl font-bold">
                 팔로워

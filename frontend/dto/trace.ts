@@ -11,6 +11,6 @@ export interface TraceDetailResponseType {
   id: number;
   date: string;
   title: string;
-  ownerId: number;
+  ownerName: string;
   footprints: FootprintResponseType[];
 }

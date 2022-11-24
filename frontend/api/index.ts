@@ -23,6 +23,10 @@ export const whoAmI = async () => {
   return (await apiClient.get<UserResponseType>("/me")).data;
 };
 
+export const fetchUsernameById = async (userId: number) => {
+  return (await apiClient.get<UserResponseType>(`user/${userId}`)).data;
+};
+
 export const fetchAllUserTraces = async (username: string) => {
   return (await apiClient.get<TraceDetailResponseType[]>(`/traces/user/${username}`)).data;
 };

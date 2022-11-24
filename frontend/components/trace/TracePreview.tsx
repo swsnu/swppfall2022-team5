@@ -16,7 +16,7 @@ export function TracePreview(props: IProps) {
         >
             <div className="ml-1">
                 <div className="mt-2">{props.title}</div>
-                <div className="mt-1 text-xs text-navy-500">{props.date}</div>
+                <div className="my-2 text-xs text-navy-500">{props.date}</div>
             </div>
             <PhotoPreview key={props.footprints[0].photos[0].id} {...props.footprints[0].photos[0]} />
             
