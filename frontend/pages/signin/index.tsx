@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { postSignin, postSignUp } from "../../api";
 import RectangleButton from "../../components/buttons/RectangleButton";
@@ -17,14 +17,23 @@ export default function Signin() {
   const signupMutation = useMutation((signinRequest: SigninRequestType) => postSignUp(signinRequest));
   const router = useRouter();
   const setToken = useAuthStore((state) => state.setToken);
+  const userToken = useAuthStore((state) => state.userToken);
+
+  useEffect(() => {
+    if (!userToken) {
+      return;
+    }
+    setToken(userToken);
+    router.push("/footprints");
+  }, [router, setToken, userToken]);
 
   return (
     <Container>
       <div className="mx-5 flex min-h-screen items-center justify-center">
         <div>
           <div className="text-center">
-            <div className="pt-10 text-2xl font-bold text-navy-200">당신의 발자취를 이곳에 기록하세요</div>
-            <div className="text-sm text-navy-300">
+            <div className="pt-10 text-3xl font-bold text-navy-200">당신의 발자취를 이곳에 기록하세요</div>
+            <div className="text-md text-navy-300">
               <div className="mt-2">추억이 담긴 사진을 편하게 정리하고, 열람하세요.</div>
               <div className="">사진을 한번에 업로드하세요. 자동으로 분류하여 정리해 드립니다.</div>
             </div>
