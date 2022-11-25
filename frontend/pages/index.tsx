@@ -6,22 +6,19 @@ import { useAuthStore } from "../store/auth";
 
 export default function Home() {
   const router = useRouter();
-  const token = useAuthStore.getState().userToken
+  const token = useAuthStore.getState().userToken;
   useQuery(
-    ['token valid', token],
+    ["token valid", token],
     () => {
-      return checkToken({token:token})
+      return checkToken({ token: token });
     },
     {
       onSuccess: (result) => {
-        if (result.valid) {
-          router.push("/footprints")
+        if (!result.valid) {
+          router.push("/signin");
         }
-        else {
-          router.push("/signin")
-        }
-      }
-    }
-  )
+      },
+    },
+  );
   return <Container></Container>;
 }
