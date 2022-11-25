@@ -1,6 +1,7 @@
 package com.swpp.footprinter.domain.trace.model
 
 import com.swpp.footprinter.common.model.BaseEntity
+import com.swpp.footprinter.common.utils.ImageUrlUtil
 import com.swpp.footprinter.domain.footprint.model.Footprint
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import com.swpp.footprinter.domain.trace.dto.TraceResponse
@@ -39,13 +40,13 @@ class Trace(
         )
     }
 
-    fun toDetailResponse(): TraceDetailResponse {
+    fun toDetailResponse(imageUrlUtil: ImageUrlUtil): TraceDetailResponse {
         return TraceDetailResponse(
             id = id!!,
             date = traceDate,
             title = traceTitle,
             ownerName = owner.username,
-            footprints = footprints.map { it.toResponse() }
+            footprints = footprints.map { it.toResponse(imageUrlUtil) }
         )
     }
 }

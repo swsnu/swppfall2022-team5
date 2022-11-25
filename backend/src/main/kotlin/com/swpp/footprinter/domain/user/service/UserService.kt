@@ -2,6 +2,7 @@ package com.swpp.footprinter.domain.user.service
 
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
+import com.swpp.footprinter.common.utils.ImageUrlUtil
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import com.swpp.footprinter.domain.trace.dto.TraceResponse
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
@@ -18,6 +19,7 @@ interface UserService {
 class UserServiceImpl(
     private val userRepo: UserRepository,
     private val traceRepo: TraceRepository,
+    private val imageUrlUtil: ImageUrlUtil,
 ) : UserService {
     override fun getUserTraces(userId: Long): List<TraceResponse> {
         val user = userRepo.findByIdOrNull(userId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
@@ -27,6 +29,6 @@ class UserServiceImpl(
 
     override fun getUserTraceByDate(userId: Long, date: String): TraceDetailResponse? {
         val user = userRepo.findByIdOrNull(userId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
-        return traceRepo.findTracesByTraceDate(date).first().toDetailResponse()
+        return traceRepo.findTracesByTraceDate(date).first().toDetailResponse(imageUrlUtil)
     }
 }
