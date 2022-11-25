@@ -4,11 +4,11 @@ import { Fragment } from "react";
 
 interface IProps {
     onClickSignout: () => void,
-    onClickMypage: () => void,
+    onClickMyPage: () => void,
     onClickInfo: () => void,
 }
 
-const UserDropdown = ({onClickSignout, onClickMypage, onClickInfo}: IProps) => {
+const UserDropdown = ({onClickSignout, onClickMyPage, onClickInfo}: IProps) => {
     return (
         <div className="mt-1 mr-2">
             <Popover>
@@ -28,7 +28,7 @@ const UserDropdown = ({onClickSignout, onClickMypage, onClickInfo}: IProps) => {
                 >
                 <Popover.Panel className="absolute right-0 mr-3 ">
             <div className="rounded-lg border border-navy-200/5 bg-navy-800 py-3 px-4 shadow-md">
-                <div className="flex items-center hover:opacity-80 mb-2" role='button'> 
+                <div className="flex items-center hover:opacity-80 mb-2" role='button' onClick={() => onClickMyPage()}> 
                     마이페이지
                 </div>
                 <div className="flex items-center hover:opacity-80 mb-2" role='button'> 

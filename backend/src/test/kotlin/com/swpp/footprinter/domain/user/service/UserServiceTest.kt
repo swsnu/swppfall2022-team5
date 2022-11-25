@@ -14,10 +14,8 @@ import com.swpp.footprinter.global.TestHelper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import java.util.*
 import javax.transaction.Transactional
 
 @SpringBootTest
@@ -55,7 +53,7 @@ class UserServiceTest @Autowired constructor(
         // given
         val user = testHelper.createUser(
             username = "testname",
-            email = "testemail",
+            password = "testemail",
             myTrace = mutableSetOf(),
         )
         val trace = testHelper.createTrace(
@@ -98,7 +96,7 @@ class UserServiceTest @Autowired constructor(
         // given
         val user = testHelper.createUser(
             username = "testname",
-            email = "testemail",
+            password = "testemail",
             myTrace = mutableSetOf(),
         )
 
@@ -126,14 +124,14 @@ class UserServiceTest @Autowired constructor(
             id = trace2.id!!,
             date = trace2.traceDate,
             title = trace2.traceTitle,
-            ownerId = user.id,
+            ownerName = user.username,
             footprints = listOf(),
         )
 
         assertThat(traceDetailResponseReturned?.id).isEqualTo(traceDetailResponseExpected.id)
         assertThat(traceDetailResponseReturned?.date).isEqualTo(traceDetailResponseExpected.date)
         assertThat(traceDetailResponseReturned?.title).isEqualTo(traceDetailResponseExpected.title)
-        assertThat(traceDetailResponseReturned?.ownerId).isEqualTo(traceDetailResponseExpected.ownerId)
+        assertThat(traceDetailResponseReturned?.ownerName).isEqualTo(traceDetailResponseExpected.ownerName)
         assertThat(traceDetailResponseReturned?.footprints).isEmpty()
     }
 

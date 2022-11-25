@@ -41,8 +41,6 @@ export default function Signin() {
                         width={300}>
                     </Image>
                 </div>
-                
-
                 <div className="mt-5 grid grid-cols-1 place-items-center">
                     <input 
                         className="text-white-900 text-sm bg-black w-3/5 p-2 enabled:hover:border-white-400 rounded-xl"
