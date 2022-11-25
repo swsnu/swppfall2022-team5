@@ -1,4 +1,4 @@
-import { IconMenu2, IconUser } from "@tabler/icons";
+import { IconMenu2 } from "@tabler/icons";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
@@ -12,8 +12,8 @@ interface IProps {
 }
 
 const NavigationBar = ({ title }: IProps) => {
-  const router = useRouter()
-  const setToken = useAuthStore.getState().setToken
+  const router = useRouter();
+  const setToken = useAuthStore.getState().setToken;
   const myName = useQuery(["whoAmI"], whoAmI);
   return (
     <div className="flex items-center justify-between px-3 py-5">
@@ -23,12 +23,12 @@ const NavigationBar = ({ title }: IProps) => {
         onClickSignout={() => {
           setToken("");
           router.push("/signin");
-          toast("로그아웃 되었습니다.");
-        } }
-        onClickInfo={()=>{}}
+          toast.success("로그아웃 되었습니다.");
+        }}
+        onClickInfo={() => {}}
         onClickMyPage={() => {
-          router.push(`/user/${myName.data?.username}`)
-        } }
+          router.push(`/user/${myName.data?.username}`);
+        }}
       />
     </div>
   );

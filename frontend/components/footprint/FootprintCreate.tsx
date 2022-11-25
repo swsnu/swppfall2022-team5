@@ -5,6 +5,7 @@ import { tagToEmoji } from "../../data/emojiMap";
 import { FootprintRequestType } from "../../dto/footprint";
 import { useFootprintCreateStore } from "../../store/footprint";
 import TagButton from "../buttons/TagButton";
+import TextArea from "../textfield/TextArea";
 import Photo from "./Photo";
 
 interface IProps extends FootprintRequestType {}
@@ -96,11 +97,10 @@ const FootprintCreate = (props: IProps) => {
         </div>
 
         <Label text="메모" />
-        <textarea
-          className="w-full rounded-lg border border-navy-800 bg-navy-800 p-3 text-sm outline-none transition-colors focus:border-navy-700"
+        <TextArea
           value={props.memo}
-          onChange={(e) => {
-            updateFootprint({ memo: e.target.value });
+          onChange={(value) => {
+            updateFootprint({ memo: value });
           }}
           placeholder="이 장소에 대한 간단한 메모를 남겨보세요."
         />
