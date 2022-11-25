@@ -1,6 +1,5 @@
-import { Popover, Transition } from "@headlessui/react";
+import { Popover } from "@headlessui/react";
 import { IconChevronDown } from "@tabler/icons";
-import { Fragment } from "react";
 import Moment from "react-moment";
 import TransitionContainer from "../containers/TransitionContainer";
 import FullCalendar from "./FullCalendar";
