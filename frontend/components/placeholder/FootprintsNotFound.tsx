@@ -4,7 +4,7 @@ const FootprintsNotFound = () => {
   return (
     <div className="flex flex-col items-center justify-center pt-32 text-navy-700">
       <IconCalendarMinus size={150} stroke={2} />
-      <div className="mt-5 text-center text-navy-500/50">
+      <div className="mt-5 text-center text-navy-400/50">
         <div className="mt-3 text-center text-xl font-bold">이 날짜에 발자취가 존재하지 않습니다</div>
         <div className="mt-3 text-center">
           아래 <span>기록 추가하기</span> 버튼을 클릭해서

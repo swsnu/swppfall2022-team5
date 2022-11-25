@@ -11,7 +11,7 @@ import Photo from "./Photo";
 interface IProps extends FootprintRequestType {}
 
 export const Label = ({ text }: { text: string }) => {
-  return <div className="mt-3 mb-1 text-sm text-navy-500">{text}</div>;
+  return <div className="mt-3 mb-1 text-sm text-navy-400">{text}</div>;
 };
 
 interface Rating {

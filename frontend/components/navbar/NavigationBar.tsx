@@ -16,9 +16,9 @@ const NavigationBar = ({ title }: IProps) => {
   const setToken = useAuthStore.getState().setToken;
   const myName = useQuery(["whoAmI"], whoAmI);
   return (
-    <div className="flex items-center justify-between px-3 py-5">
+    <div className="flex items-center justify-between px-3 py-2">
       <IconButton icon={IconMenu2} onClick={() => {}} />
-      <div className="text-xl font-semibold ">{title}</div>
+      <div className="font-semibold">{title}</div>
       <UserDropdown
         onClickSignout={() => {
           setToken("");
