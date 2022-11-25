@@ -69,7 +69,7 @@ class TestHelper @Autowired constructor(
         traceDate: String,
         owner: User,
         footprints: MutableSet<Footprint> = mutableSetOf(),
-    ) = Trace(traceTitle, traceDate, owner, footprints).also { traceRepo.save(it) }
+    ) = Trace(traceTitle, traceDate, true, owner, footprints).also { traceRepo.save(it) }
 
     fun initializeTag() {
         for (tagCode in TAG_CODE.values()) {

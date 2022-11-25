@@ -16,12 +16,18 @@ class Trace(
     @Column(name = "trace_date", nullable = false)
     val traceDate: String,
 
+    @Column(name = "public", nullable = false)
+    var public: Boolean = true,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id", name = "userId")
     val owner: User,
 
     @OneToMany(mappedBy = "trace", cascade = [CascadeType.ALL])
     val footprints: MutableSet<Footprint>,
+
+    @Column(name = "likes_count", columnDefinition = "integer default 0")
+    var likesCount: Int = 0,
 
 ) : BaseEntity() {
     fun toResponse(): TraceResponse {
@@ -38,7 +44,7 @@ class Trace(
             id = id!!,
             date = traceDate,
             title = traceTitle,
-            ownerId = owner.id,
+            ownerName = owner.username,
             footprints = footprints.map { it.toResponse() }
         )
     }

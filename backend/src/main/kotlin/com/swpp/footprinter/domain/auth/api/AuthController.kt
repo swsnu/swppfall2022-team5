@@ -3,9 +3,7 @@ package com.swpp.footprinter.domain.auth.api
 import com.swpp.footprinter.common.annotations.UserContext
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
-import com.swpp.footprinter.domain.auth.dto.AuthResponse
-import com.swpp.footprinter.domain.auth.dto.SignInRequest
-import com.swpp.footprinter.domain.auth.dto.SignUpRequest
+import com.swpp.footprinter.domain.auth.dto.*
 import com.swpp.footprinter.domain.auth.service.AuthService
 import com.swpp.footprinter.domain.auth.service.AuthTokenService
 import com.swpp.footprinter.domain.user.dto.UserResponse
@@ -47,5 +45,11 @@ class AuthController(
     @GetMapping("/me")
     fun getMe(@UserContext user: User): UserResponse {
         return UserResponse(username = user.username)
+    }
+
+    @PostMapping("/token")
+    fun verifyToken(@Valid @RequestBody token: TokenVerifyRequest): TokenVerifyResponse {
+        return if (authTokenService.verifyToken(token.token.orEmpty())) TokenVerifyResponse(true)
+        else TokenVerifyResponse(false)
     }
 }

@@ -8,7 +8,6 @@ import com.swpp.footprinter.domain.footprint.dto.FootprintRequest
 import com.swpp.footprinter.domain.footprint.dto.FootprintResponse
 import com.swpp.footprinter.domain.footprint.model.Footprint
 import com.swpp.footprinter.domain.footprint.repository.FootprintRepository
-import com.swpp.footprinter.domain.photo.model.Photo
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
 import com.swpp.footprinter.domain.photo.service.PhotoService
 import com.swpp.footprinter.domain.place.model.Place
@@ -125,14 +124,13 @@ class FootprintServiceImpl(
         }
         // Remove footprint in original place, and add new editted place (if two places are different).
         // Also, remove place when no footprint joined to place
-        target.place = request.place!!.let {
+        request.place!!.let {
             if (!(it.name!! == target.place.name && it.address!! == target.place.address)) {
-                // TODO: Remove footprint in original place, and clean original place if possible
-//                target.place.footprints.remove(target)
-//                if (target.place.footprints.isEmpty()) { placeRepo.delete(target.place) }
+                // Save original place for later use.
+                val originalPlace = target.place
                 // Change to new place.
                 val editPlace = placeRepo.findByNameAndAddress(it.name, it.address!!)
-                editPlace?.apply { this.footprints.add(target) }
+                target.place = editPlace?.apply { this.footprints.add(target) }
                     ?: placeRepo.save(
                         Place(
                             name = it.name,
@@ -140,8 +138,9 @@ class FootprintServiceImpl(
                             footprints = mutableSetOf(target)
                         )
                     )
-            } else {
-                target.place
+                // Remove footprint in original place, and clean original place if possible
+                originalPlace.footprints.remove(target)
+                if (originalPlace.footprints.isEmpty()) { placeRepo.delete(originalPlace) }
             }
         }
         // Edit target.photo
@@ -158,14 +157,8 @@ class FootprintServiceImpl(
                 photoService.deletePhotoFromDatabaseAndServer(it)
             }
             toAddPhotoRequests.forEach {
-                val addPhoto = Photo(
-                    imagePath = it.imagePath!!,
-                    latitude = it.latitude!!,
-                    longitude = it.longitude!!,
-                    timestamp = stringToDate8601(it.timestamp!!),
-                    footprint = target
-                )
-                photoRepo.save(addPhoto)
+                val addPhoto = photoRepo.findByImagePath(it.imagePath!!) ?: throw FootprinterException(ErrorType.NOT_FOUND)
+                addPhoto.footprint = target
                 this.add(addPhoto)
             }
         }
