@@ -18,19 +18,6 @@ class User(
 ) : BaseEntity()
 
 @Entity
-class UserFollow(
-
-    @ManyToOne
-    @JoinColumn(referencedColumnName = "id", name = "followerId")
-    val follower: User,
-
-    @ManyToOne
-    @JoinColumn(referencedColumnName = "id", name = "followingId")
-    val followed: User,
-
-) : BaseEntity()
-
-@Entity
 class LikedTrace(
 
     @ManyToOne
