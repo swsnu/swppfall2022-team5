@@ -16,6 +16,8 @@ export default function Home() {
       onSuccess: (result) => {
         if (!result.valid) {
           router.push("/signin");
+        } else {
+          router.push("/footprints");
         }
       },
     },
