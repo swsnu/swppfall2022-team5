@@ -7,8 +7,6 @@ import javax.validation.constraints.NotEmpty
 class TraceRequest(
     @field: NotBlank
     val title: String?,
-    @field: NotBlank
-    val date: String?,
     val public: Boolean? = true,
     @field: NotEmpty
     val footprintList: List<FootprintRequest>?

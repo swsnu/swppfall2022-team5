@@ -8,6 +8,7 @@ import com.swpp.footprinter.common.TIME_GRID_SEC
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.common.utils.ImageUrlUtil
+import com.swpp.footprinter.common.utils.dateToStringWithoutTime
 import com.swpp.footprinter.common.utils.stringToDate8601
 import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
 import com.swpp.footprinter.domain.footprint.service.FootprintService
@@ -72,24 +73,54 @@ class TraceServiceImpl(
 
     @Transactional
     override fun createTrace(traceRequest: TraceRequest, loginUser: User) {
-        val newTrace = Trace(
-            traceTitle = traceRequest.title!!,
-            traceDate = traceRequest.date!!,
-            public = traceRequest.public!!,
-            owner = loginUser,
-            footprints = mutableSetOf()
-        )
-        traceRepo.save(newTrace)
-
-        // TODO: 여러 날의 footprint가 들어온 경우 handle
-        traceRequest.footprintList!!.forEach {
-            // Create new footprints
-            val footprint = footprintService.createFootprintAndReturn(it, newTrace)
-
-            // Update newTrace
-            newTrace.footprints.add(footprint)
+        var currentDayTrace: Trace? = null
+        traceRequest.footprintList?.forEach { footprintRequest ->
+            val day = dateToStringWithoutTime(stringToDate8601(footprintRequest.startTime!!))
+            if (currentDayTrace?.traceDate == day) {
+                val footprint = footprintService.createFootprintAndReturn(footprintRequest, currentDayTrace!!)
+                currentDayTrace!!.footprints.add(footprint)
+                currentDayTrace = traceRepo.save(currentDayTrace!!)
+            } else {
+                currentDayTrace = traceRepo.findByOwnerAndTraceDate(loginUser, day)
+                    ?.let {
+                        val footprint = footprintService.createFootprintAndReturn(footprintRequest, it)
+                        it.footprints.add(footprint)
+                        traceRepo.save(it)
+                    } ?: Trace(
+                    traceTitle = traceRequest.title!!,
+                    traceDate = day!!,
+                    public = traceRequest.public!!,
+                    owner = loginUser,
+                    footprints = mutableSetOf()
+                ).let {
+                    val footprint = footprintService.createFootprintAndReturn(footprintRequest, it)
+                    it.footprints.add(footprint)
+                    traceRepo.save(it)
+                }
+            }
         }
     }
+
+//    @Transactional
+//    fun createTraceOld(traceRequest: TraceRequest, loginUser: User) {
+//        val newTrace = Trace(
+//            traceTitle = traceRequest.title!!,
+//            traceDate = traceRequest.date!!,
+//            public = traceRequest.public!!,
+//            owner = loginUser,
+//            footprints = mutableSetOf()
+//        )
+//        traceRepo.save(newTrace)
+//
+//        // TODO: 여러 날의 footprint가 들어온 경우 handle
+//        traceRequest.footprintList!!.forEach {
+//            // Create new footprints
+//            val footprint = footprintService.createFootprintAndReturn(it, newTrace)
+//
+//            // Update newTrace
+//            newTrace.footprints.add(footprint)
+//        }
+//    }
 
     override fun getTraceById(traceId: Long): TraceDetailResponse {
         val trace = traceRepo.findByIdOrNull(traceId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
@@ -120,7 +151,7 @@ class TraceServiceImpl(
 
     override fun getTraceByDate(date: String, loginUser: User): TraceDetailResponse? {
         return traceRepo
-            .findTraceByOwnerAndTraceDate(loginUser, date).lastOrNull()
+            .findByOwnerAndTraceDate(loginUser, date)
             ?.toDetailResponse(imageUrlUtil)
             ?.apply {
                 footprints = footprints?.sortedBy {
