@@ -2,7 +2,7 @@ import { FootprintRequestType, FootprintResponseType } from "./footprint";
 
 export interface TraceRequestType {
   title: string;
-  date: string;
+  // date: string;
   public: boolean;
   footprintList: FootprintRequestType[];
 }
