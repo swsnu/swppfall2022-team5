@@ -27,11 +27,11 @@ export default function MyPage() {
 
       <UserProfile username={String(username)}></UserProfile>
 
-      <div className="px-5 pt-5 text-xl font-semibold">발자취 목록</div>
+      <div className="mx-6 mt-5 text-xl font-semibold">발자취 목록</div>
 
       {traceResult.isSuccess && traceResult.data?.length == 0 && <TracesNotFound />}
 
-      <div className="divide-y divide-navy-700/50 pb-20">
+      <div className="space-y-5 p-5">
         {traceResult.data
           ?.sort((a, b) => a.date.localeCompare(b.date))
           .map((trace) => {

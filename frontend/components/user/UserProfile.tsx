@@ -7,7 +7,7 @@ const UserProfile = (profile: { username: String }) => {
       <div className="ml-6 flex items-center">
         <div>
           <div className="text-lg">{profile.username}</div>
-          <div className="mt-1 flex flex-row divide-x divide-navy-500 leading-3 text-navy-400">
+          <div className="mt-1 flex flex-row divide-x divide-navy-500 text-sm leading-3 text-navy-400">
             <span className="pr-2">업로드한 발자취 {0}개</span>
             <span className="px-2">팔로우 {0}명</span>
             <span className="px-2">팔로워 {0}명</span>
