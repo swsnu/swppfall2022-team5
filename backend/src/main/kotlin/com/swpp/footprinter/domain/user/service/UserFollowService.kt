@@ -2,6 +2,7 @@ package com.swpp.footprinter.domain.user.service
 
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
+import com.swpp.footprinter.domain.user.dto.UserFollowResponse
 import com.swpp.footprinter.domain.user.dto.UserResponse
 import com.swpp.footprinter.domain.user.model.User
 import com.swpp.footprinter.domain.user.model.UserFollow
@@ -16,12 +17,13 @@ interface UserFollowService {
     fun followUser(loginUser: User, followedUserName: String)
     fun unfollowUser(loginUser: User, unfollowedUserName: String)
     fun deleteFollower(loginUser: User, followerName: String)
+    fun getUserFollowCount(loginUser: User, username: String): UserFollowResponse
 }
 
 @Service
 class UserFollowServiceImpl(
     private val userRepo: UserRepository,
-    private val userFollowRepo: UserFollowRepository
+    private val userFollowRepo: UserFollowRepository,
 ) : UserFollowService {
 
     override fun getUserFollowers(loginUser: User, username: String): List<UserResponse> {
@@ -42,6 +44,9 @@ class UserFollowServiceImpl(
         val newFollow = UserFollow(follower = loginUser, followed = followedUser)
 
         userFollowRepo.save(newFollow)
+
+        loginUser.followingCount += 1
+        followedUser.followerCount += 1
     }
 
     @Transactional
@@ -52,6 +57,9 @@ class UserFollowServiceImpl(
         )
 
         userFollowRepo.delete(follow)
+
+        loginUser.followingCount -= 1
+        unfollowedUser.followerCount -= 1
     }
 
     @Transactional
@@ -62,5 +70,13 @@ class UserFollowServiceImpl(
         )
 
         userFollowRepo.delete(follow)
+
+        loginUser.followerCount -= 1
+        followerUser.followingCount -= 1
+    }
+
+    override fun getUserFollowCount(loginUser: User, username: String): UserFollowResponse {
+        val user = userRepo.findByUsername(username) ?: throw FootprinterException(ErrorType.NOT_FOUND)
+        return UserFollowResponse(followerCount = user.followerCount, followingCount = user.followingCount)
     }
 }

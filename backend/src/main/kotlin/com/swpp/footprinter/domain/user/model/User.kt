@@ -12,6 +12,12 @@ class User(
     @Column(name = "password")
     val password: String,
 
+    @Column(columnDefinition = "integer default 0")
+    var followingCount: Int = 0,
+
+    @Column(columnDefinition = "integer default 0")
+    var followerCount: Int = 0,
+
     @OneToMany(mappedBy = "owner", cascade = [CascadeType.ALL])
     val myTrace: MutableSet<Trace> = mutableSetOf(),
 

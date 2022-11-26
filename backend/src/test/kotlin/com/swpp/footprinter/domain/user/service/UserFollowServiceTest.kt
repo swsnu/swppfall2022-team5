@@ -8,6 +8,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.dao.DataIntegrityViolationException
+import javax.persistence.EntityManager
 import javax.transaction.Transactional
 
 @SpringBootTest
@@ -15,6 +17,7 @@ class UserFollowServiceTest @Autowired constructor(
     private val userFollowService: UserFollowService,
     private val testHelper: TestHelper,
     private val userRepo: UserRepository,
+    private val entityManager: EntityManager,
 ) {
     @Test
     @Transactional
@@ -39,6 +42,11 @@ class UserFollowServiceTest @Autowired constructor(
 
         userFollowService.followUser(user2, user1.username)
         userFollowService.followUser(user3, user1.username)
+        try {
+            userFollowService.followUser(user2, user1.username)
+        } catch (_: DataIntegrityViolationException) {
+        }
+        entityManager.clear()
 
         val followerList = userFollowService.getUserFollowers(user1, user1.username)
         assertThat(followerList).hasSize(2)

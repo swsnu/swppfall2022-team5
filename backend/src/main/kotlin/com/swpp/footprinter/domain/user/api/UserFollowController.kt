@@ -1,10 +1,12 @@
 package com.swpp.footprinter.domain.user.api
 
 import com.swpp.footprinter.common.annotations.UserContext
+import com.swpp.footprinter.domain.user.dto.UserFollowResponse
 import com.swpp.footprinter.domain.user.dto.UserRequest
 import com.swpp.footprinter.domain.user.dto.UserResponse
 import com.swpp.footprinter.domain.user.model.User
 import com.swpp.footprinter.domain.user.service.UserFollowService
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -13,6 +15,15 @@ import javax.validation.Valid
 class UserFollowController(
     private val service: UserFollowService
 ) {
+    @GetMapping("/follow/{username}")
+    @ResponseBody
+    fun getUserFollowCount(
+        @UserContext loginUser: User,
+        @PathVariable username: String
+    ): UserFollowResponse {
+        return service.getUserFollowCount(loginUser, username)
+    }
+
     @GetMapping("/followers/{username}")
     @ResponseBody
     fun getUserFollowers(
@@ -36,7 +47,11 @@ class UserFollowController(
         @RequestBody @Valid followedUser: UserRequest,
         @UserContext loginUser: User
     ) {
-        service.followUser(loginUser, followedUser.username!!)
+        try {
+            service.followUser(loginUser, followedUser.username!!)
+        } catch (e: DataIntegrityViolationException) {
+            return
+        }
     }
 
     @DeleteMapping("/followings")
