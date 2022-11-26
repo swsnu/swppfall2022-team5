@@ -1,4 +1,4 @@
-package com.swpp.footprinter.domain.place.service.externalAPI
+package com.swpp.footprinter.common.externalAPI
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.swpp.footprinter.common.exception.ErrorType

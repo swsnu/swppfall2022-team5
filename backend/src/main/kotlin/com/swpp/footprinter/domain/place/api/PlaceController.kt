@@ -5,7 +5,7 @@ import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.domain.place.dto.PlaceResponse
 import com.swpp.footprinter.domain.place.dto.PlaceSearchRequest
 import com.swpp.footprinter.domain.place.service.PlaceService
-import com.swpp.footprinter.domain.place.service.externalAPI.KakaoAPIService
+import com.swpp.footprinter.common.externalAPI.KakaoAPIService
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
