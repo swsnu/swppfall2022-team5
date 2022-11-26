@@ -27,7 +27,7 @@ class WebMvcConfig(
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(tokenVerifyInterceptor)
             .addPathPatterns("/api/v1/**")
-            .excludePathPatterns("/api/v1/signup", "/api/v1/signin")
+            .excludePathPatterns("/api/v1/signup", "/api/v1/signin", "/api/v1/token",)
     }
 
     override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {

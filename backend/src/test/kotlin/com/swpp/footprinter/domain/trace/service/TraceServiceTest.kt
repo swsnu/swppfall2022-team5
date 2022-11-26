@@ -120,7 +120,7 @@ class TraceServiceTest @Autowired constructor(
         // then
         // Check trace
         assertThat(traceRepo.count()).isEqualTo(1)
-        val createdTrace = traceRepo.findByIdOrNull(1)!!
+        val createdTrace = traceRepo.findAll().first()
         assertThat(createdTrace).extracting("traceTitle").isEqualTo("titleTrace")
         assertThat(createdTrace).extracting("traceDate").isEqualTo(dateToString8601(current))
         // TODO: After implementing user authentication, check whether current user
@@ -185,14 +185,14 @@ class TraceServiceTest @Autowired constructor(
         `when`(mockImageUrlUtil.getImageURLfromImagePath(anyString())).thenReturn("testurl")
 
         // when
-        val searchedTrace = traceService.getTraceById(trace.id!!)
+        val searchedTrace = traceService.getTraceById(trace.id)
 
         // then
         // Trace
         assertThat(searchedTrace.id).isEqualTo(trace.id)
         assertThat(searchedTrace.date).isEqualTo(trace.traceDate)
         assertThat(searchedTrace.title).isEqualTo(trace.traceTitle)
-        assertThat(searchedTrace.ownerId).isEqualTo(trace.owner.id)
+        assertThat(searchedTrace.ownerName).isEqualTo(trace.owner.username)
         assertThat(searchedTrace.footprints).hasSize(1)
         // Footprint
         assertThat(searchedTrace.footprints?.first()?.id).isEqualTo(footprint.id)
@@ -226,10 +226,10 @@ class TraceServiceTest @Autowired constructor(
         )
 
         // when
-        traceService.deleteTraceById(trace.id!!)
+        traceService.deleteTraceById(trace.id!!, user)
 
         // then
-        assertThat(traceRepo.findByIdOrNull(trace.id!!)).isNull()
+        assertThat(traceRepo.findByIdOrNull(trace.id)).isNull()
     }
 
     // TODO: add testcase about authentication failure after implemented user authentication
@@ -278,14 +278,14 @@ class TraceServiceTest @Autowired constructor(
         `when`(mockImageUrlUtil.getImageURLfromImagePath(anyString())).thenReturn("testurl")
 
         // when
-        val searchedTrace = traceService.getTraceByDate(dateToString8601(date))
+        val searchedTrace = traceService.getTraceByDate(dateToString8601(date), user)
 
         // then
         // Trace
         assertEquals(trace.id, searchedTrace!!.id)
         assertThat(searchedTrace.date).isEqualTo(trace.traceDate)
         assertThat(searchedTrace.title).isEqualTo(trace.traceTitle)
-        assertThat(searchedTrace.ownerId).isEqualTo(trace.owner.id)
+        assertThat(searchedTrace.ownerName).isEqualTo(trace.owner.username)
         assertThat(searchedTrace.footprints).hasSize(2)
         // Footprint
         assertThat(searchedTrace.footprints?.first()?.id).isEqualTo(footprint.id)
@@ -429,7 +429,7 @@ class TraceServiceTest @Autowired constructor(
                 photoList = ((i * 2)..(i * 2 + 1)).map { j ->
                     photos[j].run {
                         PhotoInitialTraceResponse(
-                            id!!,
+                            id,
                             imagePath,
                             imageUrl = "testurl",
                             longitude,
@@ -492,5 +492,74 @@ class TraceServiceTest @Autowired constructor(
             traceService.createInitialTraceBasedOnPhotoIdListGiven(listOf("null"))
         }
         assertEquals(exception.errorType, ErrorType.NOT_FOUND)
+    }
+
+    @Test
+    @Transactional
+    fun `should get all user's traces`() {
+        val date = Date()
+        val user = userRepo.findByIdOrNull(1)!!
+        val user2 = testHelper.createUser(
+            username = "tester",
+            password = "testpw",
+            myTrace = mutableSetOf()
+        )
+
+        val trace = testHelper.createTrace(
+            "testMyTraceTitle",
+            dateToString8601(date),
+            user,
+        )
+
+        val footprint = testHelper.createFootprintAndUpdateElements(
+            startTime = date,
+            endTime = date,
+            rating = 0,
+            memo = "testMemo",
+            place = testHelper.createPlace("testPlace", "testAddress"),
+            tag = testHelper.createTag(TAG_CODE.음식점),
+            trace = trace,
+            photos = mutableSetOf(
+                testHelper.createPhoto("testPath", 0.0, 0.0, date)
+            )
+        )
+
+        runBlocking { delay(1000) }
+        val dateLater = Date()
+        val traceLater = testHelper.createTrace(
+            "testAnotherTraceTitle",
+            dateToString8601(dateLater),
+            user,
+        )
+
+        val footprintLater = testHelper.createFootprintAndUpdateElements(
+            startTime = dateLater,
+            endTime = dateLater,
+            rating = 2,
+            memo = "testAnotherMemo",
+            place = testHelper.createPlace("testAnotherPlace", "testAnotherAddress"),
+            tag = testHelper.createTag(TAG_CODE.카페),
+            trace = traceLater,
+            photos = mutableSetOf(
+                testHelper.createPhoto("testAnotherPath", 0.0, 0.0, dateLater)
+            )
+        )
+
+        `when`(mockImageUrlUtil.getImageURLfromImagePath(anyString())).thenReturn("testurl")
+
+        val myTraces = traceService.getAllUserTraces(user, user.username)
+        assertThat(myTraces).hasSize(2)
+
+        val firstTrace = if (myTraces[0].date!! < myTraces[1].date!!) myTraces[0] else myTraces[1]
+        val lastTrace = if (myTraces[0].date!! < myTraces[1].date!!) myTraces[1] else myTraces[0]
+
+        assertThat(firstTrace).extracting("date").isEqualTo(trace.traceDate)
+        assertThat(firstTrace).extracting("title").isEqualTo(trace.traceTitle)
+
+        assertThat(lastTrace).extracting("date").isEqualTo(traceLater.traceDate)
+        assertThat(lastTrace).extracting("title").isEqualTo(traceLater.traceTitle)
+
+        val otherUserTraces = traceService.getAllUserTraces(user2, user.username)
+        assertThat(otherUserTraces).hasSize(2)
     }
 }

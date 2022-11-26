@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController
 class UserController(
     private val service: UserService
 ) {
-
     @GetMapping("/{userId}/traces")
     @ResponseBody
     fun getUserTraces(
