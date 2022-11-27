@@ -48,22 +48,22 @@ class DataInitializer(
         for (i in 1..5) {
             for (j in 1..5) {
                 if (i == j) continue
-                followService.followUser(authService.findUser("user$i", "1234")!!, "user$j")
+                followService.followUser(userRepo.findByUsername("user$i")!!, "user$j")
             }
         }
         // 6~11번은 서로 팔로우
         for (i in 6..11) {
             for (j in 6..11) {
                 if (i == j) continue
-                followService.followUser(authService.findUser("user$i", "1234")!!, "user$j")
+                followService.followUser(userRepo.findByUsername("user$i")!!, "user$j")
             }
         }
         // 6~10번은 1번을 팔로우
         for (j in 6..10) {
-            followService.followUser(authService.findUser("user1", "1234")!!, "user$j")
+            followService.followUser(userRepo.findByUsername("user$j")!!, "user1")
         }
         // 1번은 11번을 팔로우
-        followService.followUser(authService.findUser("user1", "1234")!!, "user11")
+        followService.followUser(userRepo.findByUsername("user1")!!, "user11")
 
         for (tagCode in TAG_CODE.values()) {
             if (!tagRepo.existsByTagCode(tagCode)) {
