@@ -13,7 +13,7 @@ interface IProps {
 
 const NavigationBar = ({ title }: IProps) => {
   const router = useRouter()
-  const setToken = useAuthStore.getState().setToken
+  const setToken = useAuthStore((state) => state.setToken)
   const myName = useQuery(["whoAmI"], whoAmI);
   return (
     <div className="flex items-center justify-between px-3 py-5">

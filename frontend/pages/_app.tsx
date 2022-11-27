@@ -35,7 +35,7 @@ const createQueryClient = (goBackToSigninPage: () => void) =>
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
   const [queryClient] = useState(createQueryClient(() => { router.push('/signin')}));
-  apiClient.defaults.headers.common['Authorization'] = `Bearer ${useAuthStore.getState().userToken}`
+  apiClient.defaults.headers.common['Authorization'] = `Bearer ${useAuthStore((state) => state.userToken)}`
   return (
     <>
       <Head>

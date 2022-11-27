@@ -104,7 +104,7 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
                     process: "/api/v1/photos/process",
                     revert: "/api/v1/photos/revert",
                     headers: {
-                      'Authorization' : `Bearer ${useAuthStore.getState().userToken}`
+                      'Authorization' : `Bearer ${useAuthStore((state) => state.userToken)}`
                     }
                   }}
                   name="files" /* sets the file input name, it's filepond by default */

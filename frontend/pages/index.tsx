@@ -6,7 +6,7 @@ import { useAuthStore } from "../store/auth";
 
 export default function Home() {
   const router = useRouter();
-  const token = useAuthStore.getState().userToken
+  const token = useAuthStore((state) => state.userToken)
   useQuery(
     ['token valid', token],
     () => {
