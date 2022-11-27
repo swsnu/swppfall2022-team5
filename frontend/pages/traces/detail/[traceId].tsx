@@ -6,20 +6,18 @@ import NavbarContainer from "../../../components/containers/NavbarContainer";
 import { FootprintPreview } from "../../../components/footprint/FootprintPreview";
 import { useRouter } from "next/router";
 
-
 export default function TraceDetail() {
-    const router = useRouter();
-    const { traceId } = router.query;
-  
+  const router = useRouter();
+  const { traceId } = router.query;
+
   const traceResult = useQuery(["footprints", traceId], () => {
     return fetchTraceById(Number(traceId));
   });
 
-
   return (
     <Container>
-      <NavbarContainer className="z-20 pb-4">
-        <NavigationBar />
+      <NavbarContainer className="">
+        <NavigationBar title={traceResult.data?.title} />
       </NavbarContainer>
 
       <div className="divide-y divide-navy-700/50 pb-20">
