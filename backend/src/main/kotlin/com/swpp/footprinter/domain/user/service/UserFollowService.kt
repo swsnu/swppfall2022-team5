@@ -41,6 +41,9 @@ class UserFollowServiceImpl(
     @Transactional
     override fun followUser(loginUser: User, followedUserName: String) {
         val followedUser = userRepo.findByUsername(followedUserName) ?: throw FootprinterException(ErrorType.NOT_FOUND)
+        if (followedUser == loginUser) {
+            throw FootprinterException(ErrorType.WRONG_FOLLOW_REQUEST)
+        }
         val newFollow = UserFollow(follower = loginUser, followed = followedUser)
 
         userFollowRepo.save(newFollow)
