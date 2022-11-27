@@ -14,6 +14,7 @@ enum class ErrorType(
     NOT_FOUND(4004, HttpStatus.NOT_FOUND, "서버상에 데이터가 존재하지 않습니다."),
     UNAUTHORIZED(4005, HttpStatus.UNAUTHORIZED, "인증되지 않은 요청입니다."),
     INVALID_USER_INFO(4006, HttpStatus.UNAUTHORIZED, "잘못된 아이디 또는 비밀번호입니다."),
+    WRONG_FOLLOW_REQUEST(4007, HttpStatus.BAD_REQUEST, "잘못된 팔로우 요청입니다."),
 
     SERVER_ERROR(5001, HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다."),
     S3_UPLOAD_ERROR(5002, HttpStatus.INTERNAL_SERVER_ERROR, "미디어 업로드가 실패했습니다."),
