@@ -2,9 +2,11 @@ package com.swpp.footprinter.domain.user.service
 
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
+import com.swpp.footprinter.domain.user.repository.UserFollowRepository
 import com.swpp.footprinter.domain.user.repository.UserRepository
 import com.swpp.footprinter.global.TestHelper
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -16,9 +18,16 @@ import javax.transaction.Transactional
 class UserFollowServiceTest @Autowired constructor(
     private val userFollowService: UserFollowService,
     private val testHelper: TestHelper,
+    private val userFollowRepo: UserFollowRepository,
     private val userRepo: UserRepository,
     private val entityManager: EntityManager,
 ) {
+    @AfterEach
+    fun cleanUp() {
+        userFollowRepo.deleteAll()
+        userRepo.deleteAll()
+    }
+
     @Test
     @Transactional
     fun `Could follow and unfollow user`() {
@@ -79,7 +88,43 @@ class UserFollowServiceTest @Autowired constructor(
 
     @Test
     @Transactional
-    fun `Throw NOT_FOUND when follow or unfollow non-existing user`() {
+    fun `Throw WRONG_FOLLOW_REQUEST when follow oneself`() {
+        val user = testHelper.createUser(
+            username = "user2",
+            password = "testpassword",
+            myTrace = mutableSetOf(),
+        )
+
+        try {
+            userFollowService.followUser(user, "user2")
+        } catch (e: FootprinterException) {
+            assertThat(e).extracting("errorType").isEqualTo(ErrorType.WRONG_FOLLOW_REQUEST)
+        }
+    }
+
+    @Test
+    @Transactional
+    fun `Could get follow info`() {
+        for (i in 1..5) {
+            val name = "user$i"
+            testHelper.createUser(username = name, password = "testpassword")
+        }
+
+        val user1 = userRepo.findByUsername("user1")!!
+
+        for (i in 2..5) {
+            userFollowService.followUser(user1, "user$i")
+        }
+
+        val followCount = userFollowService.getUserFollowCount(user1, "user1")
+
+        assertThat(followCount).extracting("followerCount").isEqualTo(0)
+        assertThat(followCount).extracting("followingCount").isEqualTo(4)
+    }
+
+    @Test
+    @Transactional
+    fun `Throw NOT_FOUND when requesting about non-existing user`() {
         val user = testHelper.createUser(
             username = "user",
             password = "testpassword",
@@ -94,6 +139,36 @@ class UserFollowServiceTest @Autowired constructor(
 
         try {
             userFollowService.unfollowUser(user, "non-existing")
+        } catch (e: FootprinterException) {
+            assertThat(e).extracting("errorType").isEqualTo(ErrorType.NOT_FOUND)
+        }
+
+        try {
+            userFollowService.unfollowUser(user, "non-existing")
+        } catch (e: FootprinterException) {
+            assertThat(e).extracting("errorType").isEqualTo(ErrorType.NOT_FOUND)
+        }
+
+        try {
+            userFollowService.deleteFollower(user, "non-existing")
+        } catch (e: FootprinterException) {
+            assertThat(e).extracting("errorType").isEqualTo(ErrorType.NOT_FOUND)
+        }
+
+        try {
+            userFollowService.getUserFollowers(user, "non-existing")
+        } catch (e: FootprinterException) {
+            assertThat(e).extracting("errorType").isEqualTo(ErrorType.NOT_FOUND)
+        }
+
+        try {
+            userFollowService.getUserFollowings(user, "non-existing")
+        } catch (e: FootprinterException) {
+            assertThat(e).extracting("errorType").isEqualTo(ErrorType.NOT_FOUND)
+        }
+
+        try {
+            userFollowService.getUserFollowCount(user, "non-existing")
         } catch (e: FootprinterException) {
             assertThat(e).extracting("errorType").isEqualTo(ErrorType.NOT_FOUND)
         }
