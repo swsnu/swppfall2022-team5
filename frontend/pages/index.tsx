@@ -8,20 +8,19 @@ export default function Home() {
   const router = useRouter();
   const token = useAuthStore((state) => state.userToken)
   useQuery(
-    ['token valid', token],
+    ["token valid", token],
     () => {
-      return checkToken({token:token})
+      return checkToken({ token: token });
     },
     {
       onSuccess: (result) => {
-        if (result.valid) {
-          router.push("/footprints")
+        if (!result.valid) {
+          router.push("/signin");
+        } else {
+          router.push("/footprints");
         }
-        else {
-          router.push("/signin")
-        }
-      }
-    }
-  )
+      },
+    },
+  );
   return <Container></Container>;
 }

@@ -84,7 +84,7 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
             >
               <Dialog.Panel className="max-h-[40rem] w-full max-w-lg transform overflow-hidden overflow-y-scroll rounded-2xl border border-navy-200/5 bg-navy-800 px-6 py-5 text-left align-middle shadow-xl transition-all">
                 <div className="text-lg font-medium leading-6 text-navy-200">사진을 업로드하세요</div>
-                <div className="mt-1 mb-4 text-sm text-navy-500">
+                <div className="mt-1 mb-4 text-sm text-navy-400">
                   사진의 정보를 분석해서 발자취를 쉽게 기록할 수 있도록 도와드려요.
                 </div>
                 <FilePond

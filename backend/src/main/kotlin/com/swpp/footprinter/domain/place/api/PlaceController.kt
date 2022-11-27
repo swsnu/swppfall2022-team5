@@ -1,4 +1,4 @@
-package com.swpp.footprintercreate
+package com.swpp.footprinter.domain.place.api
 
 import com.swpp.footprinter.domain.place.service.externalAPI.KakaoAPIService
 import org.springframework.http.ResponseEntity
