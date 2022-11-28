@@ -18,4 +18,6 @@ enum class ErrorType(
 
     SERVER_ERROR(5001, HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다."),
     S3_UPLOAD_ERROR(5002, HttpStatus.INTERNAL_SERVER_ERROR, "미디어 업로드가 실패했습니다."),
+
+    KAKAOMAP_ERROR(6001, HttpStatus.INTERNAL_SERVER_ERROR, "지도 서버에 오류가 발생했습니다.")
 }
