@@ -29,7 +29,7 @@ export function FootprintPreview(props: IProps) {
       </div>
       <div className="ml-1">
         <div className="mt-2">{props.place.name}</div>
-        <div className="mt-1 text-xs text-navy-500">{props.place.address}</div>
+        <div className="mt-1 text-xs text-navy-400">{props.place.address}</div>
         <div className="mt-2 text-sm">{props.memo}</div>
       </div>
     </div>

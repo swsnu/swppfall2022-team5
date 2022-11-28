@@ -1,4 +1,4 @@
-package com.swpp.footprinter.domain.tag.controller
+package com.swpp.footprinter.domain.tag.api
 
 import com.swpp.footprinter.domain.tag.dto.TagResponse
 import com.swpp.footprinter.domain.tag.repository.TagRepository

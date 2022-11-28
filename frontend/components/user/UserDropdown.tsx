@@ -1,48 +1,40 @@
-import { Popover, Transition } from "@headlessui/react";
-import { IconChevronDown, IconUser } from "@tabler/icons";
-import { Fragment } from "react";
+import { IconLogout, IconUser, IconUserCircle } from "@tabler/icons";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/router";
+import toast from "react-hot-toast";
+import { whoAmI } from "../../api";
+import { useAuthStore } from "../../store/auth";
+import DropDownMenuContainer from "../containers/DropdownMenuContainer";
 
-interface IProps {
-    onClickSignout: () => void,
-    onClickMyPage: () => void,
-    onClickInfo: () => void,
-}
+const UserDropdown = () => {
+  const myName = useQuery(["whoAmI"], whoAmI);
+  const router = useRouter();
+  const setToken = useAuthStore((state) => state.setToken);
 
-const UserDropdown = ({onClickSignout, onClickMyPage, onClickInfo}: IProps) => {
-    return (
-        <div className="mt-1 mr-2">
-            <Popover>
-                <Popover.Button className="focus:outline-none">
-                    <div className="flex items-center hover:opacity-80">
-                        <IconUser />
-                    </div>
-                </Popover.Button>
-                <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-200"
-                    enterFrom="opacity-0 translate-y-0"
-                    enterTo="opacity-100 translate-y-1"
-                    leave="transition ease-in duration-150"
-                    leaveFrom="opacity-100 translate-y-1"
-                    leaveTo="opacity-0 translate-y-0"
-                >
-                <Popover.Panel className="absolute right-0 mr-3 ">
-            <div className="rounded-lg border border-navy-200/5 bg-navy-800 py-3 px-4 shadow-md">
-                <div className="flex items-center hover:opacity-80 mb-2" role='button' onClick={() => onClickMyPage()}> 
-                    마이페이지
-                </div>
-                <div className="flex items-center hover:opacity-80 mb-2" role='button'> 
-                    내 정보
-                </div>
-                <div className="flex items-center hover:opacity-80" role='button' onClick={() => onClickSignout()}> 
-                    로그아웃
-                </div>
-            </div>
-            </Popover.Panel>
-                </Transition>
-            </Popover>
-        </div>
-    )
-}
+  return (
+    <DropDownMenuContainer
+      icon={IconUser}
+      orientation="right"
+      menuItems={[
+        {
+          icon: IconUserCircle,
+          text: "마이페이지",
+          onClick: () => {
+            router.push(`/user/${myName.data?.username}`);
+          },
+        },
+        {
+          icon: IconLogout,
+          text: "로그아웃",
+          onClick: () => {
+            setToken("");
+            router.push("/signin");
+            toast.success("로그아웃 되었습니다.");
+          },
+        },
+      ]}
+    />
+  );
+};
 
 export default UserDropdown;
