@@ -1,6 +1,7 @@
 package com.swpp.footprinter.domain.footprint.model
 
 import com.swpp.footprinter.common.model.BaseEntity
+import com.swpp.footprinter.common.utils.ImageUrlUtil
 import com.swpp.footprinter.common.utils.dateToString8601
 import com.swpp.footprinter.domain.footprint.dto.FootprintResponse
 import com.swpp.footprinter.domain.photo.model.Photo
@@ -37,7 +38,7 @@ class Footprint(
 
 ) : BaseEntity() {
 
-    fun toResponse(): FootprintResponse {
+    fun toResponse(imageUrlUtil: ImageUrlUtil): FootprintResponse {
         return FootprintResponse(
             id = id!!,
             startTime = dateToString8601(startTime),
@@ -47,7 +48,7 @@ class Footprint(
             place = place.toResponse(),
             tag = tag.toResponse(),
             memo = memo,
-            photos = photos.map { it.toResponse() }
+            photos = photos.map { it.toResponse(imageUrlUtil) }
         )
     }
 }

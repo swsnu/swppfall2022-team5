@@ -53,37 +53,19 @@ class TraceServiceImpl(
     override fun getAllUserTraces(loginUser: User, username: String): List<TraceDetailResponse> {
         if (loginUser.username == username) {
             return loginUser.myTrace.map { trace ->
-                trace.toDetailResponse().apply {
-                    footprints?.forEach { footprint ->
-                        footprint.photos.forEach {
-                            it.imageUrl = imageUrlUtil.getImageURLfromImagePath(it.imagePath)
-                        }
-                    }
-                }
+                trace.toDetailResponse(imageUrlUtil)
             }
         } else {
             val user = userRepo.findByUsername(username) ?: throw FootprinterException(ErrorType.NOT_FOUND)
             return user.myTrace.filter { trace -> trace.public }.map { trace ->
-                trace.toDetailResponse().apply {
-                    footprints?.forEach { footprint ->
-                        footprint.photos.forEach {
-                            it.imageUrl = imageUrlUtil.getImageURLfromImagePath(it.imagePath)
-                        }
-                    }
-                }
+                trace.toDetailResponse(imageUrlUtil)
             }
         }
     }
 
     override fun getAllOtherUsersTraces(loginUser: User): List<TraceDetailResponse> {
         return traceRepo.findAll().filter { it.owner != loginUser && it.public }.map { trace ->
-            trace.toDetailResponse().apply {
-                footprints?.forEach { footprint ->
-                    footprint.photos.forEach {
-                        it.imageUrl = imageUrlUtil.getImageURLfromImagePath(it.imagePath)
-                    }
-                }
-            }
+            trace.toDetailResponse(imageUrlUtil)
         }
     }
 
@@ -110,13 +92,7 @@ class TraceServiceImpl(
 
     override fun getTraceById(traceId: Long): TraceDetailResponse {
         val trace = traceRepo.findByIdOrNull(traceId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
-        return trace.toDetailResponse().apply {
-            footprints?.forEach { fp ->
-                fp.photos.forEach { p ->
-                    p.imageUrl = imageUrlUtil.getImageURLfromImagePath(p.imagePath)
-                }
-            }
-        }
+        return trace.toDetailResponse(imageUrlUtil)
     }
 
     override fun deleteTraceById(traceId: Long, loginUser: User) {
@@ -144,13 +120,8 @@ class TraceServiceImpl(
     override fun getTraceByDate(date: String, loginUser: User): TraceDetailResponse? {
         return traceRepo
             .findTraceByOwnerAndTraceDate(loginUser, date).lastOrNull()
-            ?.toDetailResponse()
+            ?.toDetailResponse(imageUrlUtil)
             ?.apply {
-                footprints?.forEach { footprint ->
-                    footprint.photos.forEach {
-                        it.imageUrl = imageUrlUtil.getImageURLfromImagePath(it.imagePath)
-                    }
-                }
                 footprints = footprints?.sortedBy {
                     stringToDate8601(it.startTime).time
                 }
