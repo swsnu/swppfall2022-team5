@@ -23,6 +23,7 @@ const createQueryClient = (goBackToSigninPage: () => void) =>
           case ErrorType.UNAUTHORIZED : {
             toast("로그인 페이지로 이동합니다.")
             goBackToSigninPage()
+            break;
           }
           default : {
             toast.error("무언가 잘못되었어요 😢");
