@@ -36,7 +36,7 @@ it("fetch fetchTraceById", async () => {
   mockAxios.get.mockResolvedValue({ data: "mock" });
   await act(async () => {
     const data = await fetchTraceById(5);
-    expect(data.data).toBe("mock");
+    expect(data).toBe("mock");
   });
 });
 
