@@ -1,6 +1,5 @@
 package com.swpp.footprinter.domain.trace.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.swpp.footprinter.common.Km_PER_LATLNG_DEGREE
 import com.swpp.footprinter.common.PLACE_FIND_METER
 import com.swpp.footprinter.common.PLACE_GRID_METER
@@ -17,7 +16,9 @@ import com.swpp.footprinter.domain.photo.dto.PhotoInitialTraceResponse
 import com.swpp.footprinter.domain.photo.model.Photo
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
 import com.swpp.footprinter.domain.place.dto.PlaceInitialTraceResponse
-import com.swpp.footprinter.domain.place.service.externalAPI.KakaoAPIService
+import com.swpp.footprinter.common.externalAPI.KakaoAPIService
+import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
+import com.swpp.footprinter.domain.footprint.service.FootprintService
 import com.swpp.footprinter.domain.tag.TAG_CODE
 import com.swpp.footprinter.domain.tag.dto.TagResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
@@ -241,9 +242,7 @@ class TraceServiceImpl(
                 for (category in listOf(TAG_CODE.음식점, TAG_CODE.관광명소, TAG_CODE.문화시설, TAG_CODE.카페, TAG_CODE.숙박)) {
                     // Get places for each category and add to recommendedPlaceList
                     val responseEntityPlace = kakaoAPIService.coordToPlace(it.meanLongitude.toString(), it.meanLatitude.toString(), category.code, radius)
-                    val objectMapper = ObjectMapper()
-                    val body = objectMapper.readValue(responseEntityPlace.body, Map::class.java)
-                    val documents = body["documents"] as ArrayList<Map<String, String>>
+                    val documents = kakaoAPIService.getDocumentsMapListFromResponse(responseEntityPlace)
                     documents.forEach { map ->
                         it.recommendedPlaceList.add(
                             PlaceInitialTraceResponse(

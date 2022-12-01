@@ -55,7 +55,7 @@ spring:
 auth.jwt:
   issuer: com.swpp.footprinter
   jwtSecret: SECRET_KEY_FOR_MIGHTY_MARVELOUS_FOOTPRINTER_SERVICE
-  jwtExpiration: 3600000
+  jwtExpiration: 3600000000000
 
 ---
 

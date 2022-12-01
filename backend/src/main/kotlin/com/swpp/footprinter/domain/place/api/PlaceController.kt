@@ -1,17 +1,21 @@
-package com.swpp.footprintercreate
+package com.swpp.footprinter.domain.place.api
 
-import com.swpp.footprinter.domain.place.service.externalAPI.KakaoAPIService
+import com.swpp.footprinter.common.exception.ErrorType
+import com.swpp.footprinter.common.exception.FootprinterException
+import com.swpp.footprinter.domain.place.dto.PlaceResponse
+import com.swpp.footprinter.domain.place.dto.PlaceSearchRequest
+import com.swpp.footprinter.domain.place.service.PlaceService
+import com.swpp.footprinter.common.externalAPI.KakaoAPIService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.ResponseBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.validation.BindingResult
+import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api/v1")
 class PlaceController(
-    private val kakaoApiService: KakaoAPIService
+    private val kakaoApiService: KakaoAPIService,
+    private val placeService: PlaceService,
 ) {
 
     @GetMapping("/place")
@@ -21,5 +25,17 @@ class PlaceController(
         @RequestParam("latitude") latitude: String
     ): ResponseEntity<String> {
         return kakaoApiService.coordToRegion(longitude, latitude)
+    }
+
+    @GetMapping("/place/search")
+    @ResponseBody
+    fun getPlacesSearchByKeyword(
+        @Valid @RequestBody placeSearchRequest: PlaceSearchRequest,
+        bindingResult: BindingResult,
+    ): List<PlaceResponse> {
+        if (bindingResult.hasErrors()) {
+            throw FootprinterException(ErrorType.WRONG_FORMAT)
+        }
+        return placeService.searchPlacesByKeywordAndTags(placeSearchRequest)
     }
 }

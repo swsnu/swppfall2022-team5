@@ -53,7 +53,7 @@ class UserServiceTest @Autowired constructor(
         // given
         val user = testHelper.createUser(
             username = "testname",
-            password = "testemail",
+            password = "testpassword",
             myTrace = mutableSetOf(),
         )
         val trace = testHelper.createTrace(
@@ -96,7 +96,7 @@ class UserServiceTest @Autowired constructor(
         // given
         val user = testHelper.createUser(
             username = "testname",
-            password = "testemail",
+            password = "testpassword",
             myTrace = mutableSetOf(),
         )
 

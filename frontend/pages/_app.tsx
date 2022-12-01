@@ -23,6 +23,7 @@ const createQueryClient = (goBackToSigninPage: () => void) =>
           case ErrorType.UNAUTHORIZED : {
             toast("로그인 페이지로 이동합니다.")
             goBackToSigninPage()
+            break;
           }
           default : {
             toast.error("무언가 잘못되었어요 😢");
@@ -35,7 +36,7 @@ const createQueryClient = (goBackToSigninPage: () => void) =>
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
   const [queryClient] = useState(createQueryClient(() => { router.push('/signin')}));
-  apiClient.defaults.headers.common['Authorization'] = `Bearer ${useAuthStore.getState().userToken}`
+  apiClient.defaults.headers.common['Authorization'] = `Bearer ${useAuthStore((state) => state.userToken)}`
   return (
     <>
       <Head>

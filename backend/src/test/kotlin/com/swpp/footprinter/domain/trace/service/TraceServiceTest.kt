@@ -15,7 +15,7 @@ import com.swpp.footprinter.domain.photo.repository.PhotoRepository
 import com.swpp.footprinter.domain.place.dto.PlaceInitialTraceResponse
 import com.swpp.footprinter.domain.place.dto.PlaceRequest
 import com.swpp.footprinter.domain.place.repository.PlaceRepository
-import com.swpp.footprinter.domain.place.service.externalAPI.KakaoAPIService
+import com.swpp.footprinter.common.externalAPI.KakaoAPIService
 import com.swpp.footprinter.domain.tag.TAG_CODE
 import com.swpp.footprinter.domain.tag.dto.TagResponse
 import com.swpp.footprinter.domain.tag.repository.TagRepository
@@ -29,8 +29,7 @@ import net.minidev.json.JSONObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
-import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.ArgumentMatchers.anyString
+import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -391,28 +390,35 @@ class TraceServiceTest @Autowired constructor(
         }
 
         // Mock KakaoApiService
+        val responseMock = ResponseEntity(
+            JSONObject.toJSONString(
+                mapOf(
+                    "documents" to listOf(
+                        mapOf(
+                            "place_name" to "place1",
+                            "address_name" to "addr1",
+                            "distance" to "1"
+                        ),
+                        mapOf(
+                            "place_name" to "place2",
+                            "address_name" to "addr2",
+                            "distance" to "2"
+                        ),
+                    )
+                )
+            ),
+            HttpStatus.OK
+        )
         `when`(mockKakaoApiService.coordToPlace(anyString(), anyString(), anyString(), anyInt()))
             .thenReturn(
-                ResponseEntity(
-                    JSONObject.toJSONString(
-                        mapOf(
-                            "documents" to listOf(
-                                mapOf(
-                                    "place_name" to "place1",
-                                    "address_name" to "addr1",
-                                    "distance" to "1"
-                                ),
-                                mapOf(
-                                    "place_name" to "place2",
-                                    "address_name" to "addr2",
-                                    "distance" to "2"
-                                ),
-                            )
-                        )
-                    ),
-                    HttpStatus.OK
-                )
+                responseMock
             )
+        `when`(
+            mockKakaoApiService
+                .getDocumentsMapListFromResponse(
+                    responseMock
+                )
+        ).thenCallRealMethod()
 
         // Mock getImageURLfromImagePath
         `when`(mockImageUrlUtil.getImageURLfromImagePath(anyString())).thenReturn("testurl")
