@@ -19,14 +19,6 @@ export default function Signin() {
   const setToken = useAuthStore((state) => state.setToken);
   const userToken = useAuthStore((state) => state.userToken);
 
-  useEffect(() => {
-    if (!userToken) {
-      return;
-    }
-    setToken(userToken);
-    router.push("/footprints");
-  }, [router, setToken, userToken]);
-
   return (
     <Container>
       <div className="mx-5 flex min-h-screen items-center justify-center">
