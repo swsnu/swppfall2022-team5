@@ -5,4 +5,5 @@ data class TraceResponse(
     val date: String?,
     val title: String?,
     val ownerId: Long?,
+    val likesCount: Int,
 )

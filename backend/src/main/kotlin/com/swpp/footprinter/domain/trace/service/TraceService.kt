@@ -22,6 +22,7 @@ import com.swpp.footprinter.domain.tag.dto.TagResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
 import com.swpp.footprinter.domain.trace.model.Trace
+import com.swpp.footprinter.domain.trace.repository.TraceLikeRepository
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import com.swpp.footprinter.domain.user.model.User
 import com.swpp.footprinter.domain.user.repository.UserRepository
@@ -38,7 +39,7 @@ interface TraceService {
     fun getAllUserTraces(loginUser: User, username: String): List<TraceDetailResponse>
     fun getAllOtherUsersTraces(loginUser: User): List<TraceDetailResponse>
     fun createTrace(traceRequest: TraceRequest, loginUser: User)
-    fun getTraceById(traceId: Long): TraceDetailResponse
+    fun getTraceById(traceId: Long, userId: Long? = null): TraceDetailResponse
 
     fun deleteTraceById(traceId: Long, loginUser: User)
     fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
@@ -48,6 +49,7 @@ interface TraceService {
 @Service
 class TraceServiceImpl(
     private val traceRepo: TraceRepository,
+    private val traceLikeRepo: TraceLikeRepository,
     private val footprintService: FootprintService,
     private val photoRepo: PhotoRepository,
     private val kakaoAPIService: KakaoAPIService,
@@ -116,9 +118,10 @@ class TraceServiceImpl(
         }
     }
 
-    override fun getTraceById(traceId: Long): TraceDetailResponse {
+    override fun getTraceById(traceId: Long, userId: Long?): TraceDetailResponse {
         val trace = traceRepo.findByIdOrNull(traceId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
-        return trace.toDetailResponse(imageUrlUtil)
+        val isLiked = if (userId == null) { false } else { traceLikeRepo.findByTraceIdAndUserId(traceId, userId) != null }
+        return trace.toDetailResponse(imageUrlUtil, isLiked)
     }
 
     override fun deleteTraceById(traceId: Long, loginUser: User) {
@@ -184,7 +187,7 @@ class TraceServiceImpl(
         photoEntityList.forEach {
             var isAdded = false
             val photo = PhotoInitialTraceResponse(
-                id = it.id!!,
+                id = it.id,
                 imagePath = it.imagePath,
                 imageUrl = imageUrlUtil.getImageURLfromImagePath(it.imagePath),
                 latitude = it.latitude,

@@ -18,8 +18,7 @@ class TraceLikeController(
         @PathVariable traceId: Long
     ): TraceLikeResponse {
         val likesCount = traceLikeService.likeTraceById(user, traceId)
-        // 질문: DTO mapping은 Service vs Controller 어디에서 하는게 바람직한가?
-        return TraceLikeResponse(likesCount = likesCount)
+        return TraceLikeResponse(likesCount = likesCount, isLiked = true)
     }
 
     @DeleteMapping("/{traceId}/likes")
@@ -29,6 +28,6 @@ class TraceLikeController(
         @PathVariable traceId: Long
     ): TraceLikeResponse {
         val likesCount = traceLikeService.unlikeTraceById(user, traceId)
-        return TraceLikeResponse(likesCount = likesCount)
+        return TraceLikeResponse(likesCount = likesCount, isLiked = false)
     }
 }
