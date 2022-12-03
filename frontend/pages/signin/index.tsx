@@ -25,7 +25,12 @@ export default function Signin() {
         if (response.valid) {
           setToken(userToken);
           router.push("/footprints");
+        } else {
+          setToken("");
         }
+      })
+      .catch(() => {
+        setToken("");
       })
   }, [router, setToken, userToken]);
 
