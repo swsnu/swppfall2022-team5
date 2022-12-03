@@ -17,8 +17,6 @@ import com.swpp.footprinter.domain.photo.model.Photo
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
 import com.swpp.footprinter.domain.place.dto.PlaceInitialTraceResponse
 import com.swpp.footprinter.common.externalAPI.KakaoAPIService
-import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
-import com.swpp.footprinter.domain.footprint.service.FootprintService
 import com.swpp.footprinter.domain.tag.TAG_CODE
 import com.swpp.footprinter.domain.tag.dto.TagResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
