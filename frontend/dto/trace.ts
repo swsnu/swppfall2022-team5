@@ -5,7 +5,6 @@ export interface TraceRequestType {
   // date: string;
   public: boolean;
   footprintList: FootprintRequestType[];
-  likesCount: number;
 }
 
 export interface TraceDetailResponseType {
