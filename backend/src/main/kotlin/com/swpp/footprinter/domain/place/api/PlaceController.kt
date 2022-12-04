@@ -6,7 +6,6 @@ import com.swpp.footprinter.domain.place.dto.PlaceResponse
 import com.swpp.footprinter.domain.place.dto.PlaceSearchRequest
 import com.swpp.footprinter.domain.place.service.PlaceService
 import com.swpp.footprinter.common.externalAPI.KakaoAPIService
-import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
@@ -23,8 +22,8 @@ class PlaceController(
     fun getRegionByCoordinate(
         @RequestParam("longitude") longitude: String,
         @RequestParam("latitude") latitude: String
-    ): ResponseEntity<String> {
-        return kakaoApiService.coordToRegion(longitude, latitude)
+    ): String {
+        return placeService.getAddressByLatLon(latitude, longitude)
     }
 
     @GetMapping("/search")

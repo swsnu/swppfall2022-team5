@@ -11,6 +11,7 @@ import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.domain.tag.TAG_CODE
 
 interface PlaceService {
+    fun getAddressByLatLon(latitude: String, longitude: String): String
     fun searchPlacesByKeywordAndTags(placeSearchRequest: PlaceSearchRequest): List<PlaceResponse>
 }
 
@@ -19,6 +20,12 @@ class PlaceServiceImpl(
     private val placeRepository: PlaceRepository,
     private val kakaoAPIService: KakaoAPIService,
 ) : PlaceService {
+    override fun getAddressByLatLon(latitude: String, longitude: String): String {
+        val response = kakaoAPIService.coordToRegion(longitude, latitude)
+        val regionList = kakaoAPIService.getDocumentsMapListFromResponse(response)
+        return regionList[0].getOrDefault("address_name", "알 수 없음")
+    }
+
     override fun searchPlacesByKeywordAndTags(placeSearchRequest: PlaceSearchRequest): List<PlaceResponse> {
         val searchedPlacesAllTagsResponse = placeSearchRequest.let {
             kakaoAPIService.coordAndKeywordToPlace(

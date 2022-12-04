@@ -27,9 +27,7 @@ class KakaoAPIService(
         val request = HttpEntity<String>(httpHeaders)
 
         return try {
-            val response: ResponseEntity<String> = restTemplate.exchange("$url?x=$longitude&y=$latitude", HttpMethod.GET, request, String::class)
-            val documents = getDocumentsMapListFromResponse(response)
-            return ResponseEntity.ok(documents[0]["address_name"] ?: "알 수 없음")
+            restTemplate.exchange("$url?x=$longitude&y=$latitude", HttpMethod.GET, request, String::class)
         } catch (e: HttpClientErrorException) {
             throw FootprinterException(ErrorType.KAKAOMAP_ERROR)
         }
