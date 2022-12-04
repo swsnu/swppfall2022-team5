@@ -1,7 +1,7 @@
 import Container from "../../../components/containers/Container";
 import NavigationBar from "../../../components/navbar/NavigationBar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchTraceById, likeTrace, unlikeTrace } from "../../../api";
+import { fetchTraceById, likeTrace, unlikeTrace, fetchRegionByCoordinates } from "../../../api";
 import NavbarContainer from "../../../components/containers/NavbarContainer";
 import { FootprintPreview } from "../../../components/footprint/FootprintPreview";
 import { useRouter } from "next/router";
@@ -9,14 +9,33 @@ import { useState } from "react";
 import KakaoMap from "../../../components/map/KakaoMap";
 import LikeButton from "../../../components/buttons/LikeButton";
 
+// react component named RegionTitle
+// that takes latitude and longitude and displays the region name
+const RegionTitle = ({ latitude, longitude }: { latitude: number; longitude: number }) => {
+  const regionResult = useQuery(["regions", longitude, latitude], () => {
+    return fetchRegionByCoordinates(latitude, longitude);
+  });
+
+  if (!regionResult.isSuccess) {
+    return null;
+  }
+
+  console.log(regionResult.data);
+  return <div className="text-2xl font-bold">{regionResult.data}</div>;
+};
+
 export default function TraceDetail() {
   const router = useRouter();
   const { traceId } = router.query;
   const queryClient = useQueryClient();
 
-  const traceResult = useQuery(["traces", traceId], () => {
-    return fetchTraceById(Number(traceId));
-  });
+  const traceResult = useQuery(
+    ["traces", traceId],
+    () => {
+      return fetchTraceById(Number(traceId));
+    },
+    { enabled: !!traceId },
+  );
 
   const likeMutation = useMutation((traceId: number) => likeTrace(traceId));
   const unlikeMutation = useMutation((traceId: number) => unlikeTrace(traceId));
@@ -60,7 +79,7 @@ export default function TraceDetail() {
 
       <div className="m-5 flex items-center justify-between">
         <div>
-          <div className="text-2xl font-bold">서울 마포구 연남동</div>
+          <RegionTitle latitude={coordinates[0].latitude} longitude={coordinates[0].longitude} />
           <div className="text-navy-300">{traceResult.data?.title}</div>
         </div>
         <div>

@@ -66,3 +66,7 @@ export const likeTrace = async (traceId: number) => {
 export const unlikeTrace = async (traceId: number) => {
   return (await apiClient.delete<TraceLikeResponseType>(`/traces/${traceId}/likes`)).data;
 };
+
+export const fetchRegionByCoordinates = async (latitude: number, longitude: number) => {
+  return (await apiClient.get<String>(`/place`, { params: { latitude: latitude, longitude: longitude } })).data;
+};

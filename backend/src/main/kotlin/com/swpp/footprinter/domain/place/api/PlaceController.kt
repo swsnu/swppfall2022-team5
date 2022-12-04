@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/place")
 class PlaceController(
     private val kakaoApiService: KakaoAPIService,
     private val placeService: PlaceService,
 ) {
 
-    @GetMapping("/place")
+    @GetMapping
     @ResponseBody
     fun getRegionByCoordinate(
         @RequestParam("longitude") longitude: String,
@@ -27,7 +27,7 @@ class PlaceController(
         return kakaoApiService.coordToRegion(longitude, latitude)
     }
 
-    @GetMapping("/place/search")
+    @GetMapping("/search")
     @ResponseBody
     fun getPlacesSearchByKeyword(
         @Valid @RequestBody placeSearchRequest: PlaceSearchRequest,
