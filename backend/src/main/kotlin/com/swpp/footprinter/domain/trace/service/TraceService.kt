@@ -64,14 +64,14 @@ class TraceServiceImpl(
             }
         } else {
             val user = userRepo.findByUsername(username) ?: throw FootprinterException(ErrorType.NOT_FOUND)
-            return user.myTrace.filter { trace -> trace.show }.map { trace ->
+            return user.myTrace.filter { trace -> trace.isPublic }.map { trace ->
                 trace.toDetailResponse(imageUrlUtil)
             }
         }
     }
 
     override fun getAllOtherUsersTraces(loginUser: User): List<TraceDetailResponse> {
-        return traceRepo.findAll().filter { it.owner != loginUser && it.show }.map { trace ->
+        return traceRepo.findAll().filter { it.owner != loginUser && it.isPublic }.map { trace ->
             trace.toDetailResponse(imageUrlUtil)
         }
     }
@@ -100,7 +100,7 @@ class TraceServiceImpl(
                     ?: Trace(
                         traceTitle = traceRequest.title!!,
                         traceDate = day!!,
-                        show = traceRequest.public!!,
+                        isPublic = traceRequest.public!!,
                         owner = loginUser,
                         footprints = mutableSetOf()
                     ).let {

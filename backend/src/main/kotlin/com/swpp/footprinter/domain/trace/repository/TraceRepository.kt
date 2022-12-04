@@ -43,7 +43,7 @@ class TraceRepositoryCustomImpl(
         placeList: List<PlaceRequest>
     ): List<Trace> {
         val booleanBuilder = BooleanBuilder()
-        booleanBuilder.and(trace.show.eq(true))
+        booleanBuilder.and(trace.isPublic.eq(true))
         if (usernameList.isNotEmpty()) {
             booleanBuilder.and(
                 user.username.`in`(usernameList)
