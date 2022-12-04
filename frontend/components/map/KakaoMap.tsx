@@ -1,25 +1,31 @@
 import { PhotoType } from "../../dto/photo";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
-interface IProps {
-  photos: PhotoType[];
+
+interface Coordinates {
+  latitude: number;
+  longitude: number;
 }
 
-const KakaoMap = ({ photos }: IProps) => {
+interface IProps {
+  coordinates: Coordinates[];
+}
+
+const KakaoMap = ({ coordinates }: IProps) => {
   return (
     <Map
       className="h-40"
       center={{
-        lat: photos[0].latitude,
-        lng: photos[0].longitude,
+        lat: coordinates[0].latitude,
+        lng: coordinates[0].longitude,
       }}
     >
-      {photos.map((photo) => {
+      {coordinates.map((coordinate) => {
         return (
           <MapMarker
-            key={photo.imagePath}
+            key={`${coordinate.latitude}-${coordinate.longitude}`}
             position={{
-              lat: photo.latitude,
-              lng: photo.longitude,
+              lat: coordinate.latitude,
+              lng: coordinate.longitude,
             }}
           />
         );

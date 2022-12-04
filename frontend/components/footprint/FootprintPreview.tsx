@@ -11,7 +11,7 @@ export function FootprintPreview(props: IProps) {
   return (
     <div
       data-testid="footprint-preview"
-      className="p-5 text-navy-100 transition-colors hover:cursor-pointer hover:bg-navy-800/50"
+      className="p-5 text-navy-100 transition-colors hover:cursor-pointer hover:bg-navy-700/60"
       onClick={() => {
         router.push(`/footprints/detail/${props.id}`);
       }}

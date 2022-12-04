@@ -6,6 +6,8 @@ import NavbarContainer from "../../../components/containers/NavbarContainer";
 import { FootprintPreview } from "../../../components/footprint/FootprintPreview";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import KakaoMap from "../../../components/map/KakaoMap";
+import LikeButton from "../../../components/buttons/LikeButton";
 
 export default function TraceDetail() {
   const router = useRouter();
@@ -39,21 +41,39 @@ export default function TraceDetail() {
     }
   };
 
+  if (!traceResult.isSuccess) {
+    return null;
+  }
+
+  const coordinates = traceResult.data.footprints.map((footprint) => {
+    return {
+      latitude: footprint.photos[0].latitude,
+      longitude: footprint.photos[0].longitude,
+    };
+  });
+
   return (
     <Container>
       <NavbarContainer className="">
         <NavigationBar title={traceResult.data?.title} />
       </NavbarContainer>
 
-      <div>
-        <div>서울 마포구 연남동</div>
-        <div>트레이스의 제목이 여기로 들어갑니다.</div>
+      <div className="m-5 flex items-center justify-between">
+        <div>
+          <div className="text-2xl font-bold">서울 마포구 연남동</div>
+          <div className="text-navy-300">{traceResult.data?.title}</div>
+        </div>
+        <div>
+          <LikeButton
+            isLiked={traceResult.data.isLiked}
+            onClick={handleLike}
+            likesCount={traceResult.data.likesCount}
+          />
+        </div>
       </div>
 
-      <div className="bg-yellow-200">지도는 여기에</div>
-
-      <div>
-        <button onClick={handleLike}>{traceResult.data?.likesCount}</button>
+      <div className="bg-yellow-200">
+        <KakaoMap coordinates={coordinates} />
       </div>
 
       <div className="divide-y divide-navy-700/50 pb-20">
