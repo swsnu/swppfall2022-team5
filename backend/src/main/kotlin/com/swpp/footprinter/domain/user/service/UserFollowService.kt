@@ -29,13 +29,13 @@ class UserFollowServiceImpl(
     override fun getUserFollowers(loginUser: User, username: String): List<UserResponse> {
         val user = userRepo.findByUsername(username) ?: throw FootprinterException(ErrorType.NOT_FOUND)
         val followList = userFollowRepo.findUserFollowsByFollowed(user)
-        return followList.map { UserResponse(it.follower.username) }
+        return followList.map { it.follower.toResponse() }
     }
 
     override fun getUserFollowings(loginUser: User, username: String): List<UserResponse> {
         val user = userRepo.findByUsername(username) ?: throw FootprinterException(ErrorType.NOT_FOUND)
         val followList = userFollowRepo.findUserFollowsByFollower(user)
-        return followList.map { UserResponse(it.followed.username) }
+        return followList.map { it.followed.toResponse() }
     }
 
     @Transactional

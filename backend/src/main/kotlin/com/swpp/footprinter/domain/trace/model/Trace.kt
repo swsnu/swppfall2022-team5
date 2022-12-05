@@ -36,7 +36,7 @@ class Trace(
             id = id!!,
             date = traceDate,
             title = traceTitle,
-            ownerId = owner.id
+            owner = owner.toResponse(),
         )
     }
 
@@ -45,7 +45,7 @@ class Trace(
             id = id!!,
             date = traceDate,
             title = traceTitle,
-            ownerName = owner.username,
+            owner = owner.toResponse(),
             footprints = footprints.map { it.toResponse(imageUrlUtil) }
         )
     }

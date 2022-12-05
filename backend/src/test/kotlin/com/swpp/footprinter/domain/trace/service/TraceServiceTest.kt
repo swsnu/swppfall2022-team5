@@ -191,7 +191,7 @@ class TraceServiceTest @Autowired constructor(
         assertThat(searchedTrace.id).isEqualTo(trace.id)
         assertThat(searchedTrace.date).isEqualTo(trace.traceDate)
         assertThat(searchedTrace.title).isEqualTo(trace.traceTitle)
-        assertThat(searchedTrace.ownerName).isEqualTo(trace.owner.username)
+        assertThat(searchedTrace.owner).isEqualTo(trace.owner.toResponse())
         assertThat(searchedTrace.footprints).hasSize(1)
         // Footprint
         assertThat(searchedTrace.footprints?.first()?.id).isEqualTo(footprint.id)
@@ -284,7 +284,7 @@ class TraceServiceTest @Autowired constructor(
         assertEquals(trace.id, searchedTrace!!.id)
         assertThat(searchedTrace.date).isEqualTo(trace.traceDate)
         assertThat(searchedTrace.title).isEqualTo(trace.traceTitle)
-        assertThat(searchedTrace.ownerName).isEqualTo(trace.owner.username)
+        assertThat(searchedTrace.owner).isEqualTo(trace.owner.toResponse())
         assertThat(searchedTrace.footprints).hasSize(2)
         // Footprint
         assertThat(searchedTrace.footprints?.first()?.id).isEqualTo(footprint.id)
