@@ -19,6 +19,7 @@ import com.swpp.footprinter.domain.tag.TAG_CODE
 import com.swpp.footprinter.domain.tag.dto.TagResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
+import com.swpp.footprinter.domain.trace.dto.TraceViewResponse
 import com.swpp.footprinter.domain.trace.model.Trace
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import com.swpp.footprinter.domain.user.model.User
@@ -35,10 +36,10 @@ interface TraceService {
     fun getAllOtherUsersTraces(loginUser: User): List<TraceDetailResponse>
     fun createTrace(traceRequest: TraceRequest, loginUser: User)
     fun getTraceById(traceId: Long): TraceDetailResponse
-
     fun deleteTraceById(traceId: Long, loginUser: User)
     fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
     fun getTraceByDate(date: String, loginUser: User): TraceDetailResponse?
+    fun updateViewCount(traceId: Long): TraceViewResponse
 }
 
 @Service
@@ -126,6 +127,15 @@ class TraceServiceImpl(
                     stringToDate8601(it.startTime).time
                 }
             }
+    }
+
+    @Transactional
+    override fun updateViewCount(traceId: Long): TraceViewResponse {
+        val targetTrace = traceRepo.findByIdOrNull(traceId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
+
+        targetTrace.viewCount++
+
+        return TraceViewResponse(targetTrace.viewCount)
     }
 
     /**

@@ -4,6 +4,7 @@ import com.swpp.footprinter.common.annotations.UserContext
 import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
+import com.swpp.footprinter.domain.trace.dto.TraceViewResponse
 import com.swpp.footprinter.domain.trace.service.TraceService
 import com.swpp.footprinter.domain.user.model.User
 import org.springframework.http.HttpStatus
@@ -70,5 +71,12 @@ class TraceController(
         @RequestBody photoPathList: List<String>,
     ): List<FootprintInitialTraceResponse> {
         return service.createInitialTraceBasedOnPhotoIdListGiven(photoPathList)
+    }
+
+    @PostMapping("/view/{traceId}")
+    fun updateTraceViewCount(
+        @PathVariable(required = true) traceId: Long,
+    ): TraceViewResponse {
+        return service.updateViewCount(traceId)
     }
 }

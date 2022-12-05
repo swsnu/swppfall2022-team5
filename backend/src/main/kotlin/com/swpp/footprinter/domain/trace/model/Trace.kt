@@ -30,6 +30,9 @@ class Trace(
     @Column(name = "likes_count", columnDefinition = "integer default 0")
     var likesCount: Int = 0,
 
+    @Column(name = "view_count", columnDefinition = "integer default 0")
+    var viewCount: Int = 0,
+
 ) : BaseEntity() {
     fun toResponse(): TraceResponse {
         return TraceResponse(
@@ -46,7 +49,8 @@ class Trace(
             date = traceDate,
             title = traceTitle,
             ownerName = owner.username,
-            footprints = footprints.map { it.toResponse(imageUrlUtil) }
+            footprints = footprints.map { it.toResponse(imageUrlUtil) },
+            viewCount = viewCount
         )
     }
 }
