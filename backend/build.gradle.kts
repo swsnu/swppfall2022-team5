@@ -8,6 +8,7 @@ import org.apache.http.entity.ContentType
 import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
 
 // Reference: https://github.com/nbaztec/coveralls-jacoco-gradle-plugin
 class CustomCoverallsJacocoPlugin : Plugin<Project> {
@@ -70,6 +71,8 @@ plugins {
     kotlin("plugin.jpa") version "1.6.21"
     jacoco
     id("com.github.nbaztec.coveralls-jacoco") version "1.2.15"
+    kotlin("kapt") version "1.7.10"
+    kotlin("plugin.allopen") version "1.6.21"
 }
 
 group = "com.swpp"
@@ -101,6 +104,10 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
     implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+    implementation("com.querydsl:querydsl-jpa:5.0.0")
+    annotationProcessor(group = "com.querydsl", name = "querydsl-apt", classifier = "jpa")
+    kapt("com.querydsl:querydsl-apt:5.0.0:jpa")
+    api("com.querydsl:querydsl-jpa:5.0.0")
 }
 
 tasks.withType<KotlinCompile> {
