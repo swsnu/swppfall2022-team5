@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { fetchAllUserTraces } from "../../api";
+import { fecthFollowCount, fetchAllUserTraces } from "../../api";
 import Container from "../../components/containers/Container";
 import NavbarContainer from "../../components/containers/NavbarContainer";
 import NavigationBar from "../../components/navbar/NavigationBar";
@@ -12,12 +12,28 @@ export default function MyPage() {
   const router = useRouter();
   const { username } = router.query;
 
-  const traceResult = useQuery(["traces", username], () => {
-    if (!username) {
-      return;
+  const traceResult = useQuery(
+    ["traces", username], () => {
+      if (!username) {
+        return;
+      }
+      return fetchAllUserTraces(String(username));
+    },
+    {
+      onError: () => {
+        router.back()
+      }
     }
-    return fetchAllUserTraces(String(username));
-  });
+  );
+
+  const followCount = useQuery(
+    ["follow", username], () => {
+      return fecthFollowCount(String(username));
+    },
+    {
+      enabled: traceResult.isSuccess,
+    }
+  );
 
   return (
     <Container>
@@ -25,7 +41,7 @@ export default function MyPage() {
         <NavigationBar title="프로필" />
       </NavbarContainer>
 
-      <UserProfile username={String(username)}></UserProfile>
+      {followCount.isSuccess && <UserProfile username={String(username)} numTrace={traceResult.data?.length!!} following={followCount.data?.followingCount!!} follower={followCount.data?.followerCount!!} ></UserProfile>}
 
       <div className="mx-6 mt-5 text-xl font-semibold">발자취 목록</div>
 
