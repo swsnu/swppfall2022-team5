@@ -10,21 +10,24 @@ export default function TraceDetail() {
   const router = useRouter();
   const { traceId } = router.query;
 
-  useQuery(
-    ["updateViewCount", traceId], () => {
-      return updateViewCount(Number(traceId));
-    },
-    {
-      enabled: !!traceId
-    }
-  );
-
   const traceResult = useQuery(
     ["footprints", traceId], () => {
       return fetchTraceById(Number(traceId));
     },
     {
-      enabled: !!traceId
+      enabled: !!traceId,
+      onError: () => {
+        router.back();
+      }
+    }
+  );
+
+  useQuery(
+    ["updateViewCount", traceId], () => {
+      return updateViewCount(Number(traceId));
+    },
+    {
+      enabled: traceResult.isSuccess,
     }
   );
 
