@@ -25,6 +25,10 @@ const createQueryClient = (goBackToSigninPage: () => void) =>
             goBackToSigninPage()
             break;
           }
+          case ErrorType.NOT_FOUND : {
+            toast("존재하지 않는 페이지입니다 😢");
+            break;
+          }
           default : {
             toast.error("무언가 잘못되었어요 😢");
           }
