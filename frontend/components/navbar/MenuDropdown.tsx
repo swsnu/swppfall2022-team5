@@ -20,7 +20,9 @@ const MenuDropdown = () => {
         {
           icon: IconMapSearch,
           text: "탐색하기",
-          onClick: () => {},
+          onClick: () => {
+            router.push("/traces/explore")
+          },
         },
       ]}
     />
