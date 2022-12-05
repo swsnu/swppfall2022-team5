@@ -1,5 +1,6 @@
 import { act } from "@testing-library/react";
-import { editFootprint, fetchFootprintById, fetchInitialFootprints, fetchTraceById } from "../../../api";
+import { editFootprint, fetchAllOtherUsersTraces, fetchAllUserTraces, fetchFootprintById, fetchInitialFootprints, fetchTraceById, postSignin, postSignUp } from "../../../api";
+import { SigninRequestType } from "../../../dto/auth";
 import { FootprintEditRequestType, FootprintRequestType } from "../../../dto/footprint";
 import mockAxios from "../../../__mocks__/axios";
 
@@ -14,6 +15,11 @@ const footprintRequestStub: FootprintEditRequestType = {
   },
   tagId: 0,
   memo: "",
+};
+
+const authRequestStub: SigninRequestType = {
+  username: "",
+  password: "",
 };
 
 it("fetch footprints", async () => {
@@ -44,6 +50,38 @@ it("fetch fetchFootprintById", async () => {
   mockAxios.get.mockResolvedValue({ data: "mock" });
   await act(async () => {
     const data = await fetchFootprintById(5);
+    expect(data).toBe("mock");
+  });
+});
+
+it("fetch fetchAllUserTraces", async () => {
+  mockAxios.get.mockResolvedValue({ data: "mock" });
+  await act(async () => {
+    const data = await fetchAllUserTraces("user1");
+    expect(data).toBe("mock");
+  });
+});
+
+it("fetch fetchAllOtherUsersTraces", async () => {
+  mockAxios.get.mockResolvedValue({ data: "mock" });
+  await act(async () => {
+    const data = await fetchAllOtherUsersTraces();
+    expect(data).toBe("mock");
+  });
+});
+
+it("post postSignin", async () => {
+  mockAxios.post.mockResolvedValue({ data: "mock" });
+  await act(async () => {
+    const data = await postSignin(authRequestStub);
+    expect(data).toBe("mock");
+  });
+});
+
+it("post postSignUp", async () => {
+  mockAxios.post.mockResolvedValue({ data: "mock" });
+  await act(async () => {
+    const data = await postSignUp(authRequestStub);
     expect(data).toBe("mock");
   });
 });
