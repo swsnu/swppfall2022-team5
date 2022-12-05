@@ -6,7 +6,6 @@ import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.domain.auth.dto.*
 import com.swpp.footprinter.domain.auth.service.AuthService
 import com.swpp.footprinter.domain.auth.service.AuthTokenService
-import com.swpp.footprinter.domain.user.dto.UserResponse
 import com.swpp.footprinter.domain.user.model.User
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.validation.BindingResult
@@ -43,9 +42,7 @@ class AuthController(
     }
 
     @GetMapping("/me")
-    fun getMe(@UserContext user: User): UserResponse {
-        return UserResponse(username = user.username)
-    }
+    fun getMe(@UserContext user: User) = user.toResponse()
 
     @PostMapping("/token")
     fun verifyToken(@Valid @RequestBody token: TokenVerifyRequest): TokenVerifyResponse {
