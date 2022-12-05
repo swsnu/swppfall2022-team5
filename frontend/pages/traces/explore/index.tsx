@@ -27,7 +27,7 @@ export default function Explore() {
                             <OwnerInfo username={String(trace.ownerName)} />
                             <div className="pl-40 pt-3 items-center flex divide-x divide-navy-500 text-xs leading-3 text-navy-400">
                                     <span className="px-2">좋아요 {0}</span>
-                                    <span className="px-2">{0}명 조회</span>
+                                    <span className="px-2">{trace.viewCount}명 조회</span>
                             </div>
                         </div>
                         

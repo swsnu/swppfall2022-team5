@@ -1,5 +1,5 @@
 import { FootprintPredictionType } from "../dto/recommendations";
-import { TraceDetailResponseType, TraceRequestType } from "../dto/trace";
+import { TraceDetailResponseType, TraceRequestType, TraceViewResponseType } from "../dto/trace";
 import { apiClient } from "./client";
 import moment from "moment";
 import { TagType } from "../dto/tag";
@@ -57,4 +57,8 @@ export const postSignUp = async (signinRequest: SigninRequestType) => {
 
 export const checkToken = async (tokenVerifyRequest: TokenVerifyRequestType) => {
   return (await apiClient.post<TokenVerifyResponseType>("/token", tokenVerifyRequest)).data;
+};
+
+export const updateViewCount = async (traceId: number) => {
+  return (await apiClient.post<TraceViewResponseType>(`/traces/view/${traceId}`)).data;
 };

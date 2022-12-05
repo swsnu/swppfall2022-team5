@@ -1,7 +1,7 @@
 import Container from "../../../components/containers/Container";
 import NavigationBar from "../../../components/navbar/NavigationBar";
 import { useQuery } from "@tanstack/react-query";
-import { fetchTraceById } from "../../../api";
+import { fetchTraceById, updateViewCount } from "../../../api";
 import NavbarContainer from "../../../components/containers/NavbarContainer";
 import { FootprintPreview } from "../../../components/footprint/FootprintPreview";
 import { useRouter } from "next/router";
@@ -10,9 +10,23 @@ export default function TraceDetail() {
   const router = useRouter();
   const { traceId } = router.query;
 
-  const traceResult = useQuery(["footprints", traceId], () => {
-    return fetchTraceById(Number(traceId));
-  });
+  useQuery(
+    ["updateViewCount", traceId], () => {
+      return updateViewCount(Number(traceId));
+    },
+    {
+      enabled: !!traceId
+    }
+  );
+
+  const traceResult = useQuery(
+    ["footprints", traceId], () => {
+      return fetchTraceById(Number(traceId));
+    },
+    {
+      enabled: !!traceId
+    }
+  );
 
   return (
     <Container>

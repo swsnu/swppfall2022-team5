@@ -13,4 +13,9 @@ export interface TraceDetailResponseType {
   title: string;
   ownerName: string;
   footprints: FootprintResponseType[];
+  viewCount: number;
+}
+
+export interface TraceViewResponseType {
+  viewCount: number;
 }
