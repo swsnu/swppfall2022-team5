@@ -7,4 +7,5 @@ export interface PlaceType {
   district: string;
   longitude: number;
   latitude: number;
+  distance: number;
 }

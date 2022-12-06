@@ -71,21 +71,26 @@ const FootprintCreate = (props: IProps) => {
             );
           })}
         </div>
-        <div className="mt-2">
-          {/* <TagButton text="직접 추가하기" icon={IconSearch} onClick={() => {}} isActive={false} /> */}
+
+        <hr className="my-2 border-navy-700" />
+
+        <div className="">
           <PlaceSearchBox query={query} setQuery={setQuery} />
-          <div>{searchResult.data?.map((place) => place.name).join(", ")}</div>
-          {/* <Combobox value={selectedPerson} onChange={setSelectedPerson}>
-            <Combobox.Input onChange={(event) => setQuery(event.target.value)} />
-            <Combobox.Options>
-              {filteredPeople.map((person) => (
-                <Combobox.Option key={person} value={person}>
-                  {person}
-                </Combobox.Option>
-              ))}
-            </Combobox.Options>
-          </Combobox> */}
-          {/* <PlaceSearchBox /> */}
+          <div className="mt-2 flex gap-3 overflow-x-auto scrollbar-hide">
+            {searchResult.data?.map((place) => {
+              return (
+                <TagButton
+                  key={place.name}
+                  className="flex-shrink-0"
+                  text={`${place.name} (${place.distance}m)`}
+                  onClick={() => {
+                    updateFootprint({ place: { name: place.name, address: place.address } });
+                  }}
+                  isActive={place.name === props.place?.name && place.address === props.place.address}
+                />
+              );
+            })}
+          </div>
         </div>
 
         <Label text="태그" />
