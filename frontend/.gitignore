@@ -40,3 +40,9 @@ next-env.d.ts
 **/workbox*.map
 **/sw*.js
 **/workbox*.js
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+.ebextensions/*
