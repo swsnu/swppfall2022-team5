@@ -21,6 +21,8 @@ export const useFootprintCreateStore = create<FootprintCreateState>()((set, get)
             uuid: v4(),
             startTime: prediction.startTime,
             endTime: prediction.endTime,
+            meanLatitude: prediction.meanLatitude,
+            meanLongitude: prediction.meanLongitude,
             rating: 2,
             memo: "",
             tagId: 0,

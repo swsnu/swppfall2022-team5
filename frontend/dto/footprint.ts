@@ -18,6 +18,8 @@ export interface FootprintRequestType {
     name: string;
     address: string;
   };
+  meanLatitude: number;
+  meanLongitude: number;
   recommendedPlaces: RecommendedPlaceType[];
 }
 

@@ -29,7 +29,7 @@ const RectangleButton = ({ onClick, text, isLoading, className, disabled, icon: 
             <span>로딩 중</span>
           </div>
         ) : (
-          <div className="flex gap-2">
+          <div className="flex justify-center gap-2">
             {Icon && <Icon width={20} />}
             {text}
           </div>

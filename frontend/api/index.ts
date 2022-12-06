@@ -6,6 +6,7 @@ import { TagType } from "../dto/tag";
 import { FootprintEditRequestType, FootprintRequestType, FootprintResponseType } from "../dto/footprint";
 import { SigninRequestType, SigninResponseType, TokenVerifyRequestType, TokenVerifyResponseType } from "../dto/auth";
 import { UserFollowingResponse, UserResponseType } from "../dto/user";
+import { PlaceType } from "../dto/place";
 
 export const fetchInitialFootprints = async (photoIds: string[]) => {
   return (await apiClient.post<FootprintPredictionType[]>("/traces/create", photoIds)).data;
@@ -90,6 +91,23 @@ export const fetchIsFollowing = async (username: string) => {
 export const followUser = async (username: string) => {
   return (await apiClient.post<void>(`/user/followings`, { username: username })).data;
 };
+
 export const unfollowUser = async (username: string) => {
   return (await apiClient.delete<void>(`/user/followings`, { data: { username: username } })).data;
+};
+
+export const fetchPlacesByKeywordAndLocation = async (
+  keyword: string,
+  latitude: number,
+  longitude: number,
+  tagIds: number[],
+) => {
+  return (
+    await apiClient.post<PlaceType[]>(`/place/search`, {
+      keyword: keyword,
+      latitude: latitude,
+      longitude: longitude,
+      tagIDs: tagIds,
+    })
+  ).data;
 };
