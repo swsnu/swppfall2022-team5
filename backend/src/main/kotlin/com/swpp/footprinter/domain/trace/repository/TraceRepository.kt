@@ -76,10 +76,10 @@ class TraceRepositoryCustomImpl(
 
         val traces = jpaQueryFactory
             .selectFrom(trace)
-            .join(trace.owner, user)
-            .join(trace.footprints, footprint)
-            .join(footprint.place, place)
-            .join(footprint.tag, tag)
+            .join(trace.owner, user).fetchJoin()
+            .join(trace.footprints, footprint).fetchJoin()
+            .join(footprint.place, place).fetchJoin()
+            .join(footprint.tag, tag).fetchJoin()
             .where(booleanBuilder)
             .orderBy(trace.traceDate.desc())
             .fetch()
