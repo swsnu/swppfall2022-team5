@@ -1,5 +1,5 @@
 import { FootprintPredictionType } from "../dto/recommendations";
-import { TraceDetailResponseType, TraceRequestType, TraceViewResponseType } from "../dto/trace";
+import { TraceDetailResponseType, TraceLikeResponseType, TraceRequestType, TraceViewResponseType } from "../dto/trace";
 import { apiClient } from "./client";
 import moment from "moment";
 import { TagType } from "../dto/tag";
@@ -57,6 +57,18 @@ export const postSignUp = async (signinRequest: SigninRequestType) => {
 
 export const checkToken = async (tokenVerifyRequest: TokenVerifyRequestType) => {
   return (await apiClient.post<TokenVerifyResponseType>("/token", tokenVerifyRequest)).data;
+};
+
+export const likeTrace = async (traceId: number) => {
+  return (await apiClient.post<TraceLikeResponseType>(`/traces/${traceId}/likes`)).data;
+};
+
+export const unlikeTrace = async (traceId: number) => {
+  return (await apiClient.delete<TraceLikeResponseType>(`/traces/${traceId}/likes`)).data;
+};
+
+export const fetchRegionByCoordinates = async (latitude: number, longitude: number) => {
+  return (await apiClient.get<String>(`/place`, { params: { latitude: latitude, longitude: longitude } })).data;
 };
 
 export const updateViewCount = async (traceId: number) => {

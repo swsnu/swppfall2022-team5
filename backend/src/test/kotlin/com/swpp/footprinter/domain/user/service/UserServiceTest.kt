@@ -73,7 +73,7 @@ class UserServiceTest @Autowired constructor(
                 id = trace.id,
                 date = trace.traceDate,
                 title = trace.traceTitle,
-                ownerId = user.id
+                owner = trace.owner.toResponse()
             )
         )
         assertEquals(traceResponseListReturned, traceResponseListExpected)
@@ -124,7 +124,7 @@ class UserServiceTest @Autowired constructor(
             id = trace2.id,
             date = trace2.traceDate,
             title = trace2.traceTitle,
-            ownerName = user.username,
+            owner = trace2.owner.toResponse(),
             footprints = listOf(),
             viewCount = 0
         )
@@ -132,7 +132,7 @@ class UserServiceTest @Autowired constructor(
         assertThat(traceDetailResponseReturned?.id).isEqualTo(traceDetailResponseExpected.id)
         assertThat(traceDetailResponseReturned?.date).isEqualTo(traceDetailResponseExpected.date)
         assertThat(traceDetailResponseReturned?.title).isEqualTo(traceDetailResponseExpected.title)
-        assertThat(traceDetailResponseReturned?.ownerName).isEqualTo(traceDetailResponseExpected.ownerName)
+        assertThat(traceDetailResponseReturned?.owner).isEqualTo(traceDetailResponseExpected.owner)
         assertThat(traceDetailResponseReturned?.footprints).isEmpty()
         assertThat(traceDetailResponseReturned?.viewCount).isEqualTo(traceDetailResponseExpected.viewCount)
     }

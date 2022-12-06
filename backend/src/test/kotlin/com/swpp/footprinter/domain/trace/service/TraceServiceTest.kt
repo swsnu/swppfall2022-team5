@@ -4,6 +4,7 @@ import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.common.utils.ImageUrlUtil
 import com.swpp.footprinter.common.utils.dateToString8601
+import com.swpp.footprinter.common.utils.dateToStringWithoutTime
 import com.swpp.footprinter.common.utils.stringToDate8601
 import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
 import com.swpp.footprinter.domain.footprint.dto.FootprintRequest
@@ -108,7 +109,7 @@ class TraceServiceTest @Autowired constructor(
         // TODO: Change to current user after user authentication is implemented
         val traceRequest = TraceRequest(
             "titleTrace",
-            dateToString8601(current),
+//            dateToString8601(current),
             footprintList = listOf(footprintRequest),
         )
         assertThat(traceRepo.count()).isEqualTo(0)
@@ -121,8 +122,7 @@ class TraceServiceTest @Autowired constructor(
         assertThat(traceRepo.count()).isEqualTo(1)
         val createdTrace = traceRepo.findAll().first()
         assertThat(createdTrace).extracting("traceTitle").isEqualTo("titleTrace")
-        assertThat(createdTrace).extracting("traceDate").isEqualTo(dateToString8601(current))
-        // TODO: After implementing user authentication, check whether current user
+        assertThat(createdTrace).extracting("traceDate").isEqualTo(dateToStringWithoutTime(current))
         assertThat(createdTrace).extracting { it.owner.id }.isEqualTo(currentUser.id)
 
         // Check footprints
@@ -191,7 +191,7 @@ class TraceServiceTest @Autowired constructor(
         assertThat(searchedTrace.id).isEqualTo(trace.id)
         assertThat(searchedTrace.date).isEqualTo(trace.traceDate)
         assertThat(searchedTrace.title).isEqualTo(trace.traceTitle)
-        assertThat(searchedTrace.ownerName).isEqualTo(trace.owner.username)
+        assertThat(searchedTrace.owner).isEqualTo(trace.owner.toResponse())
         assertThat(searchedTrace.footprints).hasSize(1)
         // Footprint
         assertThat(searchedTrace.footprints?.first()?.id).isEqualTo(footprint.id)
@@ -284,7 +284,7 @@ class TraceServiceTest @Autowired constructor(
         assertEquals(trace.id, searchedTrace!!.id)
         assertThat(searchedTrace.date).isEqualTo(trace.traceDate)
         assertThat(searchedTrace.title).isEqualTo(trace.traceTitle)
-        assertThat(searchedTrace.ownerName).isEqualTo(trace.owner.username)
+        assertThat(searchedTrace.owner).isEqualTo(trace.owner.toResponse())
         assertThat(searchedTrace.footprints).hasSize(2)
         // Footprint
         assertThat(searchedTrace.footprints?.first()?.id).isEqualTo(footprint.id)

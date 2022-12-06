@@ -18,7 +18,7 @@ class Trace(
     val traceDate: String,
 
     @Column(name = "public", nullable = false)
-    var public: Boolean = true,
+    var isPublic: Boolean = true,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id", name = "userId")
@@ -36,20 +36,23 @@ class Trace(
 ) : BaseEntity() {
     fun toResponse(): TraceResponse {
         return TraceResponse(
-            id = id!!,
+            id = id,
             date = traceDate,
             title = traceTitle,
-            ownerId = owner.id
+            owner = owner.toResponse(),
+            likesCount = likesCount
         )
     }
 
-    fun toDetailResponse(imageUrlUtil: ImageUrlUtil): TraceDetailResponse {
+    fun toDetailResponse(imageUrlUtil: ImageUrlUtil, isLiked: Boolean = false): TraceDetailResponse {
         return TraceDetailResponse(
-            id = id!!,
+            id = id,
             date = traceDate,
             title = traceTitle,
-            ownerName = owner.username,
-            footprints = footprints.map { it.toResponse(imageUrlUtil) },
+            owner = owner.toResponse(),
+            isLiked = isLiked,
+            footprints = footprints.map { it.toResponse(imageUrlUtil) }.sortedBy { it.startTime },
+            likesCount = likesCount,
             viewCount = viewCount
         )
     }

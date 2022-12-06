@@ -7,20 +7,24 @@ import com.swpp.footprinter.common.TIME_GRID_SEC
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.common.utils.ImageUrlUtil
+import com.swpp.footprinter.common.utils.dateToStringWithoutTime
 import com.swpp.footprinter.common.utils.stringToDate8601
+import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
+import com.swpp.footprinter.domain.footprint.repository.FootprintRepository
+import com.swpp.footprinter.domain.footprint.service.FootprintService
 import com.swpp.footprinter.domain.photo.dto.PhotoInitialTraceResponse
 import com.swpp.footprinter.domain.photo.model.Photo
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
 import com.swpp.footprinter.domain.place.dto.PlaceInitialTraceResponse
 import com.swpp.footprinter.common.externalAPI.KakaoAPIService
-import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
-import com.swpp.footprinter.domain.footprint.service.FootprintService
 import com.swpp.footprinter.domain.tag.TAG_CODE
 import com.swpp.footprinter.domain.tag.dto.TagResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
+import com.swpp.footprinter.domain.trace.dto.TraceSearchRequest
 import com.swpp.footprinter.domain.trace.dto.TraceViewResponse
 import com.swpp.footprinter.domain.trace.model.Trace
+import com.swpp.footprinter.domain.trace.repository.TraceLikeRepository
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import com.swpp.footprinter.domain.user.model.User
 import com.swpp.footprinter.domain.user.repository.UserRepository
@@ -28,28 +32,34 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*
 import javax.transaction.Transactional
+import kotlin.math.abs
 import kotlin.math.pow
+import kotlin.math.round
 import kotlin.math.sqrt
 
 interface TraceService {
     fun getAllUserTraces(loginUser: User, username: String): List<TraceDetailResponse>
     fun getAllOtherUsersTraces(loginUser: User): List<TraceDetailResponse>
     fun createTrace(traceRequest: TraceRequest, loginUser: User)
-    fun getTraceById(traceId: Long): TraceDetailResponse
+    fun getTraceById(traceId: Long, userId: Long? = null): TraceDetailResponse
+
     fun deleteTraceById(traceId: Long, loginUser: User)
     fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
     fun getTraceByDate(date: String, loginUser: User): TraceDetailResponse?
+    fun searchTrace(traceSearchRequest: TraceSearchRequest): List<TraceDetailResponse>
     fun updateViewCount(traceId: Long): TraceViewResponse
 }
 
 @Service
 class TraceServiceImpl(
     private val traceRepo: TraceRepository,
+    private val traceLikeRepo: TraceLikeRepository,
     private val footprintService: FootprintService,
     private val photoRepo: PhotoRepository,
     private val kakaoAPIService: KakaoAPIService,
     private val imageUrlUtil: ImageUrlUtil,
     private val userRepo: UserRepository,
+    private val footprintRepo: FootprintRepository,
 ) : TraceService {
     override fun getAllUserTraces(loginUser: User, username: String): List<TraceDetailResponse> {
         if (loginUser.username == username) {
@@ -58,42 +68,64 @@ class TraceServiceImpl(
             }
         } else {
             val user = userRepo.findByUsername(username) ?: throw FootprinterException(ErrorType.NOT_FOUND)
-            return user.myTrace.filter { trace -> trace.public }.map { trace ->
+            return user.myTrace.filter { trace -> trace.isPublic }.map { trace ->
                 trace.toDetailResponse(imageUrlUtil)
             }
         }
     }
 
     override fun getAllOtherUsersTraces(loginUser: User): List<TraceDetailResponse> {
-        return traceRepo.findAll().filter { it.owner != loginUser && it.public }.map { trace ->
+        return traceRepo.findAll().filter { it.owner != loginUser && it.isPublic }.map { trace ->
             trace.toDetailResponse(imageUrlUtil)
         }
     }
 
     @Transactional
     override fun createTrace(traceRequest: TraceRequest, loginUser: User) {
-        val newTrace = Trace(
-            traceTitle = traceRequest.title!!,
-            traceDate = traceRequest.date!!,
-            public = traceRequest.public!!,
-            owner = loginUser,
-            footprints = mutableSetOf()
-        )
-        traceRepo.save(newTrace)
-
-        // TODO: 여러 날의 footprint가 들어온 경우 handle
-        traceRequest.footprintList!!.forEach {
-            // Create new footprints
-            val footprint = footprintService.createFootprintAndReturn(it, newTrace)
-
-            // Update newTrace
-            newTrace.footprints.add(footprint)
+        var currentDayTrace: Trace? = null
+        val traceDeque = ArrayDeque<Trace>() // for merging later
+        // Create trace (or add footprint to exist trace)
+        traceRequest.footprintList?.forEach { footprintRequest ->
+            val day = dateToStringWithoutTime(stringToDate8601(footprintRequest.startTime!!))
+            // when trace already exists
+            if (currentDayTrace?.traceDate == day) {
+                val footprint = footprintService.createFootprintAndReturn(footprintRequest, currentDayTrace!!)
+                currentDayTrace!!.footprints.add(footprint)
+                traceRepo.save(currentDayTrace!!)
+            } else {
+                currentDayTrace = traceRepo.findByOwnerAndTraceDate(loginUser, day)
+                    // when trace already exists, but check for the first time
+                    ?.let {
+                        val footprint = footprintService.createFootprintAndReturn(footprintRequest, it)
+                        it.footprints.add(footprint)
+                        traceRepo.save(it)
+                    }
+                    // when trace does not exist
+                    ?: Trace(
+                        traceTitle = traceRequest.title!!,
+                        traceDate = day!!,
+                        isPublic = traceRequest.public!!,
+                        owner = loginUser,
+                        footprints = mutableSetOf()
+                    ).let {
+                        val footprint = footprintService.createFootprintAndReturn(footprintRequest, it)
+                        it.footprints.add(footprint)
+                        traceRepo.save(it)
+                    }
+                traceDeque.add(currentDayTrace)
+            }
+        }
+        // Merge if footprint has similar time and same place
+        while (traceDeque.isNotEmpty()) {
+            val trace = traceDeque.pop()
+            mergeFootprints(trace)
         }
     }
 
-    override fun getTraceById(traceId: Long): TraceDetailResponse {
+    override fun getTraceById(traceId: Long, userId: Long?): TraceDetailResponse {
         val trace = traceRepo.findByIdOrNull(traceId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
-        return trace.toDetailResponse(imageUrlUtil)
+        val isLiked = if (userId == null) { false } else { traceLikeRepo.findByTraceIdAndUserId(traceId, userId) != null }
+        return trace.toDetailResponse(imageUrlUtil, isLiked)
     }
 
     override fun deleteTraceById(traceId: Long, loginUser: User) {
@@ -120,7 +152,7 @@ class TraceServiceImpl(
 
     override fun getTraceByDate(date: String, loginUser: User): TraceDetailResponse? {
         return traceRepo
-            .findTraceByOwnerAndTraceDate(loginUser, date).lastOrNull()
+            .findByOwnerAndTraceDate(loginUser, date)
             ?.toDetailResponse(imageUrlUtil)
             ?.apply {
                 footprints = footprints?.sortedBy {
@@ -129,11 +161,28 @@ class TraceServiceImpl(
             }
     }
 
+    override fun searchTrace(traceSearchRequest: TraceSearchRequest): List<TraceDetailResponse> {
+        val usernameList = traceSearchRequest.users.map { it.username!! }
+        val tagList = traceSearchRequest.tags.map { TAG_CODE.values()[it] }
+        val dateList = traceSearchRequest.dates
+        val placeList = traceSearchRequest.places
+
+        val searchedTraceList = traceRepo.getTracesWithOptions(
+            usernameList,
+            tagList,
+            dateList,
+            placeList,
+        )
+
+        return searchedTraceList.map { it.toDetailResponse(imageUrlUtil) }
+    }
+
     @Transactional
     override fun updateViewCount(traceId: Long): TraceViewResponse {
         val targetTrace = traceRepo.findByIdOrNull(traceId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
 
         targetTrace.viewCount++
+        traceRepo.save(targetTrace)
 
         return TraceViewResponse(targetTrace.viewCount)
     }
@@ -168,7 +217,7 @@ class TraceServiceImpl(
         photoEntityList.forEach {
             var isAdded = false
             val photo = PhotoInitialTraceResponse(
-                id = it.id!!,
+                id = it.id,
                 imagePath = it.imagePath,
                 imageUrl = imageUrlUtil.getImageURLfromImagePath(it.imagePath),
                 latitude = it.latitude,
@@ -246,5 +295,61 @@ class TraceServiceImpl(
             // Sort by distance (shorter distance => higher priority)
             it.recommendedPlaceList.sortBy { place -> place.distance }
         }
+    }
+
+    /**
+     * Checks neighbor footprints in given trace,
+     * and merge two footprint into one
+     * if time is near enough and place is same.
+     */
+    @Transactional
+    fun mergeFootprints(trace: Trace) {
+        val footprintOrderedList = trace.footprints.sortedBy { it.startTime }.toMutableList()
+        val count = footprintOrderedList.size - 1
+        var beforeFootprint = footprintOrderedList.removeFirst()
+        for (i in 0 until count) {
+            val currentFootprint = footprintOrderedList.removeFirst()
+            // When have same place, same tag, and near time, merge
+            if ((beforeFootprint.place == currentFootprint.place) &&
+                (beforeFootprint.tag == currentFootprint.tag) &&
+                (
+                    abs(beforeFootprint.startTime.time - currentFootprint.startTime.time)
+                        < 1000 * TIME_GRID_SEC
+                    )
+            ) {
+                // Update beforeFootprint to merged footprint
+                beforeFootprint.apply {
+                    startTime = if (startTime.time < currentFootprint.startTime.time) {
+                        startTime
+                    } else { currentFootprint.startTime }
+                    endTime = if (endTime.time > currentFootprint.endTime.time) {
+                        endTime
+                    } else { currentFootprint.endTime }
+                    rating = round((rating + currentFootprint.rating).toDouble() / 2.0).toInt()
+                    memo = memo + "\n" + currentFootprint.memo
+                    photos = photos.union(
+                        currentFootprint.photos.also {
+                            it.forEach { photo ->
+                                photo.footprint = this
+                            }
+                        }
+                    ).toMutableSet()
+                }
+                // Update database
+                currentFootprint.photos = mutableSetOf() // clear photo to prevent cascading delete
+                footprintRepo.save(beforeFootprint)
+//                footprintRepo.save(currentFootprint)
+                footprintRepo.delete(currentFootprint)
+            } else {
+                footprintOrderedList.add(beforeFootprint)
+                beforeFootprint = currentFootprint
+            }
+        }
+        footprintOrderedList.add(beforeFootprint)
+
+        // Update trace
+        trace.footprints.clear()
+        trace.footprints.addAll(footprintOrderedList)
+        traceRepo.save(trace)
     }
 }

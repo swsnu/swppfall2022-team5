@@ -35,7 +35,7 @@ const FootprintsCreate = () => {
             mutation.mutate(
               {
                 title: "테스트 제목입니다.",
-                date: moment(pendingFootprintRequests[0].startTime).format("YYYY-MM-DD"),
+                // date: moment(pendingFootprintRequests[0].startTime).format("YYYY-MM-DD"),
                 public: true,
                 footprintList: pendingFootprintRequests,
               },

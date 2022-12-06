@@ -127,7 +127,6 @@ class DataInitializer(
                     loginUser = user,
                     traceRequest = TraceRequest(
                         title = "${day}일의 trace",
-                        date = "2022-11-$day",
                         public = day % 3 == 1,
                         footprintList = footprintList
                     )
