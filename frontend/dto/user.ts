@@ -3,4 +3,5 @@ export interface UserResponseType {
   followingCount: number;
   followerCount: number;
   imageUrl: string;
+  traceCount: number;
 }

@@ -23,7 +23,7 @@ class User(
     val myTrace: MutableSet<Trace> = mutableSetOf(),
 
 ) : BaseEntity() {
-    fun toResponse() = UserResponse(username, followingCount, followerCount)
+    fun toResponse() = UserResponse(username, followingCount, followerCount, traceCount = myTrace.size)
 }
 
 @Entity

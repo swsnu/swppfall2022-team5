@@ -4,4 +4,5 @@ data class UserResponse(
     val username: String,
     val followingCount: Int,
     val followerCount: Int,
+    val traceCount: Int,
 )
