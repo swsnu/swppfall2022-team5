@@ -100,12 +100,12 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
                   }}
                   maxFiles={10}
                   server={{
-                    url: "http://localhost:8080",
+                    url: `http://${process.env.NEXT_PUBLIC_API_HOST}`,
                     process: "/api/v1/photos/process",
                     revert: "/api/v1/photos/revert",
                     headers: {
-                      'Authorization' : `Bearer ${useAuthStore((state) => state.userToken)}`
-                    }
+                      Authorization: `Bearer ${useAuthStore((state) => state.userToken)}`,
+                    },
                   }}
                   name="files" /* sets the file input name, it's filepond by default */
                   labelIdle="이곳을 클릭하거나 사진을 드래그해서 업로드해보세요."
