@@ -71,7 +71,7 @@ const FootprintDetail = () => {
           <Label text="장소" />
           <div className="text-sm">{footprint.place.name}</div>
           <div className="mt-2 overflow-hidden rounded-xl">
-            <KakaoMap photos={footprint.photos} />
+            <KakaoMap coordinates={footprint.photos} />
           </div>
           {/* <div className="mt-2">
           <TagButton text="직접 추가하기" icon={IconSearch} onClick={() => {}} />

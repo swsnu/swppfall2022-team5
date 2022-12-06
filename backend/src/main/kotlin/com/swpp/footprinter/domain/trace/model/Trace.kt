@@ -33,20 +33,23 @@ class Trace(
 ) : BaseEntity() {
     fun toResponse(): TraceResponse {
         return TraceResponse(
-            id = id!!,
+            id = id,
             date = traceDate,
             title = traceTitle,
             owner = owner.toResponse(),
+            likesCount = likesCount
         )
     }
 
-    fun toDetailResponse(imageUrlUtil: ImageUrlUtil): TraceDetailResponse {
+    fun toDetailResponse(imageUrlUtil: ImageUrlUtil, isLiked: Boolean = false): TraceDetailResponse {
         return TraceDetailResponse(
-            id = id!!,
+            id = id,
             date = traceDate,
             title = traceTitle,
             owner = owner.toResponse(),
-            footprints = footprints.map { it.toResponse(imageUrlUtil) }
+            isLiked = isLiked,
+            footprints = footprints.map { it.toResponse(imageUrlUtil) }.sortedBy { it.startTime },
+            likesCount = likesCount
         )
     }
 }

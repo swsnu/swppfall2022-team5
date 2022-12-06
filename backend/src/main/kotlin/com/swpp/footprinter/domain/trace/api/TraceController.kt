@@ -56,9 +56,10 @@ class TraceController(
 
     @GetMapping("/id/{traceId}")
     fun getTraceDetail(
+        @UserContext user: User,
         @PathVariable(name = "traceId", required = true) traceId: Long
     ): TraceDetailResponse {
-        return traceService.getTraceById(traceId)
+        return traceService.getTraceById(traceId, user.id)
     }
 
     @DeleteMapping("/id/{traceId}")
