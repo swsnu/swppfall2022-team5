@@ -74,3 +74,7 @@ export const fetchRegionByCoordinates = async (latitude: number, longitude: numb
 export const updateViewCount = async (traceId: number) => {
   return (await apiClient.post<TraceViewResponseType>(`/traces/view/${traceId}`)).data;
 };
+
+export const fetchUserByUsername = async (username: string) => {
+  return (await apiClient.get<UserResponseType>(`/user/${username}`)).data;
+};

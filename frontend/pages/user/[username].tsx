@@ -1,23 +1,37 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { fetchAllUserTraces } from "../../api";
+import { fetchAllUserTraces, fetchUserByUsername } from "../../api";
 import Container from "../../components/containers/Container";
 import NavbarContainer from "../../components/containers/NavbarContainer";
 import NavigationBar from "../../components/navbar/NavigationBar";
 import TracesNotFound from "../../components/placeholder/TracesNotFound";
 import { TracePreview } from "../../components/trace/TracePreview";
+import { TracePreviewTitle } from "../../components/trace/TracePreviewTitle";
 import UserProfile from "../../components/user/UserProfile";
 
 export default function MyPage() {
   const router = useRouter();
   const { username } = router.query;
 
-  const traceResult = useQuery(["traces", username], () => {
-    if (!username) {
-      return;
-    }
-    return fetchAllUserTraces(String(username));
-  });
+  const traceResult = useQuery(
+    ["traces", username],
+    () => {
+      return fetchAllUserTraces(String(username));
+    },
+    { enabled: Boolean(username) },
+  );
+
+  const userResult = useQuery(
+    ["user", username],
+    () => {
+      return fetchUserByUsername(String(username));
+    },
+    { enabled: !!username },
+  );
+
+  if (!userResult.isSuccess) {
+    return <div>로딩중...</div>;
+  }
 
   return (
     <Container>
@@ -25,7 +39,7 @@ export default function MyPage() {
         <NavigationBar title="프로필" />
       </NavbarContainer>
 
-      <UserProfile username={String(username)}></UserProfile>
+      <UserProfile {...userResult.data} />
 
       <div className="mx-6 mt-5 text-xl font-semibold">발자취 목록</div>
 
@@ -35,7 +49,12 @@ export default function MyPage() {
         {traceResult.data
           ?.sort((a, b) => a.date.localeCompare(b.date))
           .map((trace) => {
-            return <TracePreview key={trace.id} {...trace} />;
+            return (
+              <div key={trace.id}>
+                <TracePreview {...trace} />
+                <TracePreviewTitle {...trace} hideProfile />
+              </div>
+            );
           })}
       </div>
     </Container>
