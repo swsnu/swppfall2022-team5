@@ -26,7 +26,7 @@ class PlaceController(
         return placeService.getAddressByLatLon(latitude, longitude)
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     @ResponseBody
     fun getPlacesSearchByKeyword(
         @Valid @RequestBody placeSearchRequest: PlaceSearchRequest,
