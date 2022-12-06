@@ -23,9 +23,7 @@ export function TracePreview(props: IProps) {
       <div className="relative overflow-hidden rounded-3xl border border-white/10">
         <div className="absolute right-0 left-0 bottom-0 z-10 border-t border-black/5 bg-black/20 backdrop-blur-xl">
           <div className="py-2 px-4 leading-5">
-            <div className="font-medium">
-              <Moment date={representativeFootprint.startTime} format="ll" />
-            </div>
+            <div className="font-medium">{props.title}</div>
             <div className="text-sm text-gray-300">{placeList}</div>
           </div>
         </div>

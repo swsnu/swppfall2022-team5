@@ -1,4 +1,5 @@
 import { FootprintRequestType, FootprintResponseType } from "./footprint";
+import { UserResponseType } from "./user";
 
 export interface TraceRequestType {
   title: string;
@@ -11,7 +12,7 @@ export interface TraceDetailResponseType {
   id: number;
   date: string;
   title: string;
-  ownerName: string;
+  owner: UserResponseType;
   likesCount: number;
   isLiked: boolean;
   footprints: FootprintResponseType[];

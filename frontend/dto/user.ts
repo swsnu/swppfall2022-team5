@@ -1,4 +1,6 @@
-
 export interface UserResponseType {
-    username: string;
-  }
+  username: string;
+  followingCount: number;
+  followerCount: number;
+  imageUrl: string;
+}
