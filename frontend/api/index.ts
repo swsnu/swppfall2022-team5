@@ -96,6 +96,10 @@ export const unfollowUser = async (username: string) => {
   return (await apiClient.delete<void>(`/user/followings`, { data: { username: username } })).data;
 };
 
+export const deleteFootprint = async (footprintId: number) => {
+  return (await apiClient.delete<void>(`/footprints/${footprintId}`)).data;
+};
+
 export const fetchPlacesByKeywordAndLocation = async (
   keyword: string,
   latitude: number,

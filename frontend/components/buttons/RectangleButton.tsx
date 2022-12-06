@@ -8,9 +8,10 @@ interface IProps {
   className?: string;
   disabled?: boolean;
   icon?: TablerIcon;
+  destructive?: boolean;
 }
 
-const RectangleButton = ({ onClick, text, isLoading, className, disabled, icon: Icon }: IProps) => {
+const RectangleButton = ({ onClick, text, isLoading, className, disabled, icon: Icon, destructive }: IProps) => {
   return (
     <button
       data-testid={text}
@@ -31,7 +32,7 @@ const RectangleButton = ({ onClick, text, isLoading, className, disabled, icon: 
         ) : (
           <div className="flex justify-center gap-2">
             {Icon && <Icon width={20} />}
-            {text}
+            <span className={classNames({ "text-red-400": !!destructive })}>{text}</span>
           </div>
         )}
       </span>
