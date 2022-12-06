@@ -75,8 +75,7 @@ class TraceRepositoryCustomImpl(
         }
 
         val traces = jpaQueryFactory
-            .select(trace)
-            .from(trace, user, footprint, place, tag)
+            .selectFrom(trace)
             .join(trace.owner, user)
             .join(trace.footprints, footprint)
             .join(footprint.place, place)
