@@ -35,12 +35,16 @@ class PlaceServiceImpl(
 
         val searchedPlacesAllTagsList = kakaoAPIService.getDocumentsMapListFromResponse(searchedPlacesAllTagsResponse)
 
-        val searchTagCodeValueList = placeSearchRequest.tagIDs.map {
-            try {
-                TAG_CODE.values()[it].code
-            } catch (e: IndexOutOfBoundsException) { // For wrong tag id given
-                throw FootprinterException(ErrorType.WRONG_FORMAT)
+        val searchTagCodeValueList = if (placeSearchRequest.tagIDs.isNotEmpty()) {
+            placeSearchRequest.tagIDs.map {
+                try {
+                    TAG_CODE.values()[it].code
+                } catch (e: IndexOutOfBoundsException) { // For wrong tag id given
+                    throw FootprinterException(ErrorType.WRONG_FORMAT)
+                }
             }
+        } else {
+            TAG_CODE.values().map { it.code }
         }
 
         val searchedPlacesWithTagsList = searchedPlacesAllTagsList.filter {
