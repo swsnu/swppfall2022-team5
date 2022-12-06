@@ -2,6 +2,7 @@ package com.swpp.footprinter.domain.user.model
 
 import com.swpp.footprinter.common.model.BaseEntity
 import com.swpp.footprinter.domain.trace.model.Trace
+import com.swpp.footprinter.domain.user.dto.UserResponse
 import javax.persistence.*
 
 @Entity
@@ -21,7 +22,9 @@ class User(
     @OneToMany(mappedBy = "owner", cascade = [CascadeType.ALL])
     val myTrace: MutableSet<Trace> = mutableSetOf(),
 
-) : BaseEntity()
+) : BaseEntity() {
+    fun toResponse() = UserResponse(username, followingCount, followerCount)
+}
 
 @Entity
 class LikedTrace(

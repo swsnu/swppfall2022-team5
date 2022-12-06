@@ -1,20 +1,24 @@
 package com.swpp.footprinter.domain.trace.api
 
 import com.swpp.footprinter.common.annotations.UserContext
+import com.swpp.footprinter.common.exception.ErrorType
+import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
+import com.swpp.footprinter.domain.trace.dto.TraceSearchRequest
 import com.swpp.footprinter.domain.trace.service.TraceService
 import com.swpp.footprinter.domain.user.model.User
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api/v1/traces")
 class TraceController(
-    private val service: TraceService
+    private val traceService: TraceService
 ) {
 
     @GetMapping("/user/{username}")
@@ -23,13 +27,13 @@ class TraceController(
         @UserContext loginUser: User,
         @PathVariable username: String
     ): List<TraceDetailResponse> {
-        return service.getAllUserTraces(loginUser, username)
+        return traceService.getAllUserTraces(loginUser, username)
     }
 
     @GetMapping("/explore")
     @ResponseBody
     fun getOtherUsersTraces(@UserContext loginUser: User): List<TraceDetailResponse> {
-        return service.getAllOtherUsersTraces(loginUser)
+        return traceService.getAllOtherUsersTraces(loginUser)
     }
 
     @GetMapping("/date/{date}")
@@ -38,7 +42,7 @@ class TraceController(
         @PathVariable date: String,
         @UserContext loginUser: User
     ): TraceDetailResponse? {
-        return service.getTraceByDate(date, loginUser)
+        return traceService.getTraceByDate(date, loginUser)
     }
 
     @PostMapping
@@ -46,7 +50,7 @@ class TraceController(
         @RequestBody @Valid request: TraceRequest,
         @UserContext loginUser: User
     ): ResponseEntity<String> {
-        service.createTrace(request, loginUser)
+        traceService.createTrace(request, loginUser)
         return ResponseEntity<String>("Created", HttpStatus.CREATED)
     }
 
@@ -55,7 +59,7 @@ class TraceController(
         @UserContext user: User,
         @PathVariable(name = "traceId", required = true) traceId: Long
     ): TraceDetailResponse {
-        return service.getTraceById(traceId, user.id)
+        return traceService.getTraceById(traceId, user.id)
     }
 
     @DeleteMapping("/id/{traceId}")
@@ -63,13 +67,24 @@ class TraceController(
         @PathVariable(required = true) traceId: Long,
         @UserContext loginUser: User
     ) {
-        service.deleteTraceById(traceId, loginUser)
+        traceService.deleteTraceById(traceId, loginUser)
     }
 
     @PostMapping("/create")
     fun createNewTrace(
         @RequestBody photoPathList: List<String>,
     ): List<FootprintInitialTraceResponse> {
-        return service.createInitialTraceBasedOnPhotoIdListGiven(photoPathList)
+        return traceService.createInitialTraceBasedOnPhotoIdListGiven(photoPathList)
+    }
+
+    @GetMapping("/search")
+    fun searchTrace(
+        @RequestBody traceSearchRequest: TraceSearchRequest,
+        bindingResult: BindingResult,
+    ): List<TraceDetailResponse> {
+        if (bindingResult.hasErrors()) {
+            throw FootprinterException(ErrorType.WRONG_FORMAT)
+        }
+        return traceService.searchTrace(traceSearchRequest)
     }
 }

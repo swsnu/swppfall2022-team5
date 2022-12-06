@@ -21,6 +21,7 @@ import com.swpp.footprinter.domain.tag.TAG_CODE
 import com.swpp.footprinter.domain.tag.dto.TagResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
+import com.swpp.footprinter.domain.trace.dto.TraceSearchRequest
 import com.swpp.footprinter.domain.trace.model.Trace
 import com.swpp.footprinter.domain.trace.repository.TraceLikeRepository
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
@@ -44,6 +45,7 @@ interface TraceService {
     fun deleteTraceById(traceId: Long, loginUser: User)
     fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
     fun getTraceByDate(date: String, loginUser: User): TraceDetailResponse?
+    fun searchTrace(traceSearchRequest: TraceSearchRequest): List<TraceDetailResponse>
 }
 
 @Service
@@ -64,14 +66,14 @@ class TraceServiceImpl(
             }
         } else {
             val user = userRepo.findByUsername(username) ?: throw FootprinterException(ErrorType.NOT_FOUND)
-            return user.myTrace.filter { trace -> trace.public }.map { trace ->
+            return user.myTrace.filter { trace -> trace.isPublic }.map { trace ->
                 trace.toDetailResponse(imageUrlUtil)
             }
         }
     }
 
     override fun getAllOtherUsersTraces(loginUser: User): List<TraceDetailResponse> {
-        return traceRepo.findAll().filter { it.owner != loginUser && it.public }.map { trace ->
+        return traceRepo.findAll().filter { it.owner != loginUser && it.isPublic }.map { trace ->
             trace.toDetailResponse(imageUrlUtil)
         }
     }
@@ -100,7 +102,7 @@ class TraceServiceImpl(
                     ?: Trace(
                         traceTitle = traceRequest.title!!,
                         traceDate = day!!,
-                        public = traceRequest.public!!,
+                        isPublic = traceRequest.public!!,
                         owner = loginUser,
                         footprints = mutableSetOf()
                     ).let {
@@ -155,6 +157,22 @@ class TraceServiceImpl(
                     stringToDate8601(it.startTime).time
                 }
             }
+    }
+
+    override fun searchTrace(traceSearchRequest: TraceSearchRequest): List<TraceDetailResponse> {
+        val usernameList = traceSearchRequest.users.map { it.username!! }
+        val tagList = traceSearchRequest.tags.map { TAG_CODE.values()[it] }
+        val dateList = traceSearchRequest.dates
+        val placeList = traceSearchRequest.places
+
+        val searchedTraceList = traceRepo.getTracesWithOptions(
+            usernameList,
+            tagList,
+            dateList,
+            placeList,
+        )
+
+        return searchedTraceList.map { it.toDetailResponse(imageUrlUtil) }
     }
 
     /**

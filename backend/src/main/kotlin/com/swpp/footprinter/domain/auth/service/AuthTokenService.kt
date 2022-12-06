@@ -1,6 +1,7 @@
 package com.swpp.footprinter.domain.auth.service
 
 import com.swpp.footprinter.domain.auth.AuthProperties
+import com.swpp.footprinter.domain.user.repository.UserRepository
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.JwtException
@@ -14,6 +15,7 @@ import java.util.*
 @EnableConfigurationProperties(AuthProperties::class)
 class AuthTokenService(
     private val authProperties: AuthProperties,
+    private val userRepo: UserRepository,
 ) {
     private val tokenPrefix = "Bearer "
     private val signingKey = Keys.hmacShaKeyFor(authProperties.jwtSecret.toByteArray())
@@ -34,7 +36,10 @@ class AuthTokenService(
         return try {
             val jws: Jws<Claims> = parse(accessToken) // Check expiration automatically in here.
             val expiryDate: Date = jws.body.expiration
-            expiryDate.after(Date())
+            val username = jws.body["username"] as String?
+            username?.let {
+                expiryDate.after(Date()) && userRepo.existsByUsername(it)
+            } ?: false
         } catch (e: JwtException) {
             false
         } catch (e: IllegalArgumentException) {

@@ -1,12 +1,12 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { postSignin, postSignUp } from "../../api";
+import { checkToken, postSignin, postSignUp } from "../../api";
 import RectangleButton from "../../components/buttons/RectangleButton";
 import Container from "../../components/containers/Container";
 import TextField from "../../components/textfield/TextField";
-import { SigninRequestType } from "../../dto/auth";
+import { SigninRequestType, TokenVerifyResponseType } from "../../dto/auth";
 import ErrorResponse from "../../dto/exception";
 import { useAuthStore } from "../../store/auth";
 
@@ -20,11 +20,18 @@ export default function Signin() {
   const userToken = useAuthStore((state) => state.userToken);
 
   useEffect(() => {
-    if (!userToken) {
-      return;
-    }
-    setToken(userToken);
-    router.push("/footprints");
+    checkToken({token: userToken})
+      .then((response: TokenVerifyResponseType) => {
+        if (response.valid) {
+          setToken(userToken);
+          router.push("/footprints");
+        } else {
+          setToken("");
+        }
+      })
+      .catch(() => {
+        setToken("");
+      })
   }, [router, setToken, userToken]);
 
   return (
