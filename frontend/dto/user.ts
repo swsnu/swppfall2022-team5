@@ -5,3 +5,8 @@ export interface UserResponseType {
   imageUrl: string;
   traceCount: number;
 }
+
+export interface UserFollowingResponse {
+  isFollowing: boolean;
+  isFollowed: boolean;
+}

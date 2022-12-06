@@ -10,4 +10,6 @@ interface UserFollowRepository : JpaRepository<UserFollow, Long> {
     fun findUserFollowByFollowerAndFollowed(follower: User, followed: User): UserFollow?
     fun findUserFollowsByFollowed(followed: User): List<UserFollow>
     fun findUserFollowsByFollower(follower: User): List<UserFollow>
+
+    fun existsByFollowerAndFollowed(follower: User, followed: User): Boolean
 }

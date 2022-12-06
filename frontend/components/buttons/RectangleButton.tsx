@@ -1,4 +1,4 @@
-import { IconLoader2 } from "@tabler/icons";
+import { IconLoader2, TablerIcon } from "@tabler/icons";
 import classNames from "classnames";
 
 interface IProps {
@@ -7,15 +7,16 @@ interface IProps {
   isLoading: boolean;
   className?: string;
   disabled?: boolean;
+  icon?: TablerIcon;
 }
 
-const RectangleButton = ({ onClick, text, isLoading, className, disabled }: IProps) => {
+const RectangleButton = ({ onClick, text, isLoading, className, disabled, icon: Icon }: IProps) => {
   return (
     <button
       data-testid={text}
       className={classNames(
-        className,
         "rounded-lg border border-navy-200/5 bg-navy-700 p-3 text-navy-200 transition-colors ",
+        className,
         { "hover:bg-navy-600": !disabled },
       )}
       onClick={onClick}
@@ -28,7 +29,10 @@ const RectangleButton = ({ onClick, text, isLoading, className, disabled }: IPro
             <span>로딩 중</span>
           </div>
         ) : (
-          text
+          <div className="flex gap-2">
+            {Icon && <Icon width={20} />}
+            {text}
+          </div>
         )}
       </span>
     </button>
