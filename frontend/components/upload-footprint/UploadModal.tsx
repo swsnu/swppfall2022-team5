@@ -100,9 +100,9 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
                   }}
                   maxFiles={10}
                   server={{
-                    url: `http://${process.env.NEXT_PUBLIC_API_HOST}`,
-                    process: "/api/v1/photos/process",
-                    revert: "/api/v1/photos/revert",
+                    url: `${process.env.NEXT_PUBLIC_API_URL}`,
+                    process: "/photos/process",
+                    revert: "/photos/revert",
                     headers: {
                       Authorization: `Bearer ${useAuthStore((state) => state.userToken)}`,
                     },

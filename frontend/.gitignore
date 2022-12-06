@@ -38,7 +38,7 @@ next-env.d.ts
 
 **/sw*.map
 **/workbox*.map
-**/sw*.js
+**/sw.js
 **/workbox*.js
 
 # Elastic Beanstalk Files
