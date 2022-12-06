@@ -15,9 +15,18 @@ export interface TraceDetailResponseType {
   likesCount: number;
   isLiked: boolean;
   footprints: FootprintResponseType[];
+  viewCount: number;
+}
+
+export interface TraceViewResponseType {
+  viewCount: number;
 }
 
 export interface TraceLikeResponseType {
   likesCount: number;
   isLiked: boolean;
+}
+
+export interface TraceViewResponseType {
+  viewCount: number;
 }

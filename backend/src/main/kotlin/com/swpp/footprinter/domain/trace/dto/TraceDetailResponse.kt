@@ -10,5 +10,6 @@ class TraceDetailResponse(
     val owner: UserResponse,
     var footprints: List<FootprintResponse>?,
     val isLiked: Boolean,
-    val likesCount: Int
+    val likesCount: Int,
+    val viewCount: Int
 )

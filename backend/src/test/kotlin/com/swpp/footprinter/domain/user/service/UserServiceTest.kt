@@ -65,12 +65,12 @@ class UserServiceTest @Autowired constructor(
         user.myTrace.add(trace)
 
         // when
-        val traceResponseListReturned = userService.getUserTraces(user.id!!)
+        val traceResponseListReturned = userService.getUserTraces(user.id)
 
         // then
         val traceResponseListExpected = listOf(
             TraceResponse(
-                id = trace.id!!,
+                id = trace.id,
                 date = trace.traceDate,
                 title = trace.traceTitle,
                 owner = trace.owner.toResponse()
@@ -117,15 +117,16 @@ class UserServiceTest @Autowired constructor(
         user.myTrace.add(trace2)
 
         // when
-        val traceDetailResponseReturned = userService.getUserTraceByDate(user.id!!, "2022-11-11")
+        val traceDetailResponseReturned = userService.getUserTraceByDate(user.id, "2022-11-11")
 
         // then
         val traceDetailResponseExpected = TraceDetailResponse(
-            id = trace2.id!!,
+            id = trace2.id,
             date = trace2.traceDate,
             title = trace2.traceTitle,
             owner = trace2.owner.toResponse(),
             footprints = listOf(),
+            viewCount = 0
         )
 
         assertThat(traceDetailResponseReturned?.id).isEqualTo(traceDetailResponseExpected.id)
@@ -133,6 +134,7 @@ class UserServiceTest @Autowired constructor(
         assertThat(traceDetailResponseReturned?.title).isEqualTo(traceDetailResponseExpected.title)
         assertThat(traceDetailResponseReturned?.owner).isEqualTo(traceDetailResponseExpected.owner)
         assertThat(traceDetailResponseReturned?.footprints).isEmpty()
+        assertThat(traceDetailResponseReturned?.viewCount).isEqualTo(traceDetailResponseExpected.viewCount)
     }
 
     @Test

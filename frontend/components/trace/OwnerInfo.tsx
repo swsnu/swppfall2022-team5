@@ -1,13 +1,12 @@
-import Image from "next/image";
+import { useRouter } from "next/router";
+import OwnerProfilePhoto from "./OwnerProfilePhoto";
 
 const OwnerInfo = (profile: { username: string }) => {
+    const router = useRouter();
     return (
-        <div className="flex">
-            <div className="ml-10 relative h-12 w-12 overflow-hidden rounded-full border border-gray-700">
-                <Image fill src={""} alt={""} className="object-cover" sizes="33vw" priority />
-                
-            </div>
-            <div className="text-base p-3 text-center">
+        <div className="flex pt-3">
+            <OwnerProfilePhoto imageUrl="https://images.unsplash.com/photo-1669072596436-15df4a8c083d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80" />
+            <div className="text-base p-3 text-center hover:cursor-pointer" onClick={() => router.push(`/user/${profile.username}`)}>
                 {profile.username}
             </div>
         </div>

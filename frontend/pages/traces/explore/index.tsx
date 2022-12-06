@@ -18,12 +18,19 @@ export default function Explore() {
 
             {traceExploreResult.isSuccess && traceExploreResult.data.length == 0 && <TracesNotFound />}
 
-            <div className="divide-y divide-navy-700/50 pb-20">
+            <div className="divide-y divide-navy-700/50 pb-10">
                 {traceExploreResult.data?.map((trace) => {
                     return ( 
-                    <div key = {trace.id}>
+                    <div key = {trace.id} className="py-2">
                         <TracePreview {...trace} />
-                        <OwnerInfo username={String(trace.ownerName)} />
+                        <div className="flex">
+                            <OwnerInfo username={String(trace.ownerName)} />
+                            <div className="pl-40 pt-3 items-center flex divide-x divide-navy-500 text-xs leading-3 text-navy-400">
+                                    <span className="px-2">좋아요 {0}</span>
+                                    <span className="px-2">{trace.viewCount}명 조회</span>
+                            </div>
+                        </div>
+                        
                     </div>
                     );
                 })}

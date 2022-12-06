@@ -22,6 +22,7 @@ import com.swpp.footprinter.domain.tag.dto.TagResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
 import com.swpp.footprinter.domain.trace.dto.TraceSearchRequest
+import com.swpp.footprinter.domain.trace.dto.TraceViewResponse
 import com.swpp.footprinter.domain.trace.model.Trace
 import com.swpp.footprinter.domain.trace.repository.TraceLikeRepository
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
@@ -46,6 +47,7 @@ interface TraceService {
     fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
     fun getTraceByDate(date: String, loginUser: User): TraceDetailResponse?
     fun searchTrace(traceSearchRequest: TraceSearchRequest): List<TraceDetailResponse>
+    fun updateViewCount(traceId: Long): TraceViewResponse
 }
 
 @Service
@@ -173,6 +175,16 @@ class TraceServiceImpl(
         )
 
         return searchedTraceList.map { it.toDetailResponse(imageUrlUtil) }
+    }
+
+    @Transactional
+    override fun updateViewCount(traceId: Long): TraceViewResponse {
+        val targetTrace = traceRepo.findByIdOrNull(traceId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
+
+        targetTrace.viewCount++
+        traceRepo.save(targetTrace)
+
+        return TraceViewResponse(targetTrace.viewCount)
     }
 
     /**

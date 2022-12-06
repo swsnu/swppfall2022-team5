@@ -7,6 +7,7 @@ import com.swpp.footprinter.domain.footprint.dto.FootprintInitialTraceResponse
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
 import com.swpp.footprinter.domain.trace.dto.TraceSearchRequest
+import com.swpp.footprinter.domain.trace.dto.TraceViewResponse
 import com.swpp.footprinter.domain.trace.service.TraceService
 import com.swpp.footprinter.domain.user.model.User
 import org.springframework.http.HttpStatus
@@ -86,5 +87,12 @@ class TraceController(
             throw FootprinterException(ErrorType.WRONG_FORMAT)
         }
         return traceService.searchTrace(traceSearchRequest)
+    }
+
+    @PostMapping("/view/{traceId}")
+    fun updateTraceViewCount(
+        @PathVariable(required = true) traceId: Long,
+    ): TraceViewResponse {
+        return traceService.updateViewCount(traceId)
     }
 }

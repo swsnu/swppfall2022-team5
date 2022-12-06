@@ -1,7 +1,7 @@
 import Container from "../../../components/containers/Container";
 import NavigationBar from "../../../components/navbar/NavigationBar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchTraceById, likeTrace, unlikeTrace, fetchRegionByCoordinates } from "../../../api";
+import { fetchTraceById, likeTrace, unlikeTrace, fetchRegionByCoordinates, updateViewCount } from "../../../api";
 import NavbarContainer from "../../../components/containers/NavbarContainer";
 import { FootprintPreview } from "../../../components/footprint/FootprintPreview";
 import { useRouter } from "next/router";
@@ -35,6 +35,16 @@ export default function TraceDetail() {
       return fetchTraceById(Number(traceId));
     },
     { enabled: !!traceId },
+  );
+
+  useQuery(
+    ["updateViewCount", traceId],
+    () => {
+      return updateViewCount(Number(traceId));
+    },
+    {
+      enabled: !!traceId,
+    },
   );
 
   const likeMutation = useMutation((traceId: number) => likeTrace(traceId));
