@@ -42,7 +42,7 @@ export default function Footprints() {
         />
       </div>
 
-      {footprintsResult.isSuccess && !!!footprintsResult.data.footprints && <FootprintsNotFound />}
+      {footprintsResult.isSuccess && !footprintsResult.data?.footprints?.length && <FootprintsNotFound />}
 
       <div className="divide-y divide-navy-700/50 pb-20">
         {footprintsResult.isSuccess &&

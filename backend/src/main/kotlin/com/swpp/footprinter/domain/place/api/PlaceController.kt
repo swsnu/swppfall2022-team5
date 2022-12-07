@@ -35,6 +35,9 @@ class PlaceController(
         if (bindingResult.hasErrors()) {
             throw FootprinterException(ErrorType.WRONG_FORMAT)
         }
+        if (placeSearchRequest.keyword.isEmpty()) {
+            return emptyList()
+        }
         return placeService.searchPlacesByKeywordAndTags(placeSearchRequest)
     }
 }

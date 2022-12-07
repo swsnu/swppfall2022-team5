@@ -5,7 +5,8 @@ import moment from "moment";
 import { TagType } from "../dto/tag";
 import { FootprintEditRequestType, FootprintRequestType, FootprintResponseType } from "../dto/footprint";
 import { SigninRequestType, SigninResponseType, TokenVerifyRequestType, TokenVerifyResponseType } from "../dto/auth";
-import { UserResponseType } from "../dto/user";
+import { UserFollowingResponse, UserResponseType } from "../dto/user";
+import { PlaceType } from "../dto/place";
 
 export const fetchInitialFootprints = async (photoIds: string[]) => {
   return (await apiClient.post<FootprintPredictionType[]>("/traces/create", photoIds)).data;
@@ -73,4 +74,44 @@ export const fetchRegionByCoordinates = async (latitude: number, longitude: numb
 
 export const updateViewCount = async (traceId: number) => {
   return (await apiClient.post<TraceViewResponseType>(`/traces/view/${traceId}`)).data;
+};
+
+export const fetchUserByUsername = async (username: string) => {
+  return (await apiClient.get<UserResponseType>(`/user/${username}`)).data;
+};
+
+export const fetchMe = async () => {
+  return (await apiClient.get<UserResponseType>(`/me`)).data;
+};
+
+export const fetchIsFollowing = async (username: string) => {
+  return (await apiClient.get<UserFollowingResponse>(`/user/followings/${username}/status`)).data;
+};
+
+export const followUser = async (username: string) => {
+  return (await apiClient.post<void>(`/user/followings`, { username: username })).data;
+};
+
+export const unfollowUser = async (username: string) => {
+  return (await apiClient.delete<void>(`/user/followings`, { data: { username: username } })).data;
+};
+
+export const deleteFootprint = async (footprintId: number) => {
+  return (await apiClient.delete<void>(`/footprints/${footprintId}`)).data;
+};
+
+export const fetchPlacesByKeywordAndLocation = async (
+  keyword: string,
+  latitude: number,
+  longitude: number,
+  tagIds: number[],
+) => {
+  return (
+    await apiClient.post<PlaceType[]>(`/place/search`, {
+      keyword: keyword,
+      latitude: latitude,
+      longitude: longitude,
+      tagIDs: tagIds,
+    })
+  ).data;
 };
