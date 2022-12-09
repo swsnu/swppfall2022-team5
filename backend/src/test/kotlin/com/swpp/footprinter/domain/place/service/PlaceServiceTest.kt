@@ -1,5 +1,7 @@
 package com.swpp.footprinter.domain.place.service
 
+import com.swpp.footprinter.common.exception.ErrorType
+import com.swpp.footprinter.common.exception.FootprinterException
 import com.swpp.footprinter.common.externalAPI.KakaoAPIService
 import com.swpp.footprinter.domain.place.dto.PlaceResponse
 import com.swpp.footprinter.domain.place.dto.PlaceSearchRequest
@@ -15,6 +17,7 @@ import org.mockito.Mockito.`when`
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.assertThrows
 import org.mockito.ArgumentMatchers.anyDouble
 import org.mockito.ArgumentMatchers.anyInt
 
@@ -238,5 +241,22 @@ class PlaceServiceTest @Autowired constructor(
 
         // then
         assertThat(actualPlaceResponseList).isEqualTo(expectedPlaceResponseList)
+    }
+
+    @Test
+    fun `Should Throw WRONG_FORMAT exception when given tagID is wrong`() {
+        // given
+        val placeSearchRequest = PlaceSearchRequest(
+            keyword = "hello",
+            longitude = 1.0,
+            latitude = 1.0,
+            tagIDs = listOf(100)
+        )
+
+        // when // then
+        val exception = assertThrows<FootprinterException> {
+            placeService.searchPlacesByKeywordAndTags(placeSearchRequest)
+        }
+        assertEquals(exception.errorType, ErrorType.WRONG_FORMAT)
     }
 }
