@@ -154,6 +154,97 @@ class TraceServiceTest @Autowired constructor(
         assertThat(createdPhoto).extracting { it.footprint?.id }.isEqualTo(createdFootprint.id)
     }
 
+    @Test
+    @Transactional
+    fun `Could add only footprints when trace already exists`() {
+        // given
+        val currentUser = userRepo.findByIdOrNull(1)!!
+        val current = Date()
+
+        testHelper.createPhoto("testpath1", 0.0, 0.0, current)
+        val photoRequest1 = PhotoRequest(
+            imagePath = "testpath1",
+            longitude = 0.0,
+            latitude = 0.0,
+            timestamp = dateToString8601(current)
+        )
+        testHelper.createPhoto("testpath2", 10.0, 10.0, current)
+        val photoRequest2 = PhotoRequest(
+            imagePath = "testpath2",
+            longitude = 10.0,
+            latitude = 10.0,
+            timestamp = dateToString8601(current)
+        )
+        testHelper.createPhoto("testpath3", 20.0, 20.0, current)
+        val photoRequest3 = PhotoRequest(
+            imagePath = "testpath3",
+            longitude = 20.0,
+            latitude = 20.0,
+            timestamp = dateToString8601(current)
+        )
+
+        val placeRequest1 = PlaceRequest(
+            name = "testplace1",
+            address = "testaddr1"
+        )
+        val placeRequest2 = PlaceRequest(
+            name = "testplace2",
+            address = "testaddr2"
+        )
+        val placeRequest3 = PlaceRequest(
+            name = "testplace3",
+            address = "testaddr3"
+        )
+
+        val footprintRequest1 = FootprintRequest(
+            startTime = dateToString8601(current),
+            endTime = dateToString8601(current),
+            rating = 1,
+            memo = "testmemo",
+            tagId = 0,
+            photos = listOf(photoRequest1),
+            place = placeRequest1,
+        )
+        val footprintRequest2 = FootprintRequest(
+            startTime = dateToString8601(current),
+            endTime = dateToString8601(current),
+            rating = 1,
+            memo = "testmemo",
+            tagId = 1,
+            photos = listOf(photoRequest2),
+            place = placeRequest2,
+        )
+        val footprintRequest3 = FootprintRequest(
+            startTime = dateToString8601(current),
+            endTime = dateToString8601(current),
+            rating = 1,
+            memo = "testmemo",
+            tagId = 2,
+            photos = listOf(photoRequest3),
+            place = placeRequest3,
+        )
+
+        // TODO: Change to current user after user authentication is implemented
+        val traceRequest = TraceRequest(
+            "titleTrace",
+//            dateToString8601(current),
+            footprintList = listOf(footprintRequest1, footprintRequest2, footprintRequest3),
+        )
+
+        val trace = testHelper.createTrace(
+            traceTitle = "titleTrace",
+            traceDate = "2022-12-10",
+            owner = currentUser,
+        )
+
+        // when
+        traceService.createTrace(traceRequest, currentUser)
+
+        // then
+        assertEquals(traceRepo.count(), 1)
+        assertEquals(traceRepo.getReferenceById(trace.id).footprints.size, 3)
+    }
+
     /**
      * Testing getTraceById
      */
