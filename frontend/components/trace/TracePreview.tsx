@@ -1,8 +1,6 @@
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { TraceDetailResponseType } from "../../dto/trace";
-import PhotoPreview from "../trace/PhotoPreview";
-import Image from "next/image";
-import Moment from "react-moment";
 
 interface IProps extends TraceDetailResponseType {}
 
