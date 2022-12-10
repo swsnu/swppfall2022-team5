@@ -70,8 +70,12 @@ class TestHelper @Autowired constructor(
         traceTitle: String,
         traceDate: String,
         owner: User,
+        isPublic: Boolean = true,
+        likesCount: Int = 0,
+        viewCount: Int = 0,
         footprints: MutableSet<Footprint> = mutableSetOf(),
-    ) = Trace(traceTitle, traceDate, true, owner, footprints).also { traceRepo.save(it) }
+    ) = Trace(traceTitle, traceDate, isPublic, owner, footprints, likesCount, viewCount)
+        .also { traceRepo.save(it) }
 
     fun initializeTag() {
         for (tagCode in TAG_CODE.values()) {
