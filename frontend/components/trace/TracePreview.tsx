@@ -8,7 +8,7 @@ export function TracePreview(props: IProps) {
   const router = useRouter();
 
   var representativeFootprint = props.footprints[0];
-  var thumnailPhoto = representativeFootprint.photos[0];
+  var thumnailPhoto = representativeFootprint?.photos[0];
   var placeList = props.footprints.map((fp) => fp.place.name).join(" - ");
 
   return (
@@ -26,7 +26,7 @@ export function TracePreview(props: IProps) {
           </div>
         </div>
         <div className="w-100 relative h-36">
-          <Image fill src={thumnailPhoto.imageUrl} alt={""} className="object-cover" sizes="100vw" priority />
+          <Image fill src={thumnailPhoto?.imageUrl} alt={""} className="object-cover" sizes="100vw" priority />
         </div>
       </div>
     </div>
