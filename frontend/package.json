@@ -34,6 +34,7 @@
     "react-hot-toast": "^2.4.0",
     "react-kakao-maps-sdk": "^1.1.5",
     "react-moment": "^1.1.2",
+    "sharp": "^0.31.2",
     "tailwind-scrollbar-hide": "^1.1.7",
     "uuid": "^9.0.0",
     "zustand": "^4.1.4",
