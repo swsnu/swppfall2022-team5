@@ -18,6 +18,7 @@ const placeStub: PlaceType = {
   district: "",
   longitude: 0,
   latitude: 0,
+  distance: 0,
 };
 
 const tagStub: TagType = {
