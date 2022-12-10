@@ -79,7 +79,9 @@ class TestHelper @Autowired constructor(
 
     fun initializeTag() {
         for (tagCode in TAG_CODE.values()) {
-            createTag(tagCode)
+            if (!tagRepo.existsByTagCode(tagCode)) {
+                createTag(tagCode)
+            }
         }
     }
 
