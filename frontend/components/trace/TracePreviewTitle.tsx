@@ -24,7 +24,7 @@ export const TracePreviewTitle = (props: IProps) => {
       )}
       <div className="flex items-center divide-x divide-navy-500 text-xs leading-3 text-navy-400">
         <Moment date={props.date} fromNow className="px-2" />
-        <span className="px-2">좋아요 {0}</span>
+        <span className="px-2">좋아요 {props.likesCount}</span>
         <span className="px-2">{props.viewCount}명 조회</span>
       </div>
     </div>
