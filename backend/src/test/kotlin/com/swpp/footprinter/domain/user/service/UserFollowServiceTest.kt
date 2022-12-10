@@ -2,12 +2,15 @@ package com.swpp.footprinter.domain.user.service
 
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
+import com.swpp.footprinter.domain.user.dto.UserFollowingResponse
 import com.swpp.footprinter.domain.user.repository.UserFollowRepository
 import com.swpp.footprinter.domain.user.repository.UserRepository
 import com.swpp.footprinter.global.TestHelper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.dao.DataIntegrityViolationException
@@ -172,5 +175,42 @@ class UserFollowServiceTest @Autowired constructor(
         } catch (e: FootprinterException) {
             assertThat(e).extracting("errorType").isEqualTo(ErrorType.NOT_FOUND)
         }
+    }
+
+    // Test getIsFollowingAndFollowed
+    @Test
+    fun `Could get following and followed information`() {
+        // given
+        val loginUser = testHelper.createUser(
+            username = "login",
+            password = "",
+        )
+        val targetUser = testHelper.createUser(
+            username = "target",
+            password = "",
+        )
+
+        val expectedUserFollowingResponse = UserFollowingResponse(false, false)
+
+        // when
+        val actualUserFollowingResponse = userFollowService.getIsFollowingAndFollowed(loginUser, "target")
+
+        // then
+        assertThat(actualUserFollowingResponse).isEqualTo(expectedUserFollowingResponse)
+    }
+
+    @Test
+    fun `Throw NOT_FOUND when targetUser doesn't exists from getIsFollowingAndFollowed`() {
+        // given
+        val loginUser = testHelper.createUser(
+            username = "login",
+            password = "",
+        )
+
+        // when // then
+        val exception = assertThrows<FootprinterException> {
+            userFollowService.getIsFollowingAndFollowed(loginUser, "nonExists")
+        }
+        assertEquals(exception.errorType, ErrorType.NOT_FOUND)
     }
 }
