@@ -9,6 +9,7 @@ import com.swpp.footprinter.domain.tag.repository.TagRepository
 import com.swpp.footprinter.domain.trace.dto.TraceDetailResponse
 import com.swpp.footprinter.domain.trace.dto.TraceResponse
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
+import com.swpp.footprinter.domain.user.dto.UserResponse
 import com.swpp.footprinter.domain.user.repository.UserRepository
 import com.swpp.footprinter.global.TestHelper
 import org.assertj.core.api.Assertions.assertThat
@@ -145,6 +146,49 @@ class UserServiceTest @Autowired constructor(
     fun `Throw NOT_FOUND when user given by id is not exist while getting user by id and date`() {
         // given // when // then
         val exception = assertThrows<FootprinterException> { userService.getUserTraceByDate(9999, "") }
+        assertEquals(exception.errorType, ErrorType.NOT_FOUND)
+    }
+
+    /**
+     * Test getUserByUserName
+     */
+    @Test
+    @Transactional
+    fun `Could get user by username`() {
+        // given
+        val user = testHelper.createUser(
+            username = "testname",
+            password = "testpassword",
+            followerCount = 5,
+            followingCount = 10,
+        )
+        val expectedUserResponse = UserResponse(
+            username = "testname",
+            followingCount = 10,
+            followerCount = 5,
+            traceCount = 0,
+        )
+
+        // when
+        val actualUserResponse = userService.getUserByUsername("testname")
+
+        // then
+        assertThat(actualUserResponse).isEqualTo(expectedUserResponse)
+    }
+
+    @Test
+    @Transactional
+    fun `Throw NOT_FOUND when user doesn't exists with given username`() {
+        // given
+        val user = testHelper.createUser(
+            username = "testname",
+            password = "testpassword",
+            followerCount = 5,
+            followingCount = 10,
+        )
+
+        // when // then
+        val exception = assertThrows<FootprinterException> { userService.getUserByUsername("nonExistName") }
         assertEquals(exception.errorType, ErrorType.NOT_FOUND)
     }
 }
