@@ -20,8 +20,10 @@ import com.swpp.footprinter.domain.tag.TAG_CODE
 import com.swpp.footprinter.domain.tag.dto.TagResponse
 import com.swpp.footprinter.domain.tag.repository.TagRepository
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
+import com.swpp.footprinter.domain.trace.dto.TraceSearchRequest
 import com.swpp.footprinter.domain.trace.dto.TraceViewResponse
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
+import com.swpp.footprinter.domain.user.dto.UserRequest
 import com.swpp.footprinter.domain.user.repository.UserRepository
 import com.swpp.footprinter.global.TestHelper
 import io.kotest.common.runBlocking
@@ -741,5 +743,71 @@ class TraceServiceTest @Autowired constructor(
             traceService.updateViewCount(111)
         }
         assertEquals(exception.errorType, ErrorType.NOT_FOUND)
+    }
+
+    /**
+     * Test searchTrace
+     */
+    @Test
+    @Transactional
+    fun `Could search trace with right options`() {
+        // given
+        val currentDate = Date()
+
+        val users = (1..4).map {
+            testHelper.createUser("user$it", "")
+        }
+
+        val traces = (1..8).map {
+            testHelper.createTrace(
+                traceTitle = "",
+                traceDate = "2022-12-0${(it % 2 + 1)}",
+                owner = users[(it - 1) / 2],
+            )
+        }
+
+        val places = (1..2).map {
+            testHelper.createPlace(
+                name = "place${it % 2}",
+                address = "placeaddr${it % 2}"
+            )
+        }
+
+        val footprints = (1..8).map {
+            testHelper.createFootprintAndUpdateElements(
+                startTime = currentDate,
+                endTime = currentDate,
+                rating = 1,
+                trace = traces[it - 1],
+                tag = tagRepo.findByTagCode(TAG_CODE.values()[it % 2])!!,
+                memo = "",
+                place = places[it % 2],
+            )
+        }
+
+        val traceSearchRequest = TraceSearchRequest(
+            users = listOf(
+                UserRequest(username = "user2"),
+                UserRequest(username = "user5")
+            ),
+            dates = listOf(
+                "2022-12-01"
+            ),
+            places = listOf(
+                PlaceRequest(name = "place1", address = "placeaddr1"),
+                PlaceRequest(name = "place0", address = "placeaddr0"),
+            ),
+            tags = listOf(0),
+        )
+
+        val expectedTraceDetailResponseList = listOf(
+            traces.get(3).toDetailResponse(mockImageUrlUtil)
+        )
+
+        // when
+        val actualTraceDetailResponseList = traceService.searchTrace(traceSearchRequest)
+
+        // then
+        assertThat(actualTraceDetailResponseList).isEqualTo(expectedTraceDetailResponseList)
     }
 }
