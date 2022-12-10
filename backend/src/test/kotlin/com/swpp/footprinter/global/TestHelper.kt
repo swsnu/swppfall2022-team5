@@ -30,8 +30,10 @@ class TestHelper @Autowired constructor(
     fun createUser(
         username: String,
         password: String,
+        followingCount: Int = 0,
+        followerCount: Int = 0,
         myTrace: MutableSet<Trace> = mutableSetOf()
-    ) = User(username, password).also { userRepo.save(it) }
+    ) = User(username, password, followingCount, followerCount, myTrace).also { userRepo.save(it) }
 
     fun createPlace(
         name: String,
