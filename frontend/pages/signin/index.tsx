@@ -21,7 +21,9 @@ export default function Signin() {
 
   const checkTokenMutation = useMutation((arg: any) => checkToken({ token: userToken }), {
     onSuccess(data: TokenVerifyResponseType, variables, context) {
-      setToken(userToken);
+      if (data.valid) {
+        router.push("/footprints");
+      }
     },
     onError(error: ErrorResponse, variables, context) {
       setToken("");
@@ -30,7 +32,7 @@ export default function Signin() {
 
   useEffect(() => {
     checkTokenMutation.mutate(1);
-  }, [checkTokenMutation]);
+  }, []);
 
   return (
     <Container>
