@@ -9,6 +9,7 @@ interface IProps {
 const LikeButton = ({ isLiked, onClick, likesCount }: IProps) => {
   return (
     <button
+      data-testid="like-button"
       className="flex items-center gap-1 text-sm text-navy-200 transition-colors hover:text-navy-100"
       onClick={onClick}
     >

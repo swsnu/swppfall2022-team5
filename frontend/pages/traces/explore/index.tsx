@@ -4,7 +4,6 @@ import Container from "../../../components/containers/Container";
 import NavbarContainer from "../../../components/containers/NavbarContainer";
 import NavigationBar from "../../../components/navbar/NavigationBar";
 import TracesNotFound from "../../../components/placeholder/TracesNotFound";
-import OwnerInfo from "../../../components/trace/OwnerInfo";
 import { TracePreview } from "../../../components/trace/TracePreview";
 import { TracePreviewTitle } from "../../../components/trace/TracePreviewTitle";
 

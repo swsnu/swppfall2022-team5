@@ -10,6 +10,7 @@ interface IProps {
 const TextField = ({ value, onChange, placeholder, type }: IProps) => {
   return (
     <input
+      data-testid="textfield"
       type={type}
       className="w-full rounded-lg border border-navy-800 bg-[#0c0d13] p-3 text-sm outline-none transition-colors focus:border-navy-700"
       value={value}
