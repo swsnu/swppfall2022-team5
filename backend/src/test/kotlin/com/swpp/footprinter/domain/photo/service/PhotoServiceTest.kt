@@ -17,9 +17,11 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.InjectMocks
 import org.mockito.Mockito.*
+import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.transaction.annotation.Transactional
@@ -30,6 +32,7 @@ import java.util.*
 @SpringBootTest
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ExtendWith(MockitoExtension::class)
 internal class PhotoServiceTest @Autowired constructor(
     private val testHelper: TestHelper,
     @InjectMocks private val photoService: PhotoService,
@@ -76,4 +79,23 @@ internal class PhotoServiceTest @Autowired constructor(
             assertThat(createdPhoto).extracting("longitude").isEqualTo(36.0)
         }
     }
+
+//    @Test
+//    fun `Could delete photo from db and server`() {
+//        // given
+//        val photo = testHelper.createPhoto(
+//            imagePath = "path",
+//            latitude = 0.0,
+//            longitude = 0.0,
+//            timestamp = Date(),
+//        )
+//        val id = photo.id
+//        val mockAmazonS3Client = mock(AmazonS3Client::class.java)
+//
+//        // when
+//        photoService.deletePhotoFromDatabaseAndServer(photo)
+//
+//        // then
+//        assertFalse(photoRepo.existsById(id))
+//    }
 }
