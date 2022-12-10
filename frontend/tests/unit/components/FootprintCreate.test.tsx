@@ -33,61 +33,57 @@ jest.mock("next/router", () => ({
 
 it("renders placeholder", async () => {
   const { result } = renderHook(() => useFootprintCreateStore());
-    act(() => {
-      result.current.setPendingFootprintRequests(mockPredictions);
-    });
+  act(() => {
+    result.current.setPendingFootprintRequests(mockPredictions);
+  });
 
-    mockedAxios.get.mockImplementation(() => Promise.resolve({ data: [{ tagId: 0, tagName: "카페" }] }));
+  mockedAxios.get.mockImplementation(() => Promise.resolve({ data: [{ tagId: 0, tagName: "카페" }] }));
 
-  const { container } =render(
+  const { container } = render(
     <QueryClientProvider client={queryClient}>
-        <FootprintCreate
-          uuid="1"
-          startTime=""
-          endTime=""
-          rating={3}
-          memo=""
-          tagId={0}
-          photos={
-            [
-              {
-                imagePath: "path1",
-                imageUrl: "https://www.gravatar.com/avatar/62eefdaa182b5523ac6a37d4551a0155?s=48&d=identicon&r=PG"
-              }
-            ]
-          }
-          place={
-            {
-              "name" : "placeName",
-              "address" : "placeAddress"
-            }
-          }
-          recommendedPlaces={
-            [
-              {
-                name: "placeName",
-                address: "placeAddress",
-                distance: 5,
-                category: "recCategory"
-              }
-            ]
-          }          
-        />
-      </QueryClientProvider>,
+      <FootprintCreate
+        uuid="1"
+        startTime=""
+        endTime=""
+        rating={3}
+        memo=""
+        tagId={0}
+        photos={[
+          {
+            imagePath: "path1",
+            imageUrl: "https://www.gravatar.com/avatar/62eefdaa182b5523ac6a37d4551a0155?s=48&d=identicon&r=PG",
+          },
+        ]}
+        place={{
+          name: "placeName",
+          address: "placeAddress",
+        }}
+        recommendedPlaces={[
+          {
+            name: "placeName",
+            address: "placeAddress",
+            distance: 5,
+            category: "recCategory",
+          },
+        ]}
+        meanLatitude={0}
+        meanLongitude={0}
+      />
+    </QueryClientProvider>,
   );
   expect(window).toBeTruthy();
 
-  const ratingButton = screen.getByText("🤩 좋아요")
+  const ratingButton = screen.getByText("🤩 좋아요");
   await act(async () => {
     fireEvent.click(ratingButton);
   });
 
-  const placeButton = screen.getByText("placeName")
+  const placeButton = screen.getByText("placeName");
   await act(async () => {
     fireEvent.click(placeButton);
   });
 
-  const tagButton = screen.getByText("☕ 카페")
+  const tagButton = screen.getByText("☕ 카페");
   await act(async () => {
     fireEvent.click(tagButton);
   });

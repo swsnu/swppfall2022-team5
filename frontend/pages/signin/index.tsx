@@ -19,20 +19,18 @@ export default function Signin() {
   const setToken = useAuthStore((state) => state.setToken);
   const userToken = useAuthStore((state) => state.userToken);
 
+  const checkTokenMutation = useMutation((arg: any) => checkToken({ token: userToken }), {
+    onSuccess(data: TokenVerifyResponseType, variables, context) {
+      setToken(userToken);
+    },
+    onError(error: ErrorResponse, variables, context) {
+      setToken("");
+    },
+  });
+
   useEffect(() => {
-    checkToken({token: userToken})
-      .then((response: TokenVerifyResponseType) => {
-        if (response.valid) {
-          setToken(userToken);
-          router.push("/footprints");
-        } else {
-          setToken("");
-        }
-      })
-      .catch(() => {
-        setToken("");
-      })
-  }, [router, setToken, userToken]);
+    checkTokenMutation.mutate(1);
+  }, [checkTokenMutation]);
 
   return (
     <Container>
