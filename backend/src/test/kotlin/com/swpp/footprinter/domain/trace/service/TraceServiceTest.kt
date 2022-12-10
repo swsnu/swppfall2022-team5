@@ -20,6 +20,7 @@ import com.swpp.footprinter.domain.tag.TAG_CODE
 import com.swpp.footprinter.domain.tag.dto.TagResponse
 import com.swpp.footprinter.domain.tag.repository.TagRepository
 import com.swpp.footprinter.domain.trace.dto.TraceRequest
+import com.swpp.footprinter.domain.trace.dto.TraceViewResponse
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import com.swpp.footprinter.domain.user.repository.UserRepository
 import com.swpp.footprinter.global.TestHelper
@@ -702,5 +703,43 @@ class TraceServiceTest @Autowired constructor(
         // then
         assertThat(actualTraceDetailResponse.size).isEqualTo(expectedTraceDetailResponseList.size)
         assertThat(actualTraceDetailResponse[0].id).isEqualTo(expectedTraceDetailResponseList[0].id)
+    }
+
+    /**
+     * Test updateViewCount
+     */
+    @Test
+    @Transactional
+    fun `Could update view count`() {
+        // given
+        val user = testHelper.createUser(
+            username = "",
+            password = "",
+        )
+        val targetTrace = testHelper.createTrace(
+            traceTitle = "",
+            traceDate = "",
+            owner = user,
+        )
+        val targetId = targetTrace.id
+        val targetViewCount = targetTrace.viewCount
+
+        val expectedTraceViewResponse = TraceViewResponse(targetViewCount + 1)
+
+        // when
+        val actualTraceViewResponse = traceService.updateViewCount(targetId)
+
+        // then
+        assertThat(actualTraceViewResponse).isEqualTo(expectedTraceViewResponse)
+    }
+
+    @Test
+    @Transactional
+    fun `Throw NOT_FOUND when target trace is not exists`() {
+        // given //when //then
+        val exception = assertThrows<FootprinterException> {
+            traceService.updateViewCount(111)
+        }
+        assertEquals(exception.errorType, ErrorType.NOT_FOUND)
     }
 }
