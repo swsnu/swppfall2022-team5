@@ -221,7 +221,6 @@ class TraceServiceTest @Autowired constructor(
             "testTraceTitle",
             dateToString8601(date),
             user,
-            mutableSetOf()
         )
 
         // when
@@ -567,5 +566,50 @@ class TraceServiceTest @Autowired constructor(
 
         val otherUserTraces = traceService.getAllUserTraces(user2, user.username)
         assertThat(otherUserTraces).hasSize(2)
+    }
+
+    /**
+     * Test getAllOtherUsersTraces
+     */
+    @Test
+    @Transactional
+    fun `Could get all other user's traces`() {
+        // given
+        val loginUser = testHelper.createUser(
+            username = "login",
+            password = "",
+        )
+        val otherUser = testHelper.createUser(
+            username = "other",
+            password = "",
+        )
+
+        val loginTrace = testHelper.createTrace(
+            traceTitle = "loginTrace",
+            traceDate = "2022-11-11",
+            owner = loginUser,
+        )
+        val otherTrace = testHelper.createTrace(
+            traceTitle = "otherTrace",
+            traceDate = "2022-12-12",
+            owner = otherUser,
+        )
+        val other2Trace = testHelper.createTrace(
+            traceTitle = "other2Trace",
+            traceDate = "2022-12-13",
+            owner = otherUser,
+            isPublic = false,
+        )
+
+        val expectedTraceDetailResponseList = listOf(
+            otherTrace.toDetailResponse(mockImageUrlUtil)
+        )
+
+        // when
+        val actualTraceDetailResponse = traceService.getAllOtherUsersTraces(loginUser)
+
+        // then
+        assertThat(actualTraceDetailResponse.size).isEqualTo(expectedTraceDetailResponseList.size)
+        assertThat(actualTraceDetailResponse[0].id).isEqualTo(expectedTraceDetailResponseList[0].id)
     }
 }
