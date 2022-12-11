@@ -227,7 +227,6 @@ class TraceServiceTest @Autowired constructor(
             place = placeRequest3,
         )
 
-        // TODO: Change to current user after user authentication is implemented
         val traceRequest = TraceRequest(
             "titleTrace",
 //            dateToString8601(current),
@@ -236,7 +235,7 @@ class TraceServiceTest @Autowired constructor(
 
         val trace = testHelper.createTrace(
             traceTitle = "titleTrace",
-            traceDate = "2022-12-10",
+            traceDate = dateToStringWithoutTime(current),
             owner = currentUser,
         )
 
