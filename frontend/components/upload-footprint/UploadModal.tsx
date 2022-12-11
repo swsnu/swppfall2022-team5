@@ -113,7 +113,7 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
                   name="files" /* sets the file input name, it's filepond by default */
                   labelIdle="이곳을 클릭하거나 사진을 드래그해서 업로드해보세요."
                   acceptedFileTypes={["image/jpeg", "image/png", "image/jpg", "image/heic", "image/heif"]}
-                  imageCropAspectRatio="3:1"
+                  // imageCropAspectRatio="3:1"
                   maxParallelUploads={5}
                   itemInsertLocation="after"
                   maxFileSize="10MB"

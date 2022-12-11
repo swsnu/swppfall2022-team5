@@ -26,7 +26,7 @@ export function TracePreview(props: IProps) {
           </div>
         </div>
         <div className="w-100 relative h-36">
-          <Image fill src={thumnailPhoto?.imageUrl} alt={""} className="object-cover" sizes="100vw" priority />
+          <img src={thumnailPhoto?.imageUrl} alt={""} className="object-cover" />
         </div>
       </div>
     </div>
