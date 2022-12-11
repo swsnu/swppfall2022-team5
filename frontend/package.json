@@ -24,6 +24,8 @@
     "filepond-plugin-image-crop": "^2.0.6",
     "filepond-plugin-image-exif-orientation": "^1.0.11",
     "filepond-plugin-image-preview": "^4.6.11",
+    "filepond-plugin-image-transform": "^3.8.7",
+    "image-conversion": "^2.1.1",
     "immer": "^9.0.16",
     "moment": "^2.29.4",
     "next": "13.0.0",

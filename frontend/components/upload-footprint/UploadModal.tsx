@@ -1,6 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { useMutation } from "@tanstack/react-query";
 import { Fragment, useRef, useState } from "react";
+import { compress, compressAccurately } from "image-conversion";
 
 interface IProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import FilePondPluginImageCrop from "filepond-plugin-image-crop";
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import FilePondPluginImageTransform from "filepond-plugin-image-transform";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 import { useRouter } from "next/router";
 import RectangleButton from "../buttons/RectangleButton";
@@ -34,6 +36,7 @@ registerPlugin(
   FilePondPluginFileValidateType,
   FilePondPluginImageCrop,
   FilePondPluginFileValidateSize,
+  FilePondPluginImageTransform,
 );
 
 const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
@@ -114,6 +117,9 @@ const UploadModal = ({ isOpen, setIsOpen, onConfirm }: IProps) => {
                   maxParallelUploads={5}
                   itemInsertLocation="after"
                   maxFileSize="10MB"
+                  imageTransformOutputMimeType="image/jpeg"
+                  imageTransformOutputQuality={80}
+                  imageTransformOutputStripImageHead={false}
                 />
                 <div className="flex justify-center gap-4">
                   <RectangleButton
