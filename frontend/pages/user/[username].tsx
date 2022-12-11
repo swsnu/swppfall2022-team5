@@ -47,7 +47,7 @@ export default function MyPage() {
 
       <div className="space-y-5 p-5">
         {traceResult.data
-          ?.sort((a, b) => a.date.localeCompare(b.date))
+          ?.sort((a, b) => b.date.localeCompare(a.date))
           .map((trace) => {
             return (
               <div key={trace.id}>
