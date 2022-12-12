@@ -85,7 +85,7 @@ const FootprintCreate = (props: IProps) => {
                   className="flex-shrink-0"
                   text={place.distance ? `${place.name} (${place.distance}m)` : `${place.name}`}
                   onClick={() => {
-                    updateFootprint({ place: { name: place.name, address: place.address },  meanLatitude: place.latitude, meanLongitude: place.longitude });
+                    updateFootprint({ place: { name: place.name, address: place.address } });
                   }}
                   isActive={place.name === props.place?.name && place.address === props.place.address}
                 />
