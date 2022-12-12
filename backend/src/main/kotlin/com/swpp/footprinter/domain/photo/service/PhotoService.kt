@@ -46,7 +46,14 @@ class PhotoServiceImpl(
             )
             photoRepo.save(photo)
         } else {
-            TODO("사진에 위치정보 메타데이터 없는 경우")
+            val photo = Photo(
+                imagePath = path,
+                longitude = 126.952625,
+                latitude = 37.4497208,
+                timestamp = Date(),
+                footprint = null,
+            )
+            photoRepo.save(photo)
         }
     }
 
