@@ -1,6 +1,7 @@
 package com.swpp.footprinter.common.externalAPI
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.swpp.footprinter.common.NO_META_DATA
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
 import org.springframework.beans.factory.annotation.Value
@@ -63,7 +64,7 @@ class KakaoAPIService(
         val request = HttpEntity<String>(httpHeaders)
 
         return try {
-            if (longitude < 0 && latitude < 0) {
+            if (longitude == NO_META_DATA && latitude == NO_META_DATA) {
                 restTemplate.exchange(
                     url = "$url?query=$keyword",
                     method = HttpMethod.GET,

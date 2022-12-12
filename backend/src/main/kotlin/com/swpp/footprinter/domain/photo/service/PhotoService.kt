@@ -9,6 +9,7 @@ import com.swpp.footprinter.domain.photo.repository.PhotoRepository
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import com.drew.metadata.Metadata
+import com.swpp.footprinter.common.NO_META_DATA
 import org.springframework.beans.factory.annotation.Value
 import java.util.*
 import javax.transaction.Transactional
@@ -50,8 +51,8 @@ class PhotoServiceImpl(
         } else {
             val photo = Photo(
                 imagePath = path,
-                longitude = -1.0,
-                latitude = -1.0,
+                longitude = NO_META_DATA,
+                latitude = NO_META_DATA,
                 timestamp = Date(),
                 footprint = null,
             )
