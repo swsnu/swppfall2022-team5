@@ -15,6 +15,8 @@ import com.swpp.footprinter.domain.place.repository.PlaceRepository
 import com.swpp.footprinter.domain.tag.TAG_CODE
 import com.swpp.footprinter.domain.tag.repository.TagRepository
 import com.swpp.footprinter.domain.trace.model.Trace
+import com.swpp.footprinter.domain.trace.repository.TraceLikeRepository
+import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.lang.IndexOutOfBoundsException
@@ -35,6 +37,8 @@ class FootprintServiceImpl(
     private val tagRepo: TagRepository,
     private val photoRepo: PhotoRepository,
     private val photoService: PhotoService,
+    private val traceRepo: TraceRepository,
+    private val traceLikeRepo: TraceLikeRepository,
     private val imageUrlUtil: ImageUrlUtil,
 ) : FootprintService {
     override fun getFootprintById(footprintId: Long): FootprintResponse {
@@ -160,7 +164,30 @@ class FootprintServiceImpl(
         }
     }
 
+    @Transactional
     override fun deleteFootprintById(footprintId: Long) {
-        footprintRepo.deleteById(footprintId)
+        val footprint = footprintRepo.findByIdOrNull(footprintId) ?: return
+        val place = footprint.place
+        val trace = footprint.trace
+
+        // Update trace, place
+        trace.footprints.remove(footprint)
+        place.footprints.remove(footprint)
+
+        // Delete footprint
+        footprintRepo.delete(footprint)
+
+        // Clean trace
+        if (trace.footprints.isEmpty()) {
+            // Delete All TraceLike connected to trace
+            traceLikeRepo.deleteAllByTrace(trace)
+            // Delete trace
+            traceRepo.delete(trace)
+        }
+
+        // Clean place
+        if (place.footprints.isEmpty()) {
+            placeRepo.delete(place)
+        }
     }
 }

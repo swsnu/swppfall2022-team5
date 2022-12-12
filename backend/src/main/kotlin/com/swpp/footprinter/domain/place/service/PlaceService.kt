@@ -33,29 +33,35 @@ class PlaceServiceImpl(
 
         val searchedPlacesAllTagsList = kakaoAPIService.getDocumentsMapListFromResponse(searchedPlacesAllTagsResponse)
 
-        val searchTagCodeValueList = if (placeSearchRequest.tagIDs.isNotEmpty()) {
-            placeSearchRequest.tagIDs.map {
+        return if (placeSearchRequest.tagIDs.isNotEmpty()) {
+            val searchTagCodeValueList = placeSearchRequest.tagIDs.map {
                 try {
                     TAG_CODE.values()[it].code
                 } catch (e: IndexOutOfBoundsException) { // For wrong tag id given
                     throw FootprinterException(ErrorType.WRONG_FORMAT)
                 }
             }
+
+            val searchedPlacesWithTagsList = searchedPlacesAllTagsList.filter {
+                searchTagCodeValueList.contains(it["category_group_code"])
+            }
+
+            searchedPlacesWithTagsList.map {
+                PlaceResponse(
+                    name = it["place_name"]!!,
+                    address = it["address_name"]!!,
+                    distance = if (it["distance"]!!.isEmpty()) null else it["distance"]!!.toDouble(),
+                    tagId = TAG_CODE.values().find { t -> t.code == it["category_group_code"] }!!.ordinal
+                )
+            }
         } else {
-            TAG_CODE.values().map { it.code }
-        }
-
-        val searchedPlacesWithTagsList = searchedPlacesAllTagsList.filter {
-            searchTagCodeValueList.contains(it["category_group_code"])
-        }
-
-        return searchedPlacesWithTagsList.map {
-            PlaceResponse(
-                name = it["place_name"]!!,
-                address = it["address_name"]!!,
-                distance = if (it["distance"]!!.isEmpty()) null else it["distance"]!!.toDouble(),
-                tagId = TAG_CODE.values().find { t -> t.code == it["category_group_code"] }!!.ordinal,
-            )
+            searchedPlacesAllTagsList.map {
+                PlaceResponse(
+                    name = it["place_name"]!!,
+                    address = it["address_name"]!!,
+                    distance = if (it["distance"]!!.isEmpty()) null else it["distance"]!!.toDouble(),
+                )
+            }
         }
     }
 }

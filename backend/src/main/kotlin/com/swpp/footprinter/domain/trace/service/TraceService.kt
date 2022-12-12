@@ -187,7 +187,7 @@ class TraceServiceImpl(
         return TraceViewResponse(targetTrace.viewCount)
     }
 
-    /**
+/**
      * Assume GPS error is 30m, and 1 degree of lat/lng is 1112km.
      * => Assume there is same place within 0.000027 degree of lat/lng.
      */

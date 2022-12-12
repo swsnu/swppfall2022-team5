@@ -208,23 +208,23 @@ class PlaceServiceTest @Autowired constructor(
         val expectedPlaceResponseList = listOf(
             PlaceResponse(
                 "food", "food",
-                0.0, TAG_CODE.음식점.ordinal
+                0.0,
             ),
             PlaceResponse(
                 "coffee", "coffee",
-                0.0, TAG_CODE.카페.ordinal
+                0.0,
             ),
             PlaceResponse(
                 "play", "play",
-                0.0, TAG_CODE.문화시설.ordinal
+                0.0,
             ),
             PlaceResponse(
                 "see", "see",
-                0.0, TAG_CODE.관광명소.ordinal
+                0.0,
             ),
             PlaceResponse(
                 "sleep", "sleep",
-                0.0, TAG_CODE.숙박.ordinal
+                0.0,
             ),
         )
 
