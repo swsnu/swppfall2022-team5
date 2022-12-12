@@ -9,7 +9,6 @@ import com.swpp.footprinter.domain.footprint.dto.FootprintResponse
 import com.swpp.footprinter.domain.footprint.repository.FootprintRepository
 import com.swpp.footprinter.domain.photo.dto.PhotoRequest
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
-import com.swpp.footprinter.domain.photo.service.PhotoService
 import com.swpp.footprinter.domain.place.dto.PlaceRequest
 import com.swpp.footprinter.domain.place.repository.PlaceRepository
 import com.swpp.footprinter.domain.tag.TAG_CODE
@@ -38,7 +37,6 @@ import java.util.*
 internal class FootprintServiceTest @Autowired constructor(
     private val testHelper: TestHelper,
     @MockBean val mockImageUrlUtil: ImageUrlUtil,
-    @MockBean val mockPhotoService: PhotoService,
     @InjectMocks private val footprintService: FootprintService,
     private val footprintRepo: FootprintRepository,
     private val placeRepo: PlaceRepository,
@@ -77,7 +75,7 @@ internal class FootprintServiceTest @Autowired constructor(
             photos = mutableSetOf(testHelper.createPhoto("TestPath", 0.0, 0.0, Date(), null))
         )
 
-        val footprint = footprintService.getFootprintById(testFootprint.id!!)
+        val footprint = footprintService.getFootprintById(testFootprint.id)
 
         assertThat(footprint).isExactlyInstanceOf(FootprintResponse::class.java)
         assertThat(footprint).extracting("rating").isEqualTo(2)
@@ -220,22 +218,22 @@ internal class FootprintServiceTest @Autowired constructor(
         )
 
         try {
-            footprintService.editFootprint(99, footprintRequest)
+            footprintService.editFootprint(user, 99, footprintRequest)
             assertThat(true).isFalse
         } catch (e: FootprinterException) {
             assertThat(e).extracting("errorType").isEqualTo(ErrorType.NOT_FOUND)
         }
 
         try {
-            footprintService.editFootprint(testFootprint.id!!, wrongFootprintRequest)
+            footprintService.editFootprint(user, testFootprint.id, wrongFootprintRequest)
             assertThat(true).isFalse
         } catch (e: FootprinterException) {
             assertThat(e).extracting("errorType").isEqualTo(ErrorType.WRONG_FORMAT)
         }
 
-        footprintService.editFootprint(testFootprint.id!!, footprintRequest)
+        footprintService.editFootprint(user, testFootprint.id, footprintRequest)
 
-        val footprint = footprintRepo.findByIdOrNull(testFootprint.id!!)!!
+        val footprint = footprintRepo.findByIdOrNull(testFootprint.id)!!
 
         assertThat(footprint).extracting("memo").isEqualTo("TESTEDIT")
         assertThat(footprint).extracting("rating").isEqualTo(1)
@@ -253,9 +251,9 @@ internal class FootprintServiceTest @Autowired constructor(
             photos = listOf(PhotoRequest("TestPath2", 0.0, 0.0, dateToString8601(Date())))
         )
 
-        footprintService.editFootprint(testFootprint.id!!, anotherRequest)
+        footprintService.editFootprint(user, testFootprint.id, anotherRequest)
 
-        val anotherFootprint = footprintRepo.findByIdOrNull(testFootprint.id!!)!!
+        val anotherFootprint = footprintRepo.findByIdOrNull(testFootprint.id)!!
 
         assertThat(anotherFootprint).extracting("memo").isEqualTo("TESTEDIT2")
         assertThat(anotherFootprint).extracting("rating").isEqualTo(2)
@@ -278,12 +276,12 @@ internal class FootprintServiceTest @Autowired constructor(
             photos = mutableSetOf(testHelper.createPhoto("TestPath", 0.0, 0.0, Date(), null))
         )
 
-        val footprint = footprintRepo.findByIdOrNull(testFootprint.id!!)
+        val footprint = footprintRepo.findByIdOrNull(testFootprint.id)
         assertThat(footprint).isNotNull
 
-        footprintService.deleteFootprintById(testFootprint.id!!)
+        footprintService.deleteFootprintById(user, testFootprint.id)
 
-        val test = footprintRepo.findByIdOrNull(testFootprint.id!!)
+        val test = footprintRepo.findByIdOrNull(testFootprint.id)
         assertThat(test).isNull()
     }
 }
