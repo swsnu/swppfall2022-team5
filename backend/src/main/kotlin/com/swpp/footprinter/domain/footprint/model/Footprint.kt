@@ -40,11 +40,11 @@ class Footprint(
 
     fun toResponse(imageUrlUtil: ImageUrlUtil): FootprintResponse {
         return FootprintResponse(
-            id = id!!,
+            id = id,
             startTime = dateToString8601(startTime),
             endTime = dateToString8601(endTime),
             rating = rating,
-            traceId = trace.id!!,
+            traceId = trace.id,
             place = place.toResponse(),
             tag = tag.toResponse(),
             memo = memo,
