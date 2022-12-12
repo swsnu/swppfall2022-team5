@@ -25,16 +25,3 @@ class User(
 ) : BaseEntity() {
     fun toResponse() = UserResponse(username, followingCount, followerCount, traceCount = myTrace.size)
 }
-
-@Entity
-class LikedTrace(
-
-    @ManyToOne
-    @JoinColumn(referencedColumnName = "id", name = "userId")
-    val user: User,
-
-    @ManyToOne
-    @JoinColumn(referencedColumnName = "id", name = "traceId")
-    val trace: Trace,
-
-) : BaseEntity()
