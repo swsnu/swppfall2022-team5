@@ -1,5 +1,6 @@
 package com.swpp.footprinter.domain.trace.repository
 
+import com.swpp.footprinter.domain.trace.model.Trace
 import com.swpp.footprinter.domain.trace.model.TraceLike
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
@@ -9,4 +10,6 @@ interface TraceLikeRepository : JpaRepository<TraceLike, Long> {
     fun findByTraceIdAndUserId(traceId: Long, userId: Long): TraceLike?
 
     fun findAllByTraceId(traceId: Long): MutableList<TraceLike>
+
+    fun deleteAllByTrace(trace: Trace)
 }

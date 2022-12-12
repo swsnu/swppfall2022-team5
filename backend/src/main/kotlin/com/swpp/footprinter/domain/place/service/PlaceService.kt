@@ -2,7 +2,6 @@ package com.swpp.footprinter.domain.place.service
 
 import com.swpp.footprinter.domain.place.dto.PlaceResponse
 import com.swpp.footprinter.domain.place.dto.PlaceSearchRequest
-import com.swpp.footprinter.domain.place.repository.PlaceRepository
 import com.swpp.footprinter.common.externalAPI.KakaoAPIService
 import org.springframework.stereotype.Service
 import com.swpp.footprinter.common.PLACE_SEARCH_METER
@@ -17,7 +16,6 @@ interface PlaceService {
 
 @Service
 class PlaceServiceImpl(
-    private val placeRepository: PlaceRepository,
     private val kakaoAPIService: KakaoAPIService,
 ) : PlaceService {
     override fun getAddressByLatLon(latitude: String, longitude: String): String {
