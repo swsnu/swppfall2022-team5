@@ -54,7 +54,7 @@ class FootprintServiceImpl(
             rating = request.rating!!,
             trace = trace,
             memo = request.memo!!,
-            place = request.place!!.let { placeRequest -> // If place exists, use that one. Else, create new one
+            place = request.place?.let { placeRequest -> // If place exists, use that one. Else, create new one
                 placeRepo.findByNameAndAddress(
                     placeRequest.name!!, placeRequest.address!!
                 )
@@ -63,7 +63,7 @@ class FootprintServiceImpl(
                         address = placeRequest.address,
                         footprints = mutableSetOf()
                     )
-            },
+            } ?: throw FootprinterException(ErrorType.WRONG_FORMAT),
             tag = request.tagId!!.let { tagId -> // Find the tag and match to it.
                 try {
                     tagRepo.findByTagCode(TAG_CODE.values()[tagId])!!
