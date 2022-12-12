@@ -1,8 +1,10 @@
 package com.swpp.footprinter.domain.footprint.api
 
+import com.swpp.footprinter.common.annotations.UserContext
 import com.swpp.footprinter.domain.footprint.dto.FootprintRequest
 import com.swpp.footprinter.domain.footprint.dto.FootprintResponse
 import com.swpp.footprinter.domain.footprint.service.FootprintService
+import com.swpp.footprinter.domain.user.model.User
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -30,15 +32,17 @@ class FootprintController(
     @PutMapping("/footprints/{footprintId}")
     fun editFootprintById(
         @PathVariable footprintId: Long,
-        @RequestBody @Valid request: FootprintRequest
+        @RequestBody @Valid request: FootprintRequest,
+        @UserContext loginUser: User
     ) {
-        service.editFootprint(footprintId, request)
+        service.editFootprint(loginUser, footprintId, request)
     }
 
     @DeleteMapping("/footprints/{footprintId}")
     fun deleteFootprintById(
-        @PathVariable footprintId: Long
+        @PathVariable footprintId: Long,
+        @UserContext loginUser: User
     ) {
-        service.deleteFootprintById(footprintId)
+        service.deleteFootprintById(loginUser, footprintId)
     }
 }

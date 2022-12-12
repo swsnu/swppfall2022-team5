@@ -15,6 +15,7 @@ import com.swpp.footprinter.domain.place.repository.PlaceRepository
 import com.swpp.footprinter.domain.tag.TAG_CODE
 import com.swpp.footprinter.domain.tag.repository.TagRepository
 import com.swpp.footprinter.domain.trace.model.Trace
+import com.swpp.footprinter.domain.user.model.User
 import com.swpp.footprinter.domain.trace.repository.TraceLikeRepository
 import com.swpp.footprinter.domain.trace.repository.TraceRepository
 import org.springframework.data.repository.findByIdOrNull
@@ -26,8 +27,8 @@ import javax.transaction.Transactional
 interface FootprintService {
     fun getFootprintById(footprintId: Long): FootprintResponse
     fun createFootprintAndReturn(request: FootprintRequest, trace: Trace): Footprint
-    fun editFootprint(footprintId: Long, request: FootprintRequest)
-    fun deleteFootprintById(footprintId: Long)
+    fun editFootprint(loginUser: User, footprintId: Long, request: FootprintRequest)
+    fun deleteFootprintById(loginUser: User, footprintId: Long)
 }
 
 @Service
@@ -98,13 +99,18 @@ class FootprintServiceImpl(
     }
 
     @Transactional
-    override fun editFootprint(footprintId: Long, request: FootprintRequest) {
+    override fun editFootprint(loginUser: User, footprintId: Long, request: FootprintRequest) {
         val target = footprintRepo.findByIdOrNull(footprintId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
+
+        if (target.trace.owner != loginUser) {
+            throw FootprinterException(ErrorType.FORBIDDEN)
+        }
+
         target.startTime = stringToDate8601(request.startTime!!)
         target.endTime = stringToDate8601(request.endTime!!)
         target.rating = request.rating!!
         target.memo = request.memo!!
-        // Remove footprint in original tag, and add new editted tag (if two of those are different.)
+        // Remove footprint in original tag, and add new edited tag (if two of those are different.)
         target.tag = target.tag.let {
             if (it.tagCode.ordinal != request.tagId!!) {
                 try {
@@ -122,7 +128,7 @@ class FootprintServiceImpl(
                 it
             }
         }
-        // Remove footprint in original place, and add new editted place (if two places are different).
+        // Remove footprint in original place, and add new edited place (if two places are different).
         // Also, remove place when no footprint joined to place
         request.place!!.let {
             if (!(it.name!! == target.place.name && it.address!! == target.place.address)) {
@@ -165,7 +171,13 @@ class FootprintServiceImpl(
     }
 
     @Transactional
-    override fun deleteFootprintById(footprintId: Long) {
+    override fun deleteFootprintById(loginUser: User, footprintId: Long) {
+        val target = footprintRepo.findByIdOrNull(footprintId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
+
+        if (target.trace.owner != loginUser) {
+            throw FootprinterException(ErrorType.FORBIDDEN)
+        }
+
         val footprint = footprintRepo.findByIdOrNull(footprintId) ?: return
         val place = footprint.place
         val trace = footprint.trace
