@@ -63,12 +63,21 @@ class KakaoAPIService(
         val request = HttpEntity<String>(httpHeaders)
 
         return try {
-            restTemplate.exchange(
-                url = "$url?query=$keyword&x=$longitude&y=$latitude&radius=$radius&sort=distance",
-                method = HttpMethod.GET,
-                requestEntity = request,
-                String::class
-            )
+            if (longitude < 0 && latitude < 0) {
+                restTemplate.exchange(
+                    url = "$url?query=$keyword",
+                    method = HttpMethod.GET,
+                    requestEntity = request,
+                    String::class
+                )
+            } else {
+                restTemplate.exchange(
+                    url = "$url?query=$keyword&x=$longitude&y=$latitude&radius=$radius&sort=distance",
+                    method = HttpMethod.GET,
+                    requestEntity = request,
+                    String::class
+                )
+            }
         } catch (e: HttpClientErrorException) {
             throw FootprinterException(ErrorType.KAKAOMAP_ERROR)
         }
