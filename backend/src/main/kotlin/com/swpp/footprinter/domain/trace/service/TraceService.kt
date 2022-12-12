@@ -193,8 +193,8 @@ class TraceServiceImpl(
      */
     fun isNearEnough(photo: PhotoInitialTraceResponse, latitude: Double, longitude: Double): Boolean {
         val scaledGridSize = PLACE_GRID_METER * 10 / Km_PER_LATLNG_DEGREE
-        val deltaLatScaled = kotlin.math.abs(photo.latitude - latitude) * 10000
-        val deltaLngScaled = kotlin.math.abs(photo.longitude - longitude) * 10000
+        val deltaLatScaled = abs(photo.latitude - latitude) * 10000
+        val deltaLngScaled = abs(photo.longitude - longitude) * 10000
         val deltaScaled = sqrt(deltaLatScaled.pow(2.0) + deltaLngScaled.pow(2.0))
         return (deltaScaled < scaledGridSize)
     }
@@ -203,7 +203,7 @@ class TraceServiceImpl(
      * Set similar time when the difference is within 1 hour.
      */
     fun isSimilarTime(photo: PhotoInitialTraceResponse, time: Date): Boolean {
-        val diffTime = kotlin.math.abs(photo.timestamp.time - time.time)
+        val diffTime = abs(photo.timestamp.time - time.time)
         return diffTime < 1000 * TIME_GRID_SEC // 1 hour
     }
 
@@ -225,6 +225,11 @@ class TraceServiceImpl(
                 timestamp = it.timestamp,
             )
             for (initialTraceDTO in footprintInitialTraceResponseList) {
+                if (photo.latitude < 0 && photo.longitude < 0 && initialTraceDTO.meanLatitude < 0 && initialTraceDTO.meanLongitude < 0) {
+                    initialTraceDTO.photoList.add(photo)
+                    isAdded = true
+                    break
+                }
                 // Check if place is near enough
                 // If photo has similar place and time with group, add photo to the group and update the group's average place and time
                 if (isNearEnough(photo, initialTraceDTO.meanLatitude, initialTraceDTO.meanLongitude) && isSimilarTime(photo, initialTraceDTO.meanTime)) {
@@ -269,6 +274,9 @@ class TraceServiceImpl(
      */
     private fun addRecomendedPlaceToInitialTraceDTOList(footprintInitialTraceResponseList: MutableList<FootprintInitialTraceResponse>, radius: Int) {
         footprintInitialTraceResponseList.forEach {
+            if (it.meanLongitude < 0 && it.meanLongitude < 0) {
+                return@forEach
+            }
             val loop = { radius: Int ->
                 for (category in listOf(TAG_CODE.음식점, TAG_CODE.관광명소, TAG_CODE.문화시설, TAG_CODE.카페, TAG_CODE.숙박)) {
                     // Get places for each category and add to recommendedPlaceList

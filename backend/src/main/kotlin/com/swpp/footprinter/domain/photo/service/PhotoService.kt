@@ -30,10 +30,12 @@ class PhotoServiceImpl(
     override fun processMetadataAndSaveAsPhoto(multipartFile: MultipartFile, path: String) {
 
         val metadata: Metadata = ImageMetadataReader.readMetadata(multipartFile.inputStream)
-        val gpsDirectory: GpsDirectory = metadata.getFirstDirectoryOfType(GpsDirectory::class.java)
-        val exifDirectory: ExifSubIFDDirectory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory::class.java)
+        val gpsDirectory: GpsDirectory? = metadata.getFirstDirectoryOfType(GpsDirectory::class.java)
+        val exifDirectory: ExifSubIFDDirectory? = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory::class.java)
 
-        if (gpsDirectory.containsTag(GpsDirectory.TAG_LATITUDE) && gpsDirectory.containsTag(GpsDirectory.TAG_LONGITUDE)) {
+        if (gpsDirectory != null && exifDirectory != null &&
+            gpsDirectory.containsTag(GpsDirectory.TAG_LATITUDE) && gpsDirectory.containsTag(GpsDirectory.TAG_LONGITUDE)
+        ) {
             val pdsLat: Double = gpsDirectory.geoLocation.latitude
             val pdsLon: Double = gpsDirectory.geoLocation.longitude
 
@@ -41,15 +43,15 @@ class PhotoServiceImpl(
                 imagePath = path,
                 latitude = pdsLat,
                 longitude = pdsLon,
-                timestamp = exifDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL, TimeZone.getTimeZone("GMT+9")),
+                timestamp = exifDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL, TimeZone.getTimeZone("GMT+9")) ?: Date(),
                 footprint = null,
             )
             photoRepo.save(photo)
         } else {
             val photo = Photo(
                 imagePath = path,
-                longitude = 126.952625,
-                latitude = 37.4497208,
+                longitude = -1.0,
+                latitude = -1.0,
                 timestamp = Date(),
                 footprint = null,
             )
