@@ -110,7 +110,7 @@ const FootprintDetail = () => {
                   <TagButton
                     key={place.name}
                     className="flex-shrink-0"
-                    text={`${place.name} (${place.distance}m)`}
+                    text={place.distance ? `${place.name} (${place.distance}m)` : `${place.name}`}
                     onClick={() => {
                       setFootprint(
                         produce(footprint, (state) => {
