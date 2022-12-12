@@ -15,7 +15,7 @@ class Place(
     @Column(nullable = false)
     val address: String,
 
-//    @ManyToOne() //TODO Maybe...?
+//    @ManyToOne() //
 //    @Cascade(org.hibernate.annotations.CascadeType.DELETE)
 //    val tag: Tag,
 
