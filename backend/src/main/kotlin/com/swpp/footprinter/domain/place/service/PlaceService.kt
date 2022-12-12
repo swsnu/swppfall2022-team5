@@ -50,7 +50,7 @@ class PlaceServiceImpl(
                 PlaceResponse(
                     name = it["place_name"]!!,
                     address = it["address_name"]!!,
-                    distance = it["distance"]!!.toDouble(),
+                    distance = if (it["distance"]!!.isEmpty()) null else it["distance"]!!.toDouble(),
                     tagId = TAG_CODE.values().find { t -> t.code == it["category_group_code"] }!!.ordinal
                 )
             }
@@ -59,7 +59,7 @@ class PlaceServiceImpl(
                 PlaceResponse(
                     name = it["place_name"]!!,
                     address = it["address_name"]!!,
-                    distance = it["distance"]!!.toDouble(),
+                    distance = if (it["distance"]!!.isEmpty()) null else it["distance"]!!.toDouble(),
                 )
             }
         }

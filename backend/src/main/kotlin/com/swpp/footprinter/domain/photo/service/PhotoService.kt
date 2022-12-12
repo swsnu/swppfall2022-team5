@@ -9,6 +9,7 @@ import com.swpp.footprinter.domain.photo.repository.PhotoRepository
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import com.drew.metadata.Metadata
+import com.swpp.footprinter.common.NO_META_DATA
 import org.springframework.beans.factory.annotation.Value
 import java.util.*
 import javax.transaction.Transactional
@@ -30,10 +31,12 @@ class PhotoServiceImpl(
     override fun processMetadataAndSaveAsPhoto(multipartFile: MultipartFile, path: String) {
 
         val metadata: Metadata = ImageMetadataReader.readMetadata(multipartFile.inputStream)
-        val gpsDirectory: GpsDirectory = metadata.getFirstDirectoryOfType(GpsDirectory::class.java)
-        val exifDirectory: ExifSubIFDDirectory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory::class.java)
+        val gpsDirectory: GpsDirectory? = metadata.getFirstDirectoryOfType(GpsDirectory::class.java)
+        val exifDirectory: ExifSubIFDDirectory? = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory::class.java)
 
-        if (gpsDirectory.containsTag(GpsDirectory.TAG_LATITUDE) && gpsDirectory.containsTag(GpsDirectory.TAG_LONGITUDE)) {
+        if (gpsDirectory != null && exifDirectory != null &&
+            gpsDirectory.containsTag(GpsDirectory.TAG_LATITUDE) && gpsDirectory.containsTag(GpsDirectory.TAG_LONGITUDE)
+        ) {
             val pdsLat: Double = gpsDirectory.geoLocation.latitude
             val pdsLon: Double = gpsDirectory.geoLocation.longitude
 
@@ -41,12 +44,19 @@ class PhotoServiceImpl(
                 imagePath = path,
                 latitude = pdsLat,
                 longitude = pdsLon,
-                timestamp = exifDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL, TimeZone.getTimeZone("GMT+9")),
+                timestamp = exifDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL, TimeZone.getTimeZone("GMT+9")) ?: Date(),
                 footprint = null,
             )
             photoRepo.save(photo)
         } else {
-            TODO("사진에 위치정보 메타데이터 없는 경우")
+            val photo = Photo(
+                imagePath = path,
+                longitude = NO_META_DATA,
+                latitude = NO_META_DATA,
+                timestamp = Date(),
+                footprint = null,
+            )
+            photoRepo.save(photo)
         }
     }
 

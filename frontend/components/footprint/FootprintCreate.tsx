@@ -29,6 +29,7 @@ export const ratings: Rating[] = [
   { score: 0, text: "😢 별로예요" },
 ];
 
+// 질문: 이 분들은 누구신가요????
 const people = ["Durward Reynolds", "Kenton Towne", "Therese Wunsch", "Benedict Kessler", "Katelyn Rohan"];
 
 const FootprintCreate = (props: IProps) => {
@@ -82,7 +83,7 @@ const FootprintCreate = (props: IProps) => {
                 <TagButton
                   key={place.name}
                   className="flex-shrink-0"
-                  text={`${place.name} (${place.distance}m)`}
+                  text={place.distance ? `${place.name} (${place.distance}m)` : `${place.name}`}
                   onClick={() => {
                     updateFootprint({ place: { name: place.name, address: place.address } });
                   }}
