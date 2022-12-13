@@ -2,6 +2,7 @@ package com.swpp.footprinter.domain.user.service
 
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
+import com.swpp.footprinter.common.utils.ImageUrlUtil
 import com.swpp.footprinter.domain.footprint.repository.FootprintRepository
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
 import com.swpp.footprinter.domain.place.repository.PlaceRepository
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import javax.transaction.Transactional
 
 @SpringBootTest
@@ -29,6 +31,7 @@ class UserServiceTest @Autowired constructor(
     private val photoRepo: PhotoRepository,
     private val placeRepo: PlaceRepository,
     private val tagRepo: TagRepository,
+    @MockBean val mockImageUrlUtil: ImageUrlUtil,
 ) {
     @BeforeEach
     fun setup() {
@@ -74,7 +77,7 @@ class UserServiceTest @Autowired constructor(
                 id = trace.id,
                 date = trace.traceDate,
                 title = trace.traceTitle,
-                owner = trace.owner.toResponse(),
+                owner = trace.owner.toResponse(mockImageUrlUtil),
                 likesCount = 0,
             )
         )
@@ -126,7 +129,7 @@ class UserServiceTest @Autowired constructor(
             id = trace2.id,
             date = trace2.traceDate,
             title = trace2.traceTitle,
-            owner = trace2.owner.toResponse(),
+            owner = trace2.owner.toResponse(mockImageUrlUtil),
             footprints = listOf(),
             viewCount = 0,
             isLiked = false,
