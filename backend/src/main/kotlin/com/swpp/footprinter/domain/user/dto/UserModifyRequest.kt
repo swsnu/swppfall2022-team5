@@ -1,9 +1,7 @@
 package com.swpp.footprinter.domain.user.dto
 
-import javax.validation.constraints.NotEmpty
-
 data class UserModifyRequest(
-    @field: NotEmpty
-    val password: String,
+//    @field: NotEmpty
+    val password: String? = null,
     val imagePath: String? = null,
 )

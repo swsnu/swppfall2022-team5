@@ -54,11 +54,11 @@ class UserServiceImpl(
     @Transactional
     override fun modifyUser(loginUser: User, userModifyRequest: UserModifyRequest) {
         // Update password
-        loginUser.password = passwordEncoder.encode(userModifyRequest.password)
-        // Update profile image, and remove previous image from server if different
-        if (loginUser.imagePath != null && loginUser.imagePath != userModifyRequest.imagePath) {
-            amazonS3Client.deleteObject(bucketName, loginUser.imagePath)
+        if (userModifyRequest.password != null) {
+            loginUser.password = passwordEncoder.encode(userModifyRequest.password)
         }
+
+        // Update profile image, and remove previous image from server if different
         loginUser.imagePath = userModifyRequest.imagePath
         userRepo.save(loginUser)
     }
