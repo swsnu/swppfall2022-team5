@@ -34,12 +34,12 @@ class Trace(
     var viewCount: Int = 0,
 
 ) : BaseEntity() {
-    fun toResponse(): TraceResponse {
+    fun toResponse(imageUrlUtil: ImageUrlUtil): TraceResponse {
         return TraceResponse(
             id = id,
             date = traceDate,
             title = traceTitle,
-            owner = owner.toResponse(),
+            owner = owner.toResponse(imageUrlUtil),
             likesCount = likesCount
         )
     }
@@ -49,7 +49,7 @@ class Trace(
             id = id,
             date = traceDate,
             title = traceTitle,
-            owner = owner.toResponse(),
+            owner = owner.toResponse(imageUrlUtil),
             isLiked = isLiked,
             footprints = footprints.map { it.toResponse(imageUrlUtil) }.sortedBy { it.startTime },
             likesCount = likesCount,
