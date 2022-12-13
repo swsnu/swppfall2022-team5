@@ -226,25 +226,25 @@ class TraceServiceTest @Autowired constructor(
             photos = listOf(photoRequest3),
             place = placeRequest3,
         )
-
-        val traceRequest = TraceRequest(
+//
+        val traceRequest1 = TraceRequest(
             "titleTrace",
 //            dateToString8601(current),
-            footprintList = listOf(footprintRequest1, footprintRequest2, footprintRequest3),
+            footprintList = listOf(footprintRequest1),
         )
-
-        val trace = testHelper.createTrace(
-            traceTitle = "titleTrace",
-            traceDate = dateToStringWithoutTime(current),
-            owner = currentUser,
+        val traceRequest2 = TraceRequest(
+            "titleTrace",
+//            dateToString8601(current),
+            footprintList = listOf(footprintRequest2, footprintRequest3),
         )
 
         // when
-        traceService.createTrace(traceRequest, currentUser)
+        traceService.createTrace(traceRequest1, currentUser)
+        traceService.createTrace(traceRequest2, currentUser)
 
         // then
         assertEquals(traceRepo.count(), 1)
-        assertEquals(traceRepo.getReferenceById(trace.id).footprints.size, 3)
+        assertEquals(traceRepo.findAll()[0].footprints.size, 3)
     }
 
     /**
