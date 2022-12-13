@@ -157,10 +157,12 @@ class TraceRepositoryCustomImpl(
             .orderBy(trace.traceDate.desc())
             .fetch()
 
-        jpaQueryFactory.selectFrom(footprint)
-            .join(footprint.photos, photo).fetchJoin()
-            .where(footprint.trace.`in`(traces))
-            .fetch()
+        if (traces.isNotEmpty()) {
+            jpaQueryFactory.selectFrom(footprint)
+                .join(footprint.photos, photo).fetchJoin()
+                .where(footprint.trace.`in`(traces))
+                .fetch()
+        }
 
         return traces.distinctBy { it.id }
     }
