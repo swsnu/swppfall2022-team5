@@ -699,7 +699,9 @@ class TraceServiceTest @Autowired constructor(
         )
 
         // when
+        println("QueryStart===============================")
         val actualTraceDetailResponse = traceService.getAllOtherUsersTraces(loginUser)
+        println("QueryEnd===============================")
 
         // then
         assertThat(actualTraceDetailResponse.size).isEqualTo(expectedTraceDetailResponseList.size)
@@ -804,7 +806,9 @@ class TraceServiceTest @Autowired constructor(
         )
 
         // when
+        println("QueryStart===============================")
         val actualTraceDetailResponseList = traceService.searchTrace(traceSearchRequest)
+        println("QueryEnd==============================")
 
         // then
         assertThat(actualTraceDetailResponseList).isEqualTo(expectedTraceDetailResponseList)
