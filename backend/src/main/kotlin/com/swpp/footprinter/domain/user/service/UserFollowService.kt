@@ -2,6 +2,7 @@ package com.swpp.footprinter.domain.user.service
 
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
+import com.swpp.footprinter.common.utils.ImageUrlUtil
 import com.swpp.footprinter.domain.user.dto.UserFollowResponse
 import com.swpp.footprinter.domain.user.dto.UserFollowingResponse
 import com.swpp.footprinter.domain.user.dto.UserResponse
@@ -27,6 +28,7 @@ interface UserFollowService {
 class UserFollowServiceImpl(
     private val userRepo: UserRepository,
     private val userFollowRepo: UserFollowRepository,
+    private val imageUrlUtil: ImageUrlUtil,
 ) : UserFollowService {
 
     override fun getIsFollowingAndFollowed(loginUser: User, targetUsername: String): UserFollowingResponse {
@@ -40,13 +42,13 @@ class UserFollowServiceImpl(
     override fun getUserFollowers(loginUser: User, username: String): List<UserResponse> {
         val user = userRepo.findByUsername(username) ?: throw FootprinterException(ErrorType.NOT_FOUND)
         val followList = userFollowRepo.findUserFollowsByFollowed(user)
-        return followList.map { it.follower.toResponse() }
+        return followList.map { it.follower.toResponse(imageUrlUtil) }
     }
 
     override fun getUserFollowings(loginUser: User, username: String): List<UserResponse> {
         val user = userRepo.findByUsername(username) ?: throw FootprinterException(ErrorType.NOT_FOUND)
         val followList = userFollowRepo.findUserFollowsByFollower(user)
-        return followList.map { it.followed.toResponse() }
+        return followList.map { it.followed.toResponse(imageUrlUtil) }
     }
 
     @Transactional

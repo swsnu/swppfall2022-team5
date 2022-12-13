@@ -5,4 +5,5 @@ data class UserResponse(
     val followingCount: Int,
     val followerCount: Int,
     val traceCount: Int,
+    val imageUrl: String? = null,
 )

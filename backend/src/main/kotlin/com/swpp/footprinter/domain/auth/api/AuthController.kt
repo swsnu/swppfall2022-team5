@@ -3,6 +3,7 @@ package com.swpp.footprinter.domain.auth.api
 import com.swpp.footprinter.common.annotations.UserContext
 import com.swpp.footprinter.common.exception.ErrorType
 import com.swpp.footprinter.common.exception.FootprinterException
+import com.swpp.footprinter.common.utils.ImageUrlUtil
 import com.swpp.footprinter.domain.auth.dto.*
 import com.swpp.footprinter.domain.auth.service.AuthService
 import com.swpp.footprinter.domain.auth.service.AuthTokenService
@@ -16,7 +17,8 @@ import javax.validation.Valid
 @RequestMapping("/api/v1")
 class AuthController(
     private val authTokenService: AuthTokenService,
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val imageUrlUtil: ImageUrlUtil,
 ) {
 
     @PostMapping("/signup")
@@ -42,7 +44,7 @@ class AuthController(
     }
 
     @GetMapping("/me")
-    fun getMe(@UserContext user: User) = user.toResponse()
+    fun getMe(@UserContext user: User) = user.toResponse(imageUrlUtil)
 
     @PostMapping("/token")
     fun verifyToken(@Valid @RequestBody token: TokenVerifyRequest): TokenVerifyResponse {
