@@ -62,20 +62,36 @@ class TraceServiceImpl(
     private val footprintRepo: FootprintRepository,
 ) : TraceService {
     override fun getAllUserTraces(loginUser: User, username: String): List<TraceDetailResponse> {
-        if (loginUser.username == username) {
-            return loginUser.myTrace.map { trace ->
-                trace.toDetailResponse(imageUrlUtil)
-            }
-        } else {
-            val user = userRepo.findByUsername(username) ?: throw FootprinterException(ErrorType.NOT_FOUND)
-            return user.myTrace.filter { trace -> trace.isPublic }.map { trace ->
-                trace.toDetailResponse(imageUrlUtil)
-            }
+//        if (loginUser.username == username) {
+//            return loginUser.myTrace.map { trace ->
+//                trace.toDetailResponse(imageUrlUtil)
+//            }
+//        } else {
+//            val user = userRepo.findByUsername(username) ?: throw FootprinterException(ErrorType.NOT_FOUND)
+//            return user.myTrace.filter { trace -> trace.isPublic }.map { trace ->
+//                trace.toDetailResponse(imageUrlUtil)
+//            }
+//        }
+        if (!userRepo.existsByUsername(username)) { throw FootprinterException(ErrorType.NOT_FOUND) }
+
+        return traceRepo.getTracesOfUser(
+            username = username,
+            isInclude = true,
+            isConsiderPublic = loginUser.username != username
+        ).map { t ->
+            t.toDetailResponse(imageUrlUtil)
         }
     }
 
     override fun getAllOtherUsersTraces(loginUser: User): List<TraceDetailResponse> {
-        return traceRepo.findAll().filter { it.owner != loginUser && it.isPublic }.map { trace ->
+//        return traceRepo.findAll().filter { it.owner != loginUser && it.isPublic }.map { trace ->
+//            trace.toDetailResponse(imageUrlUtil)
+//        }
+        return traceRepo.getTracesOfUser(
+            username = loginUser.username,
+            isInclude = false,
+            isConsiderPublic = true,
+        ).map { trace ->
             trace.toDetailResponse(imageUrlUtil)
         }
     }
