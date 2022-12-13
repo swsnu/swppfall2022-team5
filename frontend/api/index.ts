@@ -100,6 +100,10 @@ export const deleteFootprint = async (footprintId: number) => {
   return (await apiClient.delete<void>(`/footprints/${footprintId}`)).data;
 };
 
+export const updateUserProfile = async (imagePath: string, username: string) => {
+  return (await apiClient.put<void>(`/user/${username}`, { imagePath: imagePath })).data;
+};
+
 export const fetchPlacesByKeywordAndLocation = async (
   keyword: string,
   latitude: number,

@@ -50,7 +50,7 @@ spring:
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
 
 auth.jwt:
   issuer: com.swpp.footprinter

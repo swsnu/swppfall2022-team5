@@ -24,6 +24,7 @@ import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orien
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import FilePondPluginImageTransform from "filepond-plugin-image-transform";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+
 import { useRouter } from "next/router";
 import RectangleButton from "../buttons/RectangleButton";
 import { fetchInitialFootprints } from "../../api";

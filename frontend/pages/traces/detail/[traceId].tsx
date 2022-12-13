@@ -12,15 +12,18 @@ import LikeButton from "../../../components/buttons/LikeButton";
 // react component named RegionTitle
 // that takes latitude and longitude and displays the region name
 const RegionTitle = ({ latitude, longitude }: { latitude: number; longitude: number }) => {
-  const regionResult = useQuery(["regions", longitude, latitude], () => {
-    return fetchRegionByCoordinates(latitude, longitude);
-  });
+  const regionResult = useQuery(
+    ["regions", longitude, latitude],
+    () => {
+      return fetchRegionByCoordinates(latitude, longitude);
+    },
+    { enabled: latitude > 0 && longitude > 0 },
+  );
 
   if (!regionResult.isSuccess) {
     return null;
   }
 
-  console.log(regionResult.data);
   return <div className="text-2xl font-bold">{regionResult.data}</div>;
 };
 
