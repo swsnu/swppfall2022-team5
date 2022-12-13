@@ -45,7 +45,7 @@ class TraceRepositoryCustomImpl(
     private val jpaQueryFactory: JPAQueryFactory,
 ) : TraceRepositoryCustom {
     override fun findByIdOrNullEfficiently(id: Long): Trace? {
-        val trace = jpaQueryFactory.selectFrom(trace)
+        val quriedTrace = jpaQueryFactory.selectFrom(trace)
             .join(trace.owner, user).fetchJoin()
             .join(trace.footprints, footprint).fetchJoin()
             .join(footprint.place, place).fetchJoin()
@@ -53,18 +53,18 @@ class TraceRepositoryCustomImpl(
             .where(trace.id.eq(id))
             .fetchOne()
 
-        if (trace != null) {
+        if (quriedTrace != null) {
             jpaQueryFactory.selectFrom(footprint)
                 .join(footprint.photos, photo).fetchJoin()
-                .where(footprint.trace.eq(trace))
+                .where(footprint.trace.eq(quriedTrace))
                 .fetch()
         }
 
-        return trace
+        return quriedTrace
     }
 
     override fun findByOwnerAndTraceDate(owner: User, traceDate: String): Trace? {
-        val trace = jpaQueryFactory.selectFrom(trace)
+        val queriedTrace = jpaQueryFactory.selectFrom(trace)
             .join(trace.owner, user).fetchJoin()
             .join(trace.footprints, footprint).fetchJoin()
             .join(footprint.place, place).fetchJoin()
@@ -76,14 +76,14 @@ class TraceRepositoryCustomImpl(
             )
             .fetchOne()
 
-        if (trace != null) {
+        if (queriedTrace != null) {
             jpaQueryFactory.selectFrom(footprint)
                 .join(footprint.photos, photo).fetchJoin()
-                .where(footprint.trace.eq(trace))
+                .where(footprint.trace.eq(queriedTrace))
                 .fetch()
         }
 
-        return trace
+        return queriedTrace
     }
 
     override fun getTracesWithOptions(
