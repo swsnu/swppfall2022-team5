@@ -61,17 +61,8 @@ class TraceServiceImpl(
     private val userRepo: UserRepository,
     private val footprintRepo: FootprintRepository,
 ) : TraceService {
+    @Transactional
     override fun getAllUserTraces(loginUser: User, username: String): List<TraceDetailResponse> {
-//        if (loginUser.username == username) {
-//            return loginUser.myTrace.map { trace ->
-//                trace.toDetailResponse(imageUrlUtil)
-//            }
-//        } else {
-//            val user = userRepo.findByUsername(username) ?: throw FootprinterException(ErrorType.NOT_FOUND)
-//            return user.myTrace.filter { trace -> trace.isPublic }.map { trace ->
-//                trace.toDetailResponse(imageUrlUtil)
-//            }
-//        }
         if (!userRepo.existsByUsername(username)) { throw FootprinterException(ErrorType.NOT_FOUND) }
 
         return traceRepo.getTracesOfUser(
@@ -83,6 +74,7 @@ class TraceServiceImpl(
         }
     }
 
+    @Transactional
     override fun getAllOtherUsersTraces(loginUser: User): List<TraceDetailResponse> {
 //        return traceRepo.findAll().filter { it.owner != loginUser && it.isPublic }.map { trace ->
 //            trace.toDetailResponse(imageUrlUtil)
@@ -139,7 +131,7 @@ class TraceServiceImpl(
     }
 
     override fun getTraceById(traceId: Long, userId: Long?): TraceDetailResponse {
-        val trace = traceRepo.findByIdOrNull(traceId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
+        val trace = traceRepo.findByIdOrNullEfficiently(traceId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
         val isLiked = if (userId == null) { false } else { traceLikeRepo.findByTraceIdAndUserId(traceId, userId) != null }
         return trace.toDetailResponse(imageUrlUtil, isLiked)
     }

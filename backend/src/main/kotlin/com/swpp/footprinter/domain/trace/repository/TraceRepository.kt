@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface TraceRepository : JpaRepository<Trace, Long>, TraceRepositoryCustom {
-    fun findByOwnerAndTraceDate(owner: User, traceDate: String): Trace?
+//    fun findByOwnerAndTraceDate(owner: User, traceDate: String): Trace?
     fun findTracesByTraceDate(traceDate: String): MutableList<Trace>
     fun findTraceAllByOwner(user: User): MutableList<Trace>
     fun existsByTraceTitle(title: String): Boolean
@@ -25,6 +25,8 @@ interface TraceRepository : JpaRepository<Trace, Long>, TraceRepositoryCustom {
 }
 
 interface TraceRepositoryCustom {
+    fun findByIdOrNullEfficiently(id: Long): Trace?
+    fun findByOwnerAndTraceDate(owner: User, traceDate: String): Trace?
     fun getTracesWithOptions(
         usernameList: List<String>,
         tagList: List<TAG_CODE>,
@@ -42,6 +44,48 @@ interface TraceRepositoryCustom {
 class TraceRepositoryCustomImpl(
     private val jpaQueryFactory: JPAQueryFactory,
 ) : TraceRepositoryCustom {
+    override fun findByIdOrNullEfficiently(id: Long): Trace? {
+        val trace = jpaQueryFactory.selectFrom(trace)
+            .join(trace.owner, user).fetchJoin()
+            .join(trace.footprints, footprint).fetchJoin()
+            .join(footprint.place, place).fetchJoin()
+            .join(footprint.tag, tag).fetchJoin()
+            .where(trace.id.eq(id))
+            .fetchOne()
+
+        if (trace != null) {
+            jpaQueryFactory.selectFrom(footprint)
+                .join(footprint.photos, photo).fetchJoin()
+                .where(footprint.trace.eq(trace))
+                .fetch()
+        }
+
+        return trace
+    }
+
+    override fun findByOwnerAndTraceDate(owner: User, traceDate: String): Trace? {
+        val trace = jpaQueryFactory.selectFrom(trace)
+            .join(trace.owner, user).fetchJoin()
+            .join(trace.footprints, footprint).fetchJoin()
+            .join(footprint.place, place).fetchJoin()
+            .join(footprint.tag, tag).fetchJoin()
+            .where(
+                user.eq(owner).and(
+                    trace.traceDate.eq(traceDate)
+                )
+            )
+            .fetchOne()
+
+        if (trace != null) {
+            jpaQueryFactory.selectFrom(footprint)
+                .join(footprint.photos, photo).fetchJoin()
+                .where(footprint.trace.eq(trace))
+                .fetch()
+        }
+
+        return trace
+    }
+
     override fun getTracesWithOptions(
         usernameList: List<String>,
         tagList: List<TAG_CODE>,
@@ -96,7 +140,7 @@ class TraceRepositoryCustomImpl(
         isConsiderPublic: Boolean
     ): List<Trace> {
         val booleanBuilder = BooleanBuilder()
-        if (isConsiderPublic) { booleanBuilder.and(trace.isPublic.eq(true)) }
+        if (isConsiderPublic) { booleanBuilder.and(trace.isPublic.isTrue()) }
         if (isInclude) {
             booleanBuilder.and(user.username.eq(username))
         } else {
