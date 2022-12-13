@@ -78,9 +78,13 @@ class TraceRepositoryCustomImpl(
             .join(trace.footprints, footprint).fetchJoin()
             .join(footprint.place, place).fetchJoin()
             .join(footprint.tag, tag).fetchJoin()
-            .join(footprint.photos, photo).fetchJoin()
             .where(booleanBuilder)
             .orderBy(trace.traceDate.desc())
+            .fetch()
+
+        jpaQueryFactory.selectFrom(footprint)
+            .join(footprint.photos, photo).fetchJoin()
+            .where(footprint.trace.`in`(traces))
             .fetch()
 
         return traces.distinctBy { it.id }
@@ -94,9 +98,9 @@ class TraceRepositoryCustomImpl(
         val booleanBuilder = BooleanBuilder()
         if (isConsiderPublic) { booleanBuilder.and(trace.isPublic.eq(true)) }
         if (isInclude) {
-            booleanBuilder.and(trace.owner.username.eq(username))
+            booleanBuilder.and(user.username.eq(username))
         } else {
-            booleanBuilder.and(trace.owner.username.ne(username))
+            booleanBuilder.and(user.username.ne(username))
         }
 
         val traces = jpaQueryFactory
@@ -105,9 +109,13 @@ class TraceRepositoryCustomImpl(
             .join(trace.footprints, footprint).fetchJoin()
             .join(footprint.place, place).fetchJoin()
             .join(footprint.tag, tag).fetchJoin()
-            .join(footprint.photos, photo).fetchJoin()
             .where(booleanBuilder)
             .orderBy(trace.traceDate.desc())
+            .fetch()
+
+        jpaQueryFactory.selectFrom(footprint)
+            .join(footprint.photos, photo).fetchJoin()
+            .where(footprint.trace.`in`(traces))
             .fetch()
 
         return traces.distinctBy { it.id }
