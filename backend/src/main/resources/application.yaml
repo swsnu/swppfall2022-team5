@@ -77,3 +77,7 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: create-drop
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type: TRACE

@@ -104,6 +104,11 @@ export const updateUserProfile = async (imagePath: string, username: string) => 
   return (await apiClient.put<void>(`/user/${username}`, { imagePath: imagePath })).data;
 };
 
+export const searchTracesByKeyword = async (keyword: string) => {
+  return (await apiClient.get<TraceDetailResponseType[]>(`/traces/search/keyword`, { params: { query: keyword } }))
+    .data;
+};
+
 export const fetchPlacesByKeywordAndLocation = async (
   keyword: string,
   latitude: number,

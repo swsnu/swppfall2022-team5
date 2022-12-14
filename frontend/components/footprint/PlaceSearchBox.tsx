@@ -15,6 +15,7 @@ const PlaceSearchBox = (props: IProps) => {
     <div
       className={classNames(
         "rounded-lg border border-navy-700 px-2 py-1 text-sm text-navy-200 transition-colors hover:cursor-pointer ",
+        { [props.className ?? ""]: !!props.className },
       )}
     >
       <div className="flex">

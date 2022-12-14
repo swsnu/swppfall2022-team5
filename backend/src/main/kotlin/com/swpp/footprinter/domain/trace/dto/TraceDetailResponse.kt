@@ -11,5 +11,6 @@ data class TraceDetailResponse(
     var footprints: List<FootprintResponse>?,
     val isLiked: Boolean,
     val likesCount: Int,
-    val viewCount: Int
+    val viewCount: Int,
+    val isPublic: Boolean
 )
