@@ -71,7 +71,7 @@ internal class PhotoServiceTest @Autowired constructor(
 
         mockStatic(ImageMetadataReader::class.java).use { mockedMetadataReader ->
             mockedMetadataReader.`when`<Any> { ImageMetadataReader.readMetadata(any(InputStream::class.java)) }.thenReturn(mockedMetadata)
-            photoService.processMetadataAndSaveAsPhoto(mockedMultipartFile, "testPath")
+            photoService.processMetadataAndSaveAsPhoto(listOf(mockedMultipartFile), "testPath")
 
             val createdPhoto = photoRepo.findByImagePath("testPath")!!
             assertThat(createdPhoto).extracting("imagePath").isEqualTo("testPath")

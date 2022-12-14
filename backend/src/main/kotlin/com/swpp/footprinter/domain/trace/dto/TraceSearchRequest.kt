@@ -8,4 +8,5 @@ data class TraceSearchRequest(
     val tags: List<Int>,
     val dates: List<String>,
     val places: List<PlaceRequest>,
+    val title: String? = null,
 )

@@ -78,9 +78,9 @@ class TraceController(
         return traceService.createInitialTraceBasedOnPhotoIdListGiven(photoPathList)
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     fun searchTrace(
-        @RequestBody traceSearchRequest: TraceSearchRequest,
+        @Valid @RequestBody traceSearchRequest: TraceSearchRequest,
         bindingResult: BindingResult,
     ): List<TraceDetailResponse> {
         if (bindingResult.hasErrors()) {

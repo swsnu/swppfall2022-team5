@@ -32,6 +32,7 @@ interface TraceRepositoryCustom {
         tagList: List<TAG_CODE>,
         dateList: List<String>,
         placeList: List<PlaceRequest>,
+        title: String?,
     ): List<Trace>
 
     fun getTracesOfUser(
@@ -90,7 +91,8 @@ class TraceRepositoryCustomImpl(
         usernameList: List<String>,
         tagList: List<TAG_CODE>,
         dateList: List<String>,
-        placeList: List<PlaceRequest>
+        placeList: List<PlaceRequest>,
+        title: String?
     ): List<Trace> {
         val booleanBuilder = BooleanBuilder()
         booleanBuilder.and(trace.isPublic.eq(true))
@@ -116,6 +118,12 @@ class TraceRepositoryCustomImpl(
             )
         }
 
+        if (title != null) {
+            booleanBuilder.and(
+                trace.traceTitle.eq(title)
+            )
+        }
+
         val traces = jpaQueryFactory
             .selectFrom(trace)
             .join(trace.owner, user).fetchJoin()
@@ -126,6 +134,7 @@ class TraceRepositoryCustomImpl(
             .orderBy(trace.traceDate.desc())
             .fetch()
 
+        if (traces.isNotEmpty()) {
         jpaQueryFactory.selectFrom(footprint)
             .join(footprint.photos, photo).fetchJoin()
             .where(footprint.trace.`in`(traces))
