@@ -303,14 +303,18 @@ class TraceServiceImpl(
                     val responseEntityPlace = kakaoAPIService.coordToPlace(it.meanLongitude.toString(), it.meanLatitude.toString(), category.code, radius)
                     val documents = kakaoAPIService.getDocumentsMapListFromResponse(responseEntityPlace)
                     documents.forEach { map ->
-                        it.recommendedPlaceList.add(
-                            PlaceInitialTraceResponse(
-                                name = map["place_name"]!!,
-                                address = map["address_name"]!!,
-                                distance = map["distance"]!!.toInt(),
-                                category = TagResponse(category.ordinal, category.name)
+                        try {
+                            it.recommendedPlaceList.add(
+                                PlaceInitialTraceResponse(
+                                    name = map["place_name"]!!,
+                                    address = map["address_name"]!!,
+                                    distance = map["distance"]!!.toInt(),
+                                    category = TagResponse(category.ordinal, category.name)
+                                )
                             )
-                        )
+                        } catch (e: NumberFormatException) {
+                            return@forEach
+                        }
                     }
                 }
             }
