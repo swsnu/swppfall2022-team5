@@ -89,6 +89,13 @@ class TraceController(
         return traceService.searchTrace(traceSearchRequest)
     }
 
+    @GetMapping("/search/keyword")
+    fun searchTraceWithKeyword(
+        @RequestParam(required = true, name = "query") query: String
+    ): List<TraceDetailResponse> {
+        return traceService.searchTraceWithKeyword(query)
+    }
+
     @PostMapping("/view/{traceId}")
     fun updateTraceViewCount(
         @PathVariable(required = true) traceId: Long,

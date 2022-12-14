@@ -3,6 +3,7 @@ package com.swpp.footprinter.domain.trace.repository
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.swpp.footprinter.domain.footprint.model.QFootprint.footprint
+import com.swpp.footprinter.domain.photo.model.QPhoto.photo
 import com.swpp.footprinter.domain.place.dto.PlaceRequest
 import com.swpp.footprinter.domain.place.model.QPlace.place
 import com.swpp.footprinter.domain.tag.TAG_CODE
@@ -31,6 +32,8 @@ interface TraceRepositoryCustom {
         dateList: List<String>,
         placeList: List<PlaceRequest>,
     ): List<Trace>
+
+    fun getTracesWithKeyword(keyword: String): List<Trace>
 }
 
 class TraceRepositoryCustomImpl(
@@ -82,6 +85,35 @@ class TraceRepositoryCustomImpl(
             .join(footprint.tag, tag).fetchJoin()
             .where(booleanBuilder)
             .orderBy(trace.traceDate.desc())
+            .fetch()
+
+        return traces.distinctBy { it.id }
+    }
+
+    override fun getTracesWithKeyword(keyword: String): List<Trace> {
+        // BooleanBuilder for keyword search
+        val booleanBuilder = BooleanBuilder()
+        booleanBuilder.or(trace.traceTitle.eq(keyword))
+        booleanBuilder.or(trace.traceDate.eq(keyword))
+        booleanBuilder.or(user.username.eq(keyword))
+        booleanBuilder.or(place.name.eq(keyword))
+        TAG_CODE.values().find { it.name == keyword }?.let {
+            booleanBuilder.or(tag.tagCode.eq(it))
+        }
+
+        val traces = jpaQueryFactory
+            .selectFrom(trace)
+            .join(trace.owner, user).fetchJoin()
+            .join(trace.footprints, footprint).fetchJoin()
+            .join(footprint.place, place).fetchJoin()
+            .join(footprint.tag, tag).fetchJoin()
+            .where(booleanBuilder.and(trace.isPublic.isTrue()))
+            .orderBy(trace.traceDate.desc())
+            .fetch()
+
+        jpaQueryFactory.selectFrom(footprint)
+            .join(footprint.photos, photo).fetchJoin()
+            .where(footprint.trace.`in`(traces))
             .fetch()
 
         return traces.distinctBy { it.id }
