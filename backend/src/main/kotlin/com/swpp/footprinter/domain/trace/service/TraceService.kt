@@ -47,6 +47,7 @@ interface TraceService {
     fun createInitialTraceBasedOnPhotoIdListGiven(photoIds: List<String>): List<FootprintInitialTraceResponse> // List<Pair<Place, List<Photo>>>
     fun getTraceByDate(date: String, loginUser: User): TraceDetailResponse?
     fun searchTrace(traceSearchRequest: TraceSearchRequest): List<TraceDetailResponse>
+    fun searchTraceWithKeyword(keyword: String): List<TraceDetailResponse>
     fun updateViewCount(traceId: Long): TraceViewResponse
 }
 
@@ -185,6 +186,15 @@ class TraceServiceImpl(
         )
 
         return searchedTraceList.map { it.toDetailResponse(imageUrlUtil) }
+    }
+
+    override fun searchTraceWithKeyword(keyword: String): List<TraceDetailResponse> {
+        return if (keyword.isBlank()) {
+            listOf()
+        } else {
+            traceRepo.getTracesWithKeyword(keyword)
+                .map { it.toDetailResponse(imageUrlUtil) }
+        }
     }
 
     @Transactional
