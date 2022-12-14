@@ -3,6 +3,7 @@ package com.swpp.footprinter.domain.trace.repository
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.swpp.footprinter.domain.footprint.model.QFootprint.footprint
+import com.swpp.footprinter.domain.photo.model.QPhoto.photo
 import com.swpp.footprinter.domain.place.dto.PlaceRequest
 import com.swpp.footprinter.domain.place.model.QPlace.place
 import com.swpp.footprinter.domain.tag.TAG_CODE
@@ -30,6 +31,7 @@ interface TraceRepositoryCustom {
         tagList: List<TAG_CODE>,
         dateList: List<String>,
         placeList: List<PlaceRequest>,
+        title: String?,
     ): List<Trace>
 }
 
@@ -40,7 +42,8 @@ class TraceRepositoryCustomImpl(
         usernameList: List<String>,
         tagList: List<TAG_CODE>,
         dateList: List<String>,
-        placeList: List<PlaceRequest>
+        placeList: List<PlaceRequest>,
+        title: String?
     ): List<Trace> {
         val booleanBuilder = BooleanBuilder()
         booleanBuilder.and(trace.isPublic.eq(true))
@@ -61,16 +64,14 @@ class TraceRepositoryCustomImpl(
         }
         if (placeList.isNotEmpty()) {
             booleanBuilder.and(
-//                Expressions.list(
-//                    place.name,
-//                    place.address
-//                ).`in`(
-//                    placeList.map {
-//                        Tuple
-//                    }
-//                )
                 place.name.`in`(placeList.map { it.name })
                     .and(place.address.`in`(placeList.map { it.address }))
+            )
+        }
+
+        if (title != null) {
+            booleanBuilder.and(
+                trace.traceTitle.eq(title)
             )
         }
 
@@ -83,6 +84,13 @@ class TraceRepositoryCustomImpl(
             .where(booleanBuilder)
             .orderBy(trace.traceDate.desc())
             .fetch()
+
+        if (traces != null) {
+            jpaQueryFactory.selectFrom(footprint)
+                .join(footprint.photos, photo).fetchJoin()
+                .where(footprint.trace.`in`(traces))
+                .fetch()
+        }
 
         return traces.distinctBy { it.id }
     }

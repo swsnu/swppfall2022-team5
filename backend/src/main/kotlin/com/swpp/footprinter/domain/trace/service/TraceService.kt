@@ -166,12 +166,14 @@ class TraceServiceImpl(
         val tagList = traceSearchRequest.tags.map { TAG_CODE.values()[it] }
         val dateList = traceSearchRequest.dates
         val placeList = traceSearchRequest.places
+        val title = traceSearchRequest.title
 
         val searchedTraceList = traceRepo.getTracesWithOptions(
             usernameList,
             tagList,
             dateList,
             placeList,
+            title
         )
 
         return searchedTraceList.map { it.toDetailResponse(imageUrlUtil) }
