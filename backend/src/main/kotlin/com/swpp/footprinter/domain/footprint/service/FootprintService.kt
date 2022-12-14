@@ -42,7 +42,7 @@ class FootprintServiceImpl(
     private val imageUrlUtil: ImageUrlUtil,
 ) : FootprintService {
     override fun getFootprintById(footprintId: Long): FootprintResponse {
-        val footprint = footprintRepo.findByIdOrNull(footprintId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
+        val footprint = footprintRepo.findByIdOrNullImproved(footprintId) ?: throw FootprinterException(ErrorType.NOT_FOUND)
         return footprint.toResponse(imageUrlUtil)
     }
 
