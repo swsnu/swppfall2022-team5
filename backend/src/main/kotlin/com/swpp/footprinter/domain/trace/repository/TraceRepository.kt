@@ -182,10 +182,10 @@ class TraceRepositoryCustomImpl(
     override fun getTracesWithKeyword(keyword: String): List<Trace> {
         // BooleanBuilder for keyword search
         val booleanBuilder = BooleanBuilder()
-        booleanBuilder.or(trace.traceTitle.eq(keyword))
-        booleanBuilder.or(trace.traceDate.eq(keyword))
-        booleanBuilder.or(user.username.eq(keyword))
-        booleanBuilder.or(place.name.eq(keyword))
+        booleanBuilder.or(trace.traceTitle.contains(keyword))
+        booleanBuilder.or(trace.traceDate.contains(keyword))
+        booleanBuilder.or(user.username.contains(keyword))
+        booleanBuilder.or(place.name.contains(keyword))
         TAG_CODE.values().find { it.name == keyword }?.let {
             booleanBuilder.or(tag.tagCode.eq(it))
         }
