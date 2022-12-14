@@ -2,7 +2,7 @@ import { IconSearch } from "@tabler/icons";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { searchTracesByKeyword } from "../../../api";
+import { fetchAllOtherUsersTraces, searchTracesByKeyword } from "../../../api";
 import RectangleButton from "../../../components/buttons/RectangleButton";
 import Container from "../../../components/containers/Container";
 import NavbarContainer from "../../../components/containers/NavbarContainer";
@@ -14,6 +14,9 @@ import { TracePreviewTitle } from "../../../components/trace/TracePreviewTitle";
 export default function Explore() {
   const [query, setQuery] = useState("");
   const searchResult = useQuery(["search"], () => {
+    if (!query) {
+      return fetchAllOtherUsersTraces();
+    }
     return searchTracesByKeyword(query);
   });
 
