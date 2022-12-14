@@ -62,6 +62,7 @@ const ProfilePhoto = (props: IProps) => {
           }}
           name="files"
           labelIdle="업로드"
+          acceptedFileTypes={["image/jpeg", "image/png", "image/jpg", "image/heic", "image/heif"]}
           stylePanelLayout={"compact circle"}
           styleLoadIndicatorPosition={"center bottom"}
           styleProgressIndicatorPosition={"center bottom"}

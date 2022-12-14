@@ -17,6 +17,7 @@ export interface TraceDetailResponseType {
   isLiked: boolean;
   footprints: FootprintResponseType[];
   viewCount: number;
+  isPublic: boolean;
 }
 
 export interface TraceViewResponseType {

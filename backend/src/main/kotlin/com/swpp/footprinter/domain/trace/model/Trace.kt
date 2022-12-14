@@ -53,7 +53,8 @@ class Trace(
             isLiked = isLiked,
             footprints = footprints.map { it.toResponse(imageUrlUtil) }.sortedBy { it.startTime },
             likesCount = likesCount,
-            viewCount = viewCount
+            viewCount = viewCount,
+            isPublic = isPublic
         )
     }
 }
