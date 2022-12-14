@@ -25,6 +25,7 @@ class FootprintRepositoryCustomImpl(
             .join(footprint.place, place).fetchJoin()
             .join(footprint.trace, trace).fetchJoin()
             .join(footprint.photos, photo).fetchJoin()
+            .where(footprint.id.eq(id))
             .fetchOne()
     }
 }
