@@ -137,10 +137,11 @@ class TraceRepositoryCustomImpl(
             .fetch()
 
         if (traces.isNotEmpty()) {
-        jpaQueryFactory.selectFrom(footprint)
-            .join(footprint.photos, photo).fetchJoin()
-            .where(footprint.trace.`in`(traces))
-            .fetch()
+            jpaQueryFactory.selectFrom(footprint)
+                .join(footprint.photos, photo).fetchJoin()
+                .where(footprint.trace.`in`(traces))
+                .fetch()
+        }
 
         return traces.distinctBy { it.id }
     }

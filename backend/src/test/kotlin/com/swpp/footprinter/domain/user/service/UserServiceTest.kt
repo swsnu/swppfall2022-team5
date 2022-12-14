@@ -134,6 +134,7 @@ class UserServiceTest @Autowired constructor(
             viewCount = 0,
             isLiked = false,
             likesCount = 0,
+            isPublic = true,
         )
 
         assertThat(traceDetailResponseReturned?.id).isEqualTo(traceDetailResponseExpected.id)
