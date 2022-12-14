@@ -9,6 +9,7 @@ import com.swpp.footprinter.domain.footprint.dto.FootprintResponse
 import com.swpp.footprinter.domain.footprint.repository.FootprintRepository
 import com.swpp.footprinter.domain.photo.dto.PhotoRequest
 import com.swpp.footprinter.domain.photo.repository.PhotoRepository
+import com.swpp.footprinter.domain.photo.service.PhotoService
 import com.swpp.footprinter.domain.place.dto.PlaceRequest
 import com.swpp.footprinter.domain.place.repository.PlaceRepository
 import com.swpp.footprinter.domain.tag.TAG_CODE
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.InjectMocks
+import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -37,6 +39,7 @@ import java.util.*
 internal class FootprintServiceTest @Autowired constructor(
     private val testHelper: TestHelper,
     @MockBean val mockImageUrlUtil: ImageUrlUtil,
+    @MockBean val mockPhotoService: PhotoService,
     @InjectMocks private val footprintService: FootprintService,
     private val footprintRepo: FootprintRepository,
     private val placeRepo: PlaceRepository,
@@ -46,11 +49,21 @@ internal class FootprintServiceTest @Autowired constructor(
     private val photoRepo: PhotoRepository,
 ) {
 
+    object MockitoHelper {
+        fun <T> anyObject(): T {
+            Mockito.any<T>()
+            return uninitialized()
+        }
+        @Suppress("UNCHECKED_CAST")
+        fun <T> uninitialized(): T = null as T
+    }
     @BeforeAll
     fun initialSetup() {
+
         testHelper.createUser("testUser", "test@snu.ac.kr")
         testHelper.initializeTag()
         `when`(mockImageUrlUtil.getImageURLfromImagePath(anyString())).thenReturn("testURL")
+        `when`(mockPhotoService.deletePhotoFromDatabaseAndServer(MockitoHelper.anyObject())).then { print("mocking") }
     }
 
     @AfterEach
